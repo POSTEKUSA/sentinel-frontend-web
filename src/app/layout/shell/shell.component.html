@@ -1,0 +1,47 @@
+<mat-sidenav-container class="shell-container">
+
+  <!-- ── Sidenav ── -->
+  <mat-sidenav mode="side" opened class="sidenav">
+    <div class="brand">
+      <mat-icon class="brand-icon">devices</mat-icon>
+      <div class="brand-words">
+        <span class="brand-text">{{ appName }}</span>
+        <span class="brand-sub">{{ appDescription }}</span>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <mat-nav-list>
+      <ng-container *ngFor="let section of navSections; let sectionIndex = index">
+        <div class="nav-section-title" *ngIf="section.title">{{ section.title }}</div>
+        <mat-divider *ngIf="sectionIndex > 0 && !section.title"></mat-divider>
+        <a mat-list-item *ngFor="let item of section.items" [routerLink]="item.route" routerLinkActive="active-link"
+          [routerLinkActiveOptions]="{ exact: false }">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      </ng-container>
+    </mat-nav-list>
+
+    <div class="sidenav-footer">
+      <div class="footer-app-name">{{ appName }}™</div>
+      <div class="footer-app-copyright">{{ copyrightText }}</div>
+      <div class="footer-app-version">{{ appVersion }}</div>
+    </div>
+  </mat-sidenav>
+
+  <!-- ── Main content ── -->
+  <mat-sidenav-content class="main-content">
+    <mat-toolbar class="app-toolbar" color="primary">
+      <span class="toolbar-title">Device Monitoring</span>
+      <span class="spacer"></span>
+      <span class="toolbar-env-badge">Prototype</span>
+    </mat-toolbar>
+
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

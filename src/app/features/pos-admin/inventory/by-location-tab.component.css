@@ -1,0 +1,31 @@
+.tab-body {
+  padding-top: 16px;
+}
+
+.location-card {
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  border: 2px solid transparent;
+}
+
+.location-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.location-card.expanded-card {
+  border-color: #1976d2;
+}
+
+.location-card .admin-kpi-icon {
+  color: #1976d2;
+}
+
+.detail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #334155;
+}

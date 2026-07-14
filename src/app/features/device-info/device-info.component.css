@@ -1,0 +1,255 @@
+.detail-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 16px;
+  color: rgba(0,0,0,0.54);
+  font-size: 13px;
+}
+
+.bc-sep { font-size: 16px; }
+.bc-current { font-weight: 500; color: rgba(0,0,0,0.7); }
+
+/* ── Header ── */
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.device-big-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: rgba(0,0,0,0.45);
+}
+
+.device-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.device-subtitle {
+  font-size: 12px;
+  color: rgba(0,0,0,0.45);
+  margin-top: 2px;
+}
+
+.header-right { color: rgba(0,0,0,0.5); }
+
+.last-seen {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.last-seen mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+/* ── Grid ── */
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.info-card {
+  border-radius: 10px;
+}
+
+/* ── Meta grid ── */
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
+  padding-top: 8px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meta-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(0,0,0,0.45);
+}
+
+.meta-value {
+  font-size: 14px;
+  color: #1a1a2e;
+}
+
+/* ── Health ── */
+.health-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.health-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(0,0,0,0.45);
+}
+
+.metric-value {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+
+/* ── Maps link ── */
+.maps-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: inherit;
+}
+
+.maps-link mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+/* ── Events ── */
+.events-card {
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.event-item {
+  height: auto !important;
+  padding: 8px 0;
+}
+
+.event-type { font-weight: 500; }
+
+.event-time, .event-id {
+  font-size: 12px;
+  color: rgba(0,0,0,0.5);
+}
+
+.event-icon { font-size: 20px; }
+
+/* ── JSON ── */
+.json-panel {
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.json-panel mat-icon { vertical-align: middle; }
+
+.json-pre {
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 16px;
+  font-size: 12px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  overflow-x: auto;
+  max-height: 400px;
+  white-space: pre;
+}
+
+/* ── Loading ── */
+.loading-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px;
+  gap: 16px;
+  color: rgba(0,0,0,0.5);
+}
+
+/* ── Events Panel ── */
+.event-panel {
+  box-shadow: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  margin-bottom: 8px;
+  border-radius: 6px !important;
+}
+
+.event-panel:last-child {
+  margin-bottom: 0;
+}
+
+.event-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 180px;
+}
+
+.event-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-type-text {
+  font-weight: 500;
+}
+
+.event-desc-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.event-time {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.event-id-short {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.38);
+  font-family: monospace;
+}
+
+.json-pre-small {
+  background: #f8f9fa;
+  border-radius: 4px;
+  padding: 12px;
+  font-size: 11px;
+  font-family: 'Cascadia Code', 'Fira Code', monospace;
+  overflow-x: auto;
+  max-height: 250px;
+  margin: 8px 0 0 0;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}

@@ -1,0 +1,194 @@
+<div class="device-list-wrapper">
+
+  <!-- ── Header row ── -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">
+        <mat-icon>smartphone</mat-icon>
+        Device List
+      </h1>
+      @if (isMockMode) {
+      <span class="mock-badge">
+        <mat-icon>science</mat-icon> Mock Data
+      </span>
+      }
+      @else {
+      <span class="real-badge">
+        <mat-icon>cloud</mat-icon> Real Data
+      </span>
+      }
+    </div>
+  </div>
+
+  @if (hasUrlFilters && !loading) {
+    <div class="url-filter-banner">
+      <mat-icon>filter_alt</mat-icon>
+      <span>Filtered view from dashboard</span>
+      @if (activeStatusFilter !== 'all') {
+        <span class="url-filter-tag">Status: {{ activeStatusFilter }}</span>
+      }
+      @if (filterTenantId) {
+        <span class="url-filter-tag">Tenant: {{ filterTenantId }}</span>
+      }
+      @if (filterMerchantId) {
+        <span class="url-filter-tag">Merchant: {{ filterMerchantId }}</span>
+      }
+      @if (filterStaleSyncOnly) {
+        <span class="url-filter-tag">Stale sync only</span>
+      }
+      <button mat-button type="button" (click)="clearUrlFilters()">Clear filters</button>
+    </div>
+  }
+
+  <!-- ── Filters Panel ── -->
+  <mat-expansion-panel class="filter-panel" [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="filter-label-group">
+        <mat-icon>filter_list</mat-icon>
+        <span>Filters</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <div class="filter-row">
+      <div class="kpi-chips-container">
+        <div class="kpi-chip kpi-total" (click)="setStatusFilter('all')" [class.active]="activeStatusFilter === 'all'">
+          <span class="kpi-count">{{ allDevices.length }}</span>
+          <span class="kpi-label">Total</span>
+        </div>
+        <div class="kpi-chip kpi-online" (click)="setStatusFilter('online')"
+          [class.active]="activeStatusFilter === 'online'">
+          <span class="kpi-count">{{ countByStatus('online') }}</span>
+          <span class="kpi-label">Online</span>
+        </div>
+        <div class="kpi-chip kpi-delayed" (click)="setStatusFilter('delayed')"
+          [class.active]="activeStatusFilter === 'delayed'">
+          <span class="kpi-count">{{ countByStatus('delayed') }}</span>
+          <span class="kpi-label">Delayed</span>
+        </div>
+        <div class="kpi-chip kpi-offline" (click)="setStatusFilter('offline')"
+          [class.active]="activeStatusFilter === 'offline'">
+          <span class="kpi-count">{{ countByStatus('offline') }}</span>
+          <span class="kpi-label">Offline</span>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="search-field" subscriptSizing="dynamic" floatLabel="always">
+        <mat-label>Search devices…</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [formControl]="searchCtrl" placeholder="Alias, Device ID, Merchant ID, Tenant ID" />
+        <button *ngIf="searchCtrl.value" matSuffix mat-icon-button (click)="searchCtrl.reset()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </mat-expansion-panel>
+
+  <!-- ── Loading ── -->
+  <div *ngIf="loading" class="loading-center">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading devices…</p>
+  </div>
+
+  <!-- ── Table ── -->
+  <mat-card *ngIf="!loading" class="table-card">
+    <mat-card-content>
+
+      <!-- Empty state -->
+      <app-empty-state *ngIf="filtered.length === 0" icon="devices_off" title="No devices match your search"
+        subtitle="Try adjusting the filters or search query"></app-empty-state>
+
+      <table mat-table [dataSource]="filtered" class="device-table" *ngIf="filtered.length > 0">
+
+        <!-- Alias -->
+        <ng-container matColumnDef="alias">
+          <th mat-header-cell *matHeaderCellDef>Device Alias</th>
+          <td mat-cell *matCellDef="let d">
+            <div class="alias-cell">
+              <mat-icon class="device-icon">smartphone</mat-icon>
+              <div>
+                <div class="alias-name">{{ d.metadata.alias }}</div>
+                <div class="alias-id">{{ d.metadata.deviceId }}</div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Tenant -->
+        <ng-container matColumnDef="tenantId">
+          <th mat-header-cell *matHeaderCellDef>Tenant</th>
+          <td mat-cell *matCellDef="let d">{{ d.metadata.tenantId }}</td>
+        </ng-container>
+
+        <!-- Merchant -->
+        <ng-container matColumnDef="merchantId">
+          <th mat-header-cell *matHeaderCellDef>Merchant</th>
+          <td mat-cell *matCellDef="let d">{{ d.metadata.merchantId }}</td>
+        </ng-container>
+
+        <!-- Battery -->
+        <ng-container matColumnDef="battery">
+          <th mat-header-cell *matHeaderCellDef>Battery</th>
+          <td mat-cell *matCellDef="let d">
+            <app-battery-indicator [level]="d.health.batteryLevel"
+              [charging]="d.health.batteryCharging"></app-battery-indicator>
+          </td>
+        </ng-container>
+
+        <!-- Network -->
+        <ng-container matColumnDef="network">
+          <th mat-header-cell *matHeaderCellDef>Network</th>
+          <td mat-cell *matCellDef="let d">
+            <div class="network-cell">
+              <mat-icon class="net-icon">{{ d.health.networkType === 'wifi' ? 'wifi' : 'signal_cellular_alt'
+                }}</mat-icon>
+              <span>{{ d.health.networkType | uppercase }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Last Seen -->
+        <ng-container matColumnDef="lastSeen">
+          <th mat-header-cell *matHeaderCellDef>Last Seen</th>
+          <td mat-cell *matCellDef="let d" [matTooltip]="d.lastHeartbeat">
+            {{ statusSvc.formatRelative(d.lastHeartbeat) }}
+          </td>
+        </ng-container>
+
+        <!-- Latitude -->
+        <ng-container matColumnDef="latitude">
+          <th mat-header-cell *matHeaderCellDef>Lat</th>
+          <td mat-cell *matCellDef="let d">{{ d.location.latitude | number:'1.4-4' }}</td>
+        </ng-container>
+
+        <!-- Longitude -->
+        <ng-container matColumnDef="longitude">
+          <th mat-header-cell *matHeaderCellDef>Lng</th>
+          <td mat-cell *matCellDef="let d">{{ d.location.longitude | number:'1.4-4' }}</td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let d">
+            <app-status-badge [status]="d.status"></app-status-badge>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let d">
+            <button mat-icon-button [routerLink]="['/device-info', d.metadata.deviceId]" matTooltip="View details">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+      </table>
+
+    </mat-card-content>
+  </mat-card>
+
+</div>

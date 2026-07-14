@@ -1,0 +1,16 @@
+.tab-body {
+  padding-top: 16px;
+}
+
+.tab-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-field {
+  flex: 1;
+  min-width: 260px;
+}

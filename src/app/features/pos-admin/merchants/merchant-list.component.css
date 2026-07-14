@@ -1,0 +1,56 @@
+.tab-body {
+  padding-top: 16px;
+}
+
+.merchant-link {
+  font-weight: 600;
+  color: var(--mat-primary, #1976d2);
+  text-decoration: none;
+}
+
+.merchant-link:hover {
+  text-decoration: underline;
+}
+
+.mcc-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mcc-bar-row {
+  display: grid;
+  grid-template-columns: 240px 1fr 50px;
+  align-items: center;
+  gap: 12px;
+}
+
+.mcc-label {
+  font-size: 13px;
+  color: #334155;
+}
+
+.mcc-bar-track {
+  height: 10px;
+  border-radius: 5px;
+  background: #eef2f7;
+  overflow: hidden;
+}
+
+.mcc-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #1976d2, #42a5f5);
+}
+
+.mcc-count {
+  font-weight: 700;
+  color: #1a1a2e;
+  text-align: right;
+}
+
+@media (max-width: 720px) {
+  .mcc-bar-row {
+    grid-template-columns: 140px 1fr 40px;
+  }
+}

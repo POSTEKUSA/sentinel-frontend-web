@@ -1,0 +1,218 @@
+<div class="admin-page">
+
+  <div class="admin-page-header">
+    <div>
+      <h1 class="admin-page-title">
+        <mat-icon>move_to_inbox</mat-icon>
+        Recepción de Equipos
+      </h1>
+      <p class="admin-page-subtitle">Ingreso de terminales POS al inventario desde su llegada física</p>
+    </div>
+  </div>
+
+  <mat-tab-group animationDuration="150ms">
+
+    <!-- ── HU-006 — Recepción individual ── -->
+    <mat-tab label="Recepción individual">
+      <div class="tab-body">
+        <mat-card class="admin-card">
+          <mat-card-content>
+            <form [formGroup]="form" class="receive-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Orden de compra asociada (opcional)</mat-label>
+                <mat-select formControlName="purchaseOrderId" (selectionChange)="onOrderChange($event.value, form)">
+                  <mat-option value="">Sin orden asociada</mat-option>
+                  @for (o of orders; track o.id) {
+                    <mat-option [value]="o.id">{{ o.orderNumber }} · {{ o.supplierName }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              @if (form.value.purchaseOrderId) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Línea de la orden</mat-label>
+                  <mat-select formControlName="purchaseOrderLineId" (selectionChange)="onLineChange($event.value)">
+                    @for (l of pendingLines; track l.id) {
+                      <mat-option [value]="l.id">{{ l.brand }} {{ l.model }} ({{ l.receivedQty }}/{{ l.requestedQty }})</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+
+              <mat-form-field appearance="outline">
+                <mat-label>Marca</mat-label>
+                <input matInput formControlName="brand">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Modelo</mat-label>
+                <input matInput formControlName="model">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo de POS</mat-label>
+                <input matInput formControlName="posType" placeholder="Android POS, mPOS...">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Número de serie</mat-label>
+                <input matInput formControlName="serialNumber" placeholder="Único por equipo">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Ubicación de recepción</mat-label>
+                <mat-select formControlName="locationType">
+                  @for (loc of locationOptions; track loc.value) {
+                    <mat-option [value]="loc.value">{{ loc.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Detalle de ubicación (opcional)</mat-label>
+                <input matInput formControlName="locationLabel" placeholder="Ej. Almacén Central Managua">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Estado físico inicial</mat-label>
+                <input matInput formControlName="initialCondition">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Observaciones</mat-label>
+                <textarea matInput formControlName="observations" rows="2"></textarea>
+              </mat-form-field>
+            </form>
+
+            <p class="receiver-note">
+              <mat-icon>person</mat-icon>
+              Usuario receptor: <strong>{{ currentUser.displayName }}</strong>
+            </p>
+
+            @if (duplicateError) {
+              <p class="form-error">
+                <mat-icon>error_outline</mat-icon>
+                Ya existe un equipo registrado con ese número de serie en el inventario.
+              </p>
+            }
+            @if (lastReceived) {
+              <p class="form-success">
+                <mat-icon>check_circle</mat-icon>
+                Equipo {{ lastReceived }} recibido correctamente e ingresado al inventario.
+              </p>
+            }
+
+            <div class="form-actions">
+              <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="submitSingle()">
+                <mat-icon>save</mat-icon> Registrar recepción
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- ── HU-007 — Carga masiva ── -->
+    <mat-tab label="Carga masiva">
+      <div class="tab-body">
+        <mat-card class="admin-card">
+          <mat-card-content>
+            <div class="bulk-toolbar">
+              <button mat-stroked-button (click)="downloadTemplate()">
+                <mat-icon>download</mat-icon> Descargar plantilla CSV
+              </button>
+              <button mat-raised-button color="primary" (click)="fileInput.click()">
+                <mat-icon>upload_file</mat-icon> Seleccionar archivo CSV
+              </button>
+              <input #fileInput type="file" accept=".csv" hidden (change)="onFileSelected($event)">
+              @if (bulkFileName) {
+                <span class="file-name-chip"><mat-icon>description</mat-icon> {{ bulkFileName }}</span>
+              }
+            </div>
+
+            <form [formGroup]="bulkForm" class="receive-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Orden de compra asociada (opcional)</mat-label>
+                <mat-select formControlName="purchaseOrderId" (selectionChange)="onOrderChange($event.value, bulkForm)">
+                  <mat-option value="">Sin orden asociada</mat-option>
+                  @for (o of orders; track o.id) {
+                    <mat-option [value]="o.id">{{ o.orderNumber }} · {{ o.supplierName }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              @if (bulkForm.value.purchaseOrderId) {
+                <mat-form-field appearance="outline">
+                  <mat-label>Línea de la orden</mat-label>
+                  <mat-select formControlName="purchaseOrderLineId" (selectionChange)="onBulkLineChange($event.value)">
+                    @for (l of pendingLines; track l.id) {
+                      <mat-option [value]="l.id">{{ l.brand }} {{ l.model }} ({{ l.receivedQty }}/{{ l.requestedQty }})</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+              <mat-form-field appearance="outline">
+                <mat-label>Ubicación de recepción</mat-label>
+                <mat-select formControlName="locationType">
+                  @for (loc of locationOptions; track loc.value) {
+                    <mat-option [value]="loc.value">{{ loc.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Estado físico inicial</mat-label>
+                <input matInput formControlName="initialCondition">
+              </mat-form-field>
+            </form>
+
+            @if (bulkValidation.length > 0) {
+              <div class="bulk-summary">
+                <span class="status-chip chip-green">{{ validCount }} válidos</span>
+                <span class="status-chip chip-red">{{ errorCount }} con error</span>
+              </div>
+
+              <div class="admin-table-wrap">
+                <table mat-table [dataSource]="bulkValidation" class="admin-table">
+                  <ng-container matColumnDef="row">
+                    <th mat-header-cell *matHeaderCellDef>Fila</th>
+                    <td mat-cell *matCellDef="let r">{{ r.row }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="serialNumber">
+                    <th mat-header-cell *matHeaderCellDef>Número de serie</th>
+                    <td mat-cell *matCellDef="let r">{{ r.serialNumber }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="brand">
+                    <th mat-header-cell *matHeaderCellDef>Marca</th>
+                    <td mat-cell *matCellDef="let r">{{ r.brand }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="model">
+                    <th mat-header-cell *matHeaderCellDef>Modelo</th>
+                    <td mat-cell *matCellDef="let r">{{ r.model }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Estado</th>
+                    <td mat-cell *matCellDef="let r">
+                      @if (r.status === 'valid') {
+                        <span class="status-chip chip-green">Válido</span>
+                      } @else {
+                        <span class="status-chip chip-red" [matTooltip]="r.error">{{ r.error }}</span>
+                      }
+                    </td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="bulkResultColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: bulkResultColumns;"></tr>
+                </table>
+              </div>
+
+              <div class="form-actions">
+                <button mat-raised-button color="primary" [disabled]="validCount === 0" (click)="confirmBulkImport()">
+                  <mat-icon>done_all</mat-icon> Confirmar carga de {{ validCount }} equipo(s)
+                </button>
+              </div>
+            }
+
+            @if (bulkImported) {
+              <p class="form-success">
+                <mat-icon>check_circle</mat-icon>
+                Bitácora de carga: {{ bulkImported.created }} equipos ingresados al inventario, {{ bulkImported.skipped }} registros omitidos por error.
+              </p>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
+</div>

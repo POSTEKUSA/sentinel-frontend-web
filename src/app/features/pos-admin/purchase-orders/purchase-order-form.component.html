@@ -1,0 +1,137 @@
+<div class="admin-page">
+
+  <div class="admin-page-header">
+    <div>
+      <h1 class="admin-page-title">
+        <mat-icon>receipt_long</mat-icon>
+        {{ isNew ? 'Nueva orden de compra' : ('Orden ' + order?.orderNumber) }}
+      </h1>
+      <p class="admin-page-subtitle">
+        @if (isNew) {
+          Registra una nueva orden de compra de POS, accesorios y consumibles
+        } @else if (order) {
+          <span class="status-chip" [ngClass]="'chip-blue'">{{ statusLabels[order.status] }}</span>
+          · Creada por {{ order.createdBy }} el {{ order.createdAt | date:'medium' }}
+        }
+      </p>
+    </div>
+    <div class="admin-header-actions">
+      <a mat-button [routerLink]="['/pos-admin/purchase-orders']">
+        <mat-icon>arrow_back</mat-icon> Volver al listado
+      </a>
+      @if (!isNew && order) {
+        <button mat-stroked-button color="primary" (click)="goToReceiving()">
+          <mat-icon>move_to_inbox</mat-icon> Registrar recepción
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (!isNew && !order) {
+    <mat-card class="admin-card">
+      <mat-card-content>
+        <p>No se encontró la orden de compra solicitada.</p>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+
+    <mat-card class="admin-card">
+      <mat-card-content>
+        <form [formGroup]="form" class="po-header-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Proveedor</mat-label>
+            <mat-select formControlName="supplierId" (selectionChange)="onSupplierChange($event.value, suppliers)">
+              @for (s of suppliers; track s.id) {
+                <mat-option [value]="s.id">{{ s.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de orden</mat-label>
+            <input matInput [matDatepicker]="orderDatePicker" formControlName="orderDate">
+            <mat-datepicker-toggle matIconSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #orderDatePicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha estimada de recepción</mat-label>
+            <input matInput [matDatepicker]="estDatePicker" formControlName="estimatedReceiptDate">
+            <mat-datepicker-toggle matIconSuffix [for]="estDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #estDatePicker></mat-datepicker>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Lugar de entrega</mat-label>
+            <input matInput formControlName="deliveryLocation" placeholder="Almacén Central Managua...">
+          </mat-form-field>
+        </form>
+
+        <h3 class="lines-title">Líneas de la orden</h3>
+        <div class="lines-table" [formGroup]="form">
+          <div class="lines-header">
+            <span>Tipo</span><span>Marca</span><span>Modelo</span><span>Cant. solicitada</span><span>Cant. recibida</span><span>Precio unit.</span><span></span>
+          </div>
+          <div formArrayName="lines">
+            @for (line of lines.controls; track line; let i = $index) {
+              <div class="line-row" [formGroupName]="i">
+                <mat-form-field appearance="outline" class="dense-field">
+                  <mat-select formControlName="itemType">
+                    <mat-option value="pos">POS</mat-option>
+                    <mat-option value="accessory">Accesorio</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="dense-field">
+                  <input matInput formControlName="brand" placeholder="Marca">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="dense-field">
+                  <input matInput formControlName="model" placeholder="Modelo">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="dense-field">
+                  <input matInput type="number" min="1" formControlName="requestedQty">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="dense-field">
+                  <input matInput type="number" formControlName="receivedQty" readonly>
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="dense-field">
+                  <input matInput type="number" min="0" step="0.01" formControlName="unitPrice">
+                </mat-form-field>
+                @if (isNew) {
+                  <button mat-icon-button type="button" matTooltip="Quitar línea" (click)="removeLine(i)" [disabled]="lines.length <= 1">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                } @else {
+                  <span></span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (isNew) {
+          <button mat-button type="button" (click)="addLine()">
+            <mat-icon>add</mat-icon> Agregar línea
+          </button>
+        }
+
+        <div class="form-actions">
+          @if (isNew) {
+            <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">
+              <mat-icon>save</mat-icon> Crear orden de compra
+            </button>
+          } @else if (order) {
+            <div class="status-actions">
+              <span class="status-actions-label">Cambiar estado:</span>
+              @if (canTransitionTo('in_transit')) {
+                <button mat-stroked-button (click)="changeStatus('in_transit')">Marcar en tránsito</button>
+              }
+              @if (canTransitionTo('cancelled')) {
+                <button mat-stroked-button color="warn" (click)="changeStatus('cancelled')">Cancelar orden</button>
+              }
+              @if (canTransitionTo('closed')) {
+                <button mat-stroked-button color="primary" (click)="changeStatus('closed')">Cerrar orden</button>
+              }
+            </div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

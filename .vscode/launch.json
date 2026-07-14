@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "localhost (Chrome)",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "msedge",
+      "request": "launch",
+      "name": "localhost (Edge)",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "localhost (Brave)",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}",
+      "runtimeExecutable": "C:\\Users\\julio\\AppData\\Local\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
+    }
+  ]
+}

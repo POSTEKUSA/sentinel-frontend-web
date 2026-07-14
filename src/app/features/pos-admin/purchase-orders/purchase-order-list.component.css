@@ -1,0 +1,9 @@
+.po-link {
+  font-weight: 600;
+  color: var(--mat-primary, #1976d2);
+  text-decoration: none;
+}
+
+.po-link:hover {
+  text-decoration: underline;
+}

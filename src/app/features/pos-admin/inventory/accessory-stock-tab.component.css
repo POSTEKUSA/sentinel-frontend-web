@@ -1,0 +1,35 @@
+.tab-body {
+  padding-top: 16px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.section-header h3,
+.section-header-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #334155;
+  margin: 24px 0 10px;
+}
+
+.section-header h3 {
+  margin: 0;
+}
+
+.consumption-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
