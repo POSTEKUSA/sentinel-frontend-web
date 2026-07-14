@@ -34,6 +34,31 @@ jobs:
           cp dist/postek.sentinel.web/browser/index.html dist/postek.sentinel.web/browser/404.html
           touch dist/postek.sentinel.web/browser/.nojekyll
 
+      - name: Verify publish root has index.html
+        run: |
+          ls -la dist/postek.sentinel.web/browser
+          test -f dist/postek.sentinel.web/browser/index.html
+
+      - name: Ensure Pages uses GitHub Actions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          CURRENT=$(gh api "repos/${{ github.repository }}/pages" --jq .build_type 2>/dev/null)
+          set -e
+          echo "Current Pages build_type: ${CURRENT:-none}"
+          if [ "$CURRENT" != "workflow" ]; then
+            gh api "repos/${{ github.repository }}/pages" -X POST -f build_type=workflow \
+              || gh api "repos/${{ github.repository }}/pages" -X PUT --input - <<'EOF'
+          {
+            "build_type": "workflow"
+          }
+          EOF
+          fi
+          gh api "repos/${{ github.repository }}/pages" --jq '{build_type,html_url,status,public}'
+
+      - uses: actions/configure-pages@v5
+
       - uses: actions/upload-pages-artifact@v5
         with:
           path: dist/postek.sentinel.web/browser
