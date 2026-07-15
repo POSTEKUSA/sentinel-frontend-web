@@ -81,6 +81,21 @@ export class DeviceInfoComponent implements OnInit, OnDestroy {
     return JSON.stringify(obj, null, 2);
   }
 
+  eventTypeLabel(eventType: string): string {
+    switch (eventType) {
+      case 'heartbeat':
+        return 'Latido';
+      case 'location':
+        return 'Ubicación';
+      case 'health':
+        return 'Salud';
+      case 'sync':
+        return 'Sincronización';
+      default:
+        return eventType;
+    }
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

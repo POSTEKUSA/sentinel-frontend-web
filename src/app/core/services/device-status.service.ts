@@ -18,33 +18,26 @@ export class DeviceStatusService {
     return 'offline';
   }
 
-  // /** Etiqueta display para el status */
-  // getLabel(status: DeviceStatus): string {
-  //   switch (status) {
-  //     case 'online':  return 'Online';
-  //     case 'delayed': return 'Delayed';
-  //     case 'offline': return 'Offline';
-  //   }
-  // }
+  /** Etiqueta display para el status */
+  getLabel(status: DeviceStatus): string {
+    switch (status) {
+      case 'online':
+        return 'En línea';
+      case 'delayed':
+        return 'Retrasado';
+      case 'offline':
+        return 'Fuera de línea';
+    }
+  }
 
-  // /** Color Material para el status */
-  // getColor(status: DeviceStatus): 'primary' | 'warn' | 'accent' {
-  //   //TODO
-  //   switch (status) {
-  //     case 'online':  return 'primary';
-  //     case 'delayed': return 'accent';
-  //     case 'offline': return 'warn';
-  //   }
-  // }
-
-  /** Formatea un timestamp ISO a "X min ago" / "X h ago" */
+  /** Formatea un timestamp ISO a relatividad en español */
   formatRelative(isoString: string): string {
     const diffMs = Date.now() - new Date(isoString).getTime();
     const diffMin = Math.floor(diffMs / 60_000);
-    if (diffMin < 1) return 'just now';
-    if (diffMin < 60) return `${diffMin} min ago`;
+    if (diffMin < 1) return 'hace un momento';
+    if (diffMin < 60) return `hace ${diffMin} min`;
     const diffH = Math.floor(diffMin / 60);
-    if (diffH < 24) return `${diffH} h ago`;
-    return `${Math.floor(diffH / 24)} d ago`;
+    if (diffH < 24) return `hace ${diffH} h`;
+    return `hace ${Math.floor(diffH / 24)} d`;
   }
 }

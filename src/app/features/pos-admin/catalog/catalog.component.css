@@ -2,6 +2,14 @@
   padding-top: 16px;
 }
 
+.catalog-title-icon {
+  font-size: 1.15em;
+  line-height: 1;
+  vertical-align: -0.12em;
+  margin-right: 0.25rem;
+  color: var(--brand, #0a5fa5);
+}
+
 .tab-toolbar {
   display: flex;
   align-items: center;

@@ -68,8 +68,8 @@
 }
 
 .kpi-chip.delayed {
-  color: #e65100;
-  border-left-color: #fb8c00;
+  color: #ca8a04;
+  border-left-color: #eab308;
 }
 
 .kpi-chip.offline {
@@ -96,8 +96,8 @@
 }
 
 .kpi-chip.delayed.active {
-  background: #fff3e0;
-  box-shadow: 0 0 0 3px rgba(251, 140, 0, 0.2);
+  background: #fef9c3;
+  box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.25);
 }
 
 .kpi-chip.offline.active {

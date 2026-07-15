@@ -8,22 +8,35 @@ import { DeviceStatus } from '../../core/models/device-summary.model';
   imports: [CommonModule],
   template: `
     <span
-      class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide"
+      class="cf-badge"
       [ngClass]="{
-        'bg-ok-soft text-ok': status === 'online',
-        'bg-warn-soft text-warn': status === 'delayed',
-        'bg-danger-soft text-danger': status === 'offline'
+        'cf-badge-ok': status === 'online',
+        'cf-badge-warn': status === 'delayed',
+        'cf-badge-off': status === 'offline'
       }">
-      <span
-        class="h-1.5 w-1.5 rounded-full"
-        [ngClass]="{
-          'bg-ok animate-pulse': status === 'online',
-          'bg-warn': status === 'delayed',
-          'bg-danger': status === 'offline'
-        }"></span>
+      <span class="dot" [class.cf-badge-dot-pulse]="status === 'online'"></span>
       {{ label }}
     </span>
   `,
+  styles: [
+    `
+      :host {
+        display: inline-flex;
+      }
+      .cf-badge-dot-pulse {
+        animation: cfBadgePulse 1.6s ease-in-out infinite;
+      }
+      @keyframes cfBadgePulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.35;
+        }
+      }
+    `,
+  ],
 })
 export class StatusBadgeComponent {
   @Input() status: DeviceStatus = 'offline';
@@ -31,11 +44,11 @@ export class StatusBadgeComponent {
   get label(): string {
     switch (this.status) {
       case 'online':
-        return 'Online';
+        return 'En línea';
       case 'delayed':
-        return 'Delayed';
+        return 'Retrasado';
       case 'offline':
-        return 'Offline';
+        return 'Fuera de línea';
     }
   }
 }

@@ -30,6 +30,12 @@
   color: var(--ink-2);
 }
 
+.file-name-chip .file-name {
+  color: var(--brand);
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
 .panel-head .cf-badge {
   margin-left: 4px;
 }

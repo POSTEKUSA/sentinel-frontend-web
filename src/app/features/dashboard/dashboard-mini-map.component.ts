@@ -16,7 +16,7 @@ import { DeviceSummary, DeviceStatus } from '../../core/models/device-summary.mo
 
 const STATUS_COLORS: Record<DeviceStatus, string> = {
   online: '#43a047',
-  delayed: '#fb8c00',
+  delayed: '#eab308',
   offline: '#e53935',
 };
 
@@ -47,13 +47,13 @@ function createMarkerIcon(status: DeviceStatus): L.DivIcon {
     <div class="mini-map-shell" [class.fill-height]="fillHeight">
       <div [id]="mapElementId" class="mini-map-container"></div>
       @if (devices.length === 0) {
-        <div class="mini-map-empty">No devices need attention</div>
+        <div class="mini-map-empty">No hay dispositivos que requieran atención</div>
       } @else if (showExpandControl) {
         <button
           type="button"
           class="map-expand-fab"
-          title="Maximize map"
-          aria-label="Maximize map"
+          title="Maximizar mapa"
+          aria-label="Maximizar mapa"
           (click)="onExpandClick($event)">
           &#x26F6;
         </button>
@@ -233,8 +233,8 @@ export class DashboardMiniMapComponent implements AfterViewInit, OnChanges, OnDe
       const marker = L.marker(latlng, { icon: createMarkerIcon(device.status) })
         .bindPopup(`
           <strong>${device.metadata.alias}</strong><br/>
-          ${device.status}<br/>
-          <a href="/device-info/${device.metadata.deviceId}">View details</a>
+          ${device.status === 'online' ? 'En línea' : device.status === 'delayed' ? 'Retrasado' : 'Fuera de línea'}<br/>
+          <a href="/device-info/${device.metadata.deviceId}">Ver detalle</a>
         `)
         .addTo(this.map);
 

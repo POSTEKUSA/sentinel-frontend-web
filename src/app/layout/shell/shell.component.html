@@ -12,7 +12,7 @@
       <div class="logo-stage">
         <img
           #logoImg
-          class="logo"
+          class="logo enter"
           src="logo-postek.png"
           width="34"
           height="34"
@@ -59,9 +59,7 @@
                 </svg>
               }
               @case ('catalog') {
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                  <path d="M4 5h7v14H4zM13 5h7v6h-7zM13 13h7v6h-7z" />
-                </svg>
+                <span class="mi" aria-hidden="true">category</span>
               }
               @case ('orders') {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -138,9 +136,7 @@
               </svg>
             }
             @case ('catalog') {
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M4 5h7v14H4zM13 5h7v6h-7zM13 13h7v6h-7z" />
-              </svg>
+              <span class="mi">category</span>
             }
             @case ('orders') {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -165,9 +161,14 @@
             }
           }
         </span>
-        <span>{{ pageTitle() }}</span>
+        <div class="topbar-title-text">
+          <span>{{ pageTitle() }}</span>
+          @if (pageChrome.subtitle(); as subtitle) {
+            <span class="topbar-subtitle">{{ subtitle }}</span>
+          }
+        </div>
       </div>
-      <span class="env-badge">PROTOTYPE</span>
+      <span class="env-badge">PROTOTIPO</span>
     </header>
 
     <main class="page">

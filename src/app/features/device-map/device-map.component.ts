@@ -22,7 +22,7 @@ import { DeviceSummary, DeviceStatus } from '../../core/models/device-summary.mo
 
 const STATUS_COLORS: Record<DeviceStatus, string> = {
   online:  '#43a047',
-  delayed: '#fb8c00',
+  delayed: '#eab308',
   offline: '#e53935',
 };
 
@@ -374,7 +374,8 @@ export class DeviceMapComponent implements OnInit, AfterViewInit, OnDestroy {
           <div style="font-size:12px; margin-bottom:2px;">🔋 ${device.health.batteryLevel}%</div>
           <div style="font-size:12px; margin-bottom:2px;">📡 ${device.health.networkType.toUpperCase()}</div>
           <div style="font-size:12px; margin-bottom:6px;">🕐 ${this.statusSvc.formatRelative(device.lastHeartbeat)}</div>
-          <a href="/device-info/${id}" style="font-size:12px; color:#1565c0;">View details →</a>
+          <div style="font-size:12px; margin-bottom:6px;">${this.statusSvc.getLabel(device.status)}</div>
+          <a href="/device-info/${id}" style="font-size:12px; color:#1565c0;">Ver detalle →</a>
         </div>
       `;
 

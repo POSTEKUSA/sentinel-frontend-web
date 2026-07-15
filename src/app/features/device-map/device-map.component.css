@@ -142,7 +142,7 @@
 }
 
 .dot.online  { background: #43a047; }
-.dot.delayed { background: #fb8c00; }
+.dot.delayed { background: #eab308; }
 .dot.offline { background: #e53935; }
 
 /* Pulse animation is defined globally in styles.css */

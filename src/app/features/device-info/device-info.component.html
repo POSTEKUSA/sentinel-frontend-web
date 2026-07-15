@@ -3,7 +3,7 @@
   <!-- ── Breadcrumb ── -->
   <div class="breadcrumb">
     <button mat-button routerLink="/device-list" color="primary">
-      <mat-icon>arrow_back</mat-icon> device-list
+      <mat-icon>arrow_back</mat-icon> Volver a Dispositivos
     </button>
     <mat-icon class="bc-sep">chevron_right</mat-icon>
     <span class="bc-current">{{ device.metadata.alias }}</span>
@@ -22,7 +22,7 @@
     <div class="header-right">
       <span class="last-seen">
         <mat-icon>schedule</mat-icon>
-        Last seen: {{ statusSvc.formatRelative(device.lastHeartbeat) }}
+        Última vez visto: {{ statusSvc.formatRelative(device.lastHeartbeat) }}
       </span>
     </div>
   </div>
@@ -34,32 +34,32 @@
     <mat-card class="info-card">
       <mat-card-header>
         <mat-icon mat-card-avatar>info</mat-icon>
-        <mat-card-title>Device Metadata</mat-card-title>
+        <mat-card-title>Metadatos del dispositivo</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <div class="meta-grid">
           <div class="meta-item">
-            <span class="meta-label">Model</span>
+            <span class="meta-label">Modelo</span>
             <span class="meta-value">{{ device.metadata.model }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">OS Version</span>
+            <span class="meta-label">Versión del SO</span>
             <span class="meta-value">{{ device.metadata.osVersion }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">App Version</span>
+            <span class="meta-label">Versión de la app</span>
             <span class="meta-value">{{ device.metadata.appVersion }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Tenant ID</span>
+            <span class="meta-label">ID de organización</span>
             <span class="meta-value">{{ device.metadata.tenantId }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Merchant ID</span>
+            <span class="meta-label">ID de comercio</span>
             <span class="meta-value">{{ device.metadata.merchantId }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Registered</span>
+            <span class="meta-label">Registrado</span>
             <span class="meta-value">{{ device.metadata.registeredAt | date:'mediumDate' }}</span>
           </div>
         </div>
@@ -70,13 +70,13 @@
     <mat-card class="info-card">
       <mat-card-header>
         <mat-icon mat-card-avatar>monitor_heart</mat-icon>
-        <mat-card-title>Health Metrics</mat-card-title>
+        <mat-card-title>Métricas de salud</mat-card-title>
         <mat-card-subtitle>{{ device.health.timestamp | date:'medium' }}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content class="health-content">
 
         <div class="health-metric">
-          <div class="metric-label">Battery</div>
+          <div class="metric-label">Batería</div>
           <app-battery-indicator [level]="device.health.batteryLevel"
             [charging]="device.health.batteryCharging"></app-battery-indicator>
           <mat-progress-bar mode="determinate" [value]="device.health.batteryLevel"
@@ -84,22 +84,29 @@
         </div>
 
         <div class="health-metric" *ngIf="device.health.cpuUsage !== undefined">
-          <div class="metric-label">CPU Usage</div>
-          <div class="metric-value">{{ device.health.cpuUsage }}%</div>
+          <div class="metric-label">Uso de CPU</div>
+          <div class="metric-value">
+            <mat-icon class="metric-value-icon">developer_board</mat-icon>
+            {{ device.health.cpuUsage }}%
+          </div>
           <mat-progress-bar mode="determinate" [value]="device.health.cpuUsage || 0"
             [color]="(device.health.cpuUsage || 0) > 80 ? 'warn' : 'primary'"></mat-progress-bar>
         </div>
 
         <div class="health-metric" *ngIf="device.health.memoryUsage !== undefined">
-          <div class="metric-label">Memory</div>
-          <div class="metric-value">{{ device.health.memoryUsage }}%</div>
+          <div class="metric-label">Memoria</div>
+          <div class="metric-value">
+            <mat-icon class="metric-value-icon">memory</mat-icon>
+            {{ device.health.memoryUsage }}%
+          </div>
           <mat-progress-bar mode="determinate" [value]="device.health.memoryUsage || 0"
             [color]="(device.health.memoryUsage || 0) > 80 ? 'warn' : 'primary'"></mat-progress-bar>
         </div>
 
         <div class="health-metric" *ngIf="device.health.storageUsed !== undefined && device.health.storageTotal !== undefined">
-          <div class="metric-label">Storage</div>
+          <div class="metric-label">Almacenamiento</div>
           <div class="metric-value">
+            <mat-icon class="metric-value-icon">storage</mat-icon>
             {{ device.health.storageUsed | number:'1.1-2' }} GB / {{ device.health.storageTotal | number:'1.1-2' }} GB
             ({{ (device.health.storageUsed / device.health.storageTotal) * 100 | number:'1.0-0' }}%)
           </div>
@@ -114,35 +121,35 @@
     <mat-card class="info-card">
       <mat-card-header>
         <mat-icon mat-card-avatar>location_on</mat-icon>
-        <mat-card-title>Last Location</mat-card-title>
+        <mat-card-title>Última ubicación</mat-card-title>
         <mat-card-subtitle>{{ device.location.timestamp | date:'medium' }}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
         <div class="health-metric" style="margin-bottom: 12px; padding-top: 8px;">
-          <div class="metric-label">Network</div>
+          <div class="metric-label">Red</div>
           <div class="metric-value">
             <mat-icon>{{ device.health.networkType === 'wifi' ? 'wifi' : 'signal_cellular_alt' }}</mat-icon>
             {{ device.health.networkType | uppercase }}
-            &bull; Signal {{ device.health.networkStrength }}/4
+            &bull; Señal {{ device.health.networkStrength }}/4
           </div>
         </div>
 
         <div class="meta-grid" style="padding-top: 0; border-top: 1px solid rgba(0, 0, 0, 0.08); margin-top: 8px;">
           <div class="meta-item">
-            <span class="meta-label">Latitude</span>
+            <span class="meta-label">Latitud</span>
             <span class="meta-value">{{ device.location.latitude | number:'1.6-6' }}</span>
           </div>
           <div class="meta-item">
-            <span class="meta-label">Longitude</span>
+            <span class="meta-label">Longitud</span>
             <span class="meta-value">{{ device.location.longitude | number:'1.6-6' }}</span>
           </div>
           <div class="meta-item" *ngIf="device.location.accuracy">
-            <span class="meta-label">Accuracy</span>
+            <span class="meta-label">Precisión</span>
             <span class="meta-value">±{{ device.location.accuracy }} m</span>
           </div>
         </div>
         <a class="maps-link" [routerLink]="['/device-map']" [queryParams]="{ deviceId: device.metadata.deviceId }">
-          <mat-icon>map</mat-icon> Open in Map
+          <mat-icon>map</mat-icon> Abrir en mapa
         </a>
       </mat-card-content>
     </mat-card>
@@ -153,8 +160,8 @@
   <mat-card class="events-card">
     <mat-card-header>
       <mat-icon mat-card-avatar>history</mat-icon>
-      <mat-card-title>Recent Events</mat-card-title>
-      <mat-card-subtitle>Last {{ device.recentEvents.length }} events</mat-card-subtitle>
+      <mat-card-title>Eventos recientes</mat-card-title>
+      <mat-card-subtitle>Últimos {{ device.recentEvents.length }} eventos</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content style="padding-top: 12px;">
       <mat-accordion>
@@ -167,7 +174,7 @@
                 evt.eventType === 'health' ? 'monitor_heart' :
                 evt.eventType === 'sync' ? 'sync' : 'event' }}
               </mat-icon>
-              <span class="event-type-text">{{ evt.eventType | titlecase }}</span>
+              <span class="event-type-text">{{ eventTypeLabel(evt.eventType) }}</span>
             </mat-panel-title>
             <mat-panel-description class="event-desc-row">
               <span class="event-time">{{ evt.timestamp | date:'medium' }}</span>
@@ -189,5 +196,5 @@
 </div>
 
 <!-- Not found -->
-<app-empty-state *ngIf="!loading && notFound" icon="device_unknown" title="Device not found"
-  subtitle="The requested device ID does not exist"></app-empty-state>
+<app-empty-state *ngIf="!loading && notFound" icon="device_unknown" title="Dispositivo no encontrado"
+  subtitle="El ID de dispositivo solicitado no existe"></app-empty-state>

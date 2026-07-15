@@ -11,6 +11,7 @@ import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Rout
 import { filter, Subscription } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { BusyLoaderService } from '../../core/services/busy-loader.service';
+import { PageChromeService } from '../../core/services/page-chrome.service';
 import { BusyLoaderComponent } from '../../shared/busy-loader/busy-loader.component';
 import appConfig from '../../core/config/app-config.json';
 
@@ -44,7 +45,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
   appVersion = 'v' + appConfig.appVersion;
 
   sidebarOpen = signal(false);
-  pageTitle = signal('Tablero');
+  pageTitle = signal('Vista general de la flota');
   pageIcon = signal<NavItem['icon']>('dashboard');
   private navSub?: Subscription;
 
@@ -52,7 +53,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     {
       title: 'Monitoreo',
       items: [
-        { label: 'Tablero', icon: 'dashboard', route: '/dashboard' },
+        { label: 'Vista General', icon: 'dashboard', route: '/dashboard' },
         { label: 'Dispositivos', icon: 'devices', route: '/device-list' },
         { label: 'Mapa', icon: 'map', route: '/device-map' },
       ],
@@ -73,6 +74,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     private auth: AuthService,
     private router: Router,
     public busy: BusyLoaderService,
+    public pageChrome: PageChromeService,
   ) {
     this.applyPageMeta(this.router.url);
     this.navSub = this.router.events
@@ -121,7 +123,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/pos-admin/inventory')) return { title: 'Inventario', icon: 'inventory' };
     if (/^\/pos-admin\/merchants\/[^/]+/.test(path)) return { title: 'Comercio', icon: 'merchants' };
     if (path.startsWith('/pos-admin/merchants')) return { title: 'Comercios', icon: 'merchants' };
-    if (path.startsWith('/dashboard')) return { title: 'Tablero', icon: 'dashboard' };
+    if (path.startsWith('/dashboard')) return { title: 'Vista general de la flota', icon: 'dashboard' };
     return { title: this.appName, icon: 'dashboard' };
   }
 
@@ -138,8 +140,11 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
   }
 
   private onLogoAnimationEnd = (e: AnimationEvent): void => {
+    const el = e.target as HTMLElement;
     if (e.animationName === 'logoSpin') {
-      (e.target as HTMLElement).classList.remove('spin');
+      el.classList.remove('spin');
+    } else if (e.animationName === 'logoEnter') {
+      el.classList.remove('enter');
     }
   };
 

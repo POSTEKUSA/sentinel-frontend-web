@@ -34,8 +34,8 @@
 
   --color-ok: #2a7c34;
   --color-ok-soft: #edf7ee;
-  --color-warn: #9a6410;
-  --color-warn-soft: #faf0dc;
+  --color-warn: #ca8a04;
+  --color-warn-soft: #fef9c3;
   --color-danger: #c1272d;
   --color-danger-soft: #fbeaea;
 
@@ -205,6 +205,13 @@ body {
   margin: 0;
   font-size: 0.86rem;
   color: var(--ink-2);
+}
+
+.head-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .head-actions .btn-primary,
@@ -1083,9 +1090,9 @@ a.mat-mdc-raised-button.mat-primary:hover {
 }
 
 .cf-badge-warn {
-  background: #faf0dc;
-  color: #9a6410;
-  border-color: #f0d9a0;
+  background: #fef9c3;
+  color: #ca8a04;
+  border-color: #fde047;
 }
 
 .cf-badge-info {

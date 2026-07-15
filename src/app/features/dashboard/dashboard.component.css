@@ -156,8 +156,8 @@
 }
 
 .kpi-delayed {
-  color: #e65100;
-  border-left: 4px solid #fb8c00;
+  color: #ca8a04;
+  border-left: 4px solid #eab308;
 }
 
 .kpi-offline {
@@ -282,19 +282,38 @@
   text-decoration: underline;
 }
 
+.th-online,
 .cell-online {
   color: #2e7d32;
   font-weight: 600;
 }
 
+.th-delayed,
 .cell-delayed {
-  color: #e65100;
+  color: #ca8a04;
   font-weight: 600;
 }
 
+.th-offline,
 .cell-offline {
   color: #c62828;
   font-weight: 600;
+}
+
+/* Win over .dash-table thead th / tbody td color */
+.dash-table thead th.th-online,
+.dash-table tbody td.cell-online {
+  color: #2e7d32;
+}
+
+.dash-table thead th.th-delayed,
+.dash-table tbody td.cell-delayed {
+  color: #ca8a04;
+}
+
+.dash-table thead th.th-offline,
+.dash-table tbody td.cell-offline {
+  color: #c62828;
 }
 
 .cell-total {

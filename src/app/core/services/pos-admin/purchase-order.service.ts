@@ -58,7 +58,7 @@ export class PurchaseOrderService {
 
   /**
    * Acumula cantidad recibida en una línea de la orden y recalcula el
-   * estado agregado (creada / recibida parcial / recibida completa).
+   * estado agregado (creada / entrega parcial / recibida).
    * Usado por el flujo de recepción (HU-006/HU-007) para mantener
    * trazabilidad entre la orden y el inventario físico.
    */

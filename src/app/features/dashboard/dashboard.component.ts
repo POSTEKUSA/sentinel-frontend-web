@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 
 import { TelemetryService } from '../../core/services/telemetry.service';
 import { DeviceStatusService } from '../../core/services/device-status.service';
+import { PageChromeService } from '../../core/services/page-chrome.service';
 import { DeviceSummary, DeviceStatus } from '../../core/models/device-summary.model';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 import { BatteryIndicatorComponent } from '../../shared/battery-indicator/battery-indicator.component';
@@ -17,7 +18,6 @@ import {
   aggregateByTenant,
   countByStatus,
 } from '../../core/utils/fleet-analytics.util';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -35,18 +35,19 @@ import { environment } from '../../../environments/environment';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  private freshnessTimer?: ReturnType<typeof setInterval>;
 
   loading = true;
   devices: DeviceSummary[] = [];
-  isMockMode = environment.useMockData;
   lastUpdatedAt: Date | null = null;
   mapMaximized = false;
 
-  readonly attentionPanelHint = '(Offline or delayed devices)';
+  readonly attentionPanelHint = '(Dispositivos fuera de línea o retrasados)';
 
   constructor(
     private telemetry: TelemetryService,
     public statusSvc: DeviceStatusService,
+    private pageChrome: PageChromeService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -55,16 +56,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.devices = devices;
       this.loading = false;
       this.lastUpdatedAt = new Date();
+      this.updateChromeSubtitle();
       this.cdr.detectChanges();
     });
+
+    this.freshnessTimer = setInterval(() => this.updateChromeSubtitle(), 5_000);
+  }
+
+  private updateChromeSubtitle(): void {
+    if (!this.lastUpdatedAt) {
+      this.pageChrome.clear();
+      return;
+    }
+    this.pageChrome.setSubtitle(
+      `Datos actualizados ${this.lastUpdatedLabel} · se actualiza cada 30 s`,
+    );
   }
 
   get lastUpdatedLabel(): string {
     if (!this.lastUpdatedAt) return '';
     const sec = Math.floor((Date.now() - this.lastUpdatedAt.getTime()) / 1000);
-    if (sec < 5) return 'just now';
-    if (sec < 60) return `${sec}s ago`;
-    return `${Math.floor(sec / 60)} min ago`;
+    if (sec < 5) return 'hace un momento';
+    if (sec < 60) return `hace ${sec} s`;
+    return `hace ${Math.floor(sec / 60)} min`;
   }
 
   countByStatus(status: DeviceStatus): number {
@@ -107,6 +121,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     document.body.style.overflow = '';
+    if (this.freshnessTimer) clearInterval(this.freshnessTimer);
+    this.pageChrome.clear();
     this.destroy$.next();
     this.destroy$.complete();
   }

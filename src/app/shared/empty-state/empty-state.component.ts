@@ -43,9 +43,7 @@ export type NavIconName =
               </svg>
             }
             @case ('catalog') {
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M4 5h7v14H4zM13 5h7v6h-7zM13 13h7v6h-7z" />
-              </svg>
+              <span class="mi" style="font-size: 48px; line-height: 1;">category</span>
             }
             @case ('orders') {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">

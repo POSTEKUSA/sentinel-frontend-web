@@ -131,6 +131,13 @@
   font-size: 13px;
 }
 
+.metric-value-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
 /* ── Maps link ── */
 .maps-link {
   display: inline-flex;

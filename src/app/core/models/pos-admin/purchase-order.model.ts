@@ -10,9 +10,9 @@ export type PurchaseOrderStatus =
 
 export const PURCHASE_ORDER_STATUS_LABELS: Record<PurchaseOrderStatus, string> = {
   created: 'Creada',
-  in_transit: 'En tránsito',
-  partially_received: 'Recibida parcial',
-  received: 'Recibida completa',
+  in_transit: 'En Tránsito',
+  partially_received: 'Entrega Parcial',
+  received: 'Recibida',
   cancelled: 'Cancelada',
   closed: 'Cerrada',
 };

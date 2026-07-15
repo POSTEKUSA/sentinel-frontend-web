@@ -1,39 +1,18 @@
 <div class="dashboard-wrapper">
 
-  <div class="page-header">
-    <div class="header-left">
-      @if (isMockMode) {
-        <span class="mock-badge">
-          <span class="mi">science</span> Mock Data
-        </span>
-      } @else {
-        <span class="real-badge">
-          <span class="mi">cloud</span> Real Data
-        </span>
-      }
-    </div>
-    <p class="page-subtitle">Fleet overview and devices that need attention</p>
-    @if (lastUpdatedAt) {
-      <p class="data-freshness">
-        <span class="mi">update</span>
-        Data updated {{ lastUpdatedLabel }} · refreshes every 30s
-      </p>
-    }
-  </div>
-
   @if (loading) {
     <div class="loading-center relative">
       <app-busy-loader [show]="true" [inline]="true"></app-busy-loader>
     </div>
   } @else {
 
-    <section class="kpi-grid" aria-label="Fleet status summary">
+    <section class="kpi-grid" aria-label="Resumen del estado de la flota">
       <a class="kpi-card-link" [routerLink]="['/device-list']" [queryParams]="{}">
         <div class="kpi-card kpi-total kpi-clickable">
           <span class="mi kpi-icon">apps</span>
           <div class="kpi-body">
             <span class="kpi-value">{{ devices.length }}</span>
-            <span class="kpi-label">Total devices</span>
+            <span class="kpi-label">Dispositivos totales</span>
           </div>
         </div>
       </a>
@@ -43,7 +22,7 @@
           <span class="mi kpi-icon">check_circle</span>
           <div class="kpi-body">
             <span class="kpi-value">{{ countByStatus('online') }}</span>
-            <span class="kpi-label">Online ({{ statusPercent('online') }}%)</span>
+            <span class="kpi-label">En línea ({{ statusPercent('online') }}%)</span>
           </div>
         </div>
       </a>
@@ -53,7 +32,7 @@
           <span class="mi kpi-icon">schedule</span>
           <div class="kpi-body">
             <span class="kpi-value">{{ countByStatus('delayed') }}</span>
-            <span class="kpi-label">Delayed ({{ statusPercent('delayed') }}%)</span>
+            <span class="kpi-label">Retrasados ({{ statusPercent('delayed') }}%)</span>
           </div>
         </div>
       </a>
@@ -63,7 +42,7 @@
           <span class="mi kpi-icon">error_outline</span>
           <div class="kpi-body">
             <span class="kpi-value">{{ countByStatus('offline') }}</span>
-            <span class="kpi-label">Offline ({{ statusPercent('offline') }}%)</span>
+            <span class="kpi-label">Fuera de línea ({{ statusPercent('offline') }}%)</span>
           </div>
         </div>
       </a>
@@ -73,16 +52,16 @@
       <div class="dashboard-panel-card breakdown-card panel">
         <div class="panel-head">
           <span class="mi">corporate_fare</span>
-          By Tenant
+          Por Organización
         </div>
         <div class="breakdown-table-wrap">
           <table class="breakdown-table dash-table">
             <thead>
               <tr>
                 <th></th>
-                <th>Online</th>
-                <th>Delayed</th>
-                <th>Offline</th>
+                <th class="th-online">En línea</th>
+                <th class="th-delayed">Retrasados</th>
+                <th class="th-offline">Fuera de línea</th>
                 <th>Total</th>
               </tr>
             </thead>
@@ -108,16 +87,16 @@
       <div class="dashboard-panel-card breakdown-card panel">
         <div class="panel-head">
           <span class="mi">storefront</span>
-          By Merchant
+          Por Comercio
         </div>
         <div class="breakdown-table-wrap">
           <table class="breakdown-table dash-table">
             <thead>
               <tr>
                 <th></th>
-                <th>Online</th>
-                <th>Delayed</th>
-                <th>Offline</th>
+                <th class="th-online">En línea</th>
+                <th class="th-delayed">Retrasados</th>
+                <th class="th-offline">Fuera de línea</th>
                 <th>Total</th>
               </tr>
             </thead>
@@ -144,7 +123,7 @@
         <div class="panel-head warn">
           <span class="mi">warning_amber</span>
           <span>
-            Needs Attention
+            Requiere atención
             <span class="panel-title-hint">{{ attentionPanelHint }}</span>
           </span>
         </div>
@@ -152,17 +131,17 @@
           @if (attentionDevices.length === 0) {
             <div class="all-clear">
               <span class="mi">verified</span>
-              <p>All devices are online. No action required.</p>
+              <p>Todos los dispositivos están en línea. No se requiere acción.</p>
             </div>
           } @else {
             <div class="attention-table-wrap">
               <table class="attention-table dash-table">
                 <thead>
                   <tr>
-                    <th>Device</th>
-                    <th>Battery</th>
-                    <th>Last Seen</th>
-                    <th>Status</th>
+                    <th>Dispositivo</th>
+                    <th>Batería</th>
+                    <th>Última vez visto</th>
+                    <th>Estado</th>
                     <th class="th-actions">Acciones</th>
                   </tr>
                 </thead>
@@ -190,8 +169,8 @@
                         <a
                           class="row-action"
                           [routerLink]="['/device-info', d.metadata.deviceId]"
-                          title="View details"
-                          aria-label="View details">
+                          title="Ver detalle"
+                          aria-label="Ver detalle">
                           <span class="mi">chevron_right</span>
                         </a>
                       </td>
@@ -209,14 +188,14 @@
           <div class="panel-head-title">
             <span class="mi">map</span>
             <span>
-              Needs Attention Map
+              Mapa de atención
               <span class="panel-title-hint">{{ attentionPanelHint }}</span>
             </span>
           </div>
           <button
             type="button"
             class="icon-btn"
-            aria-label="Maximize map"
+            aria-label="Maximizar mapa"
             (click)="openMapMaximized()">
             <span class="mi">fullscreen</span>
           </button>
@@ -241,21 +220,21 @@
     class="map-maximized-overlay"
     role="dialog"
     aria-modal="true"
-    aria-label="Maximized map"
+    aria-label="Mapa maximizado"
     (click)="closeMapMaximized()">
     <div class="map-maximized-panel" (click)="$event.stopPropagation()">
       <div class="map-maximized-toolbar">
         <span class="map-maximized-title">
           <span class="mi">map</span>
           <span>
-            Needs Attention Map
+            Mapa de atención
             <span class="panel-title-hint">{{ attentionPanelHint }}</span>
           </span>
         </span>
         <button
           type="button"
           class="icon-btn"
-          aria-label="Close maximized map"
+          aria-label="Cerrar mapa maximizado"
           (click)="closeMapMaximized()">
           <span class="mi">close</span>
         </button>

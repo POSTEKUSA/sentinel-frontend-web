@@ -46,8 +46,11 @@ export class LoginComponent implements AfterViewInit {
   }
 
   private onLogoAnimationEnd = (e: AnimationEvent): void => {
+    const el = e.target as HTMLElement;
     if (e.animationName === 'logoSpin') {
-      (e.target as HTMLElement).classList.remove('spin');
+      el.classList.remove('spin');
+    } else if (e.animationName === 'logoEnter') {
+      el.classList.remove('enter');
     }
   };
 

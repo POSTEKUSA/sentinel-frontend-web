@@ -7,11 +7,6 @@
         @if (allDevices.length !== filtered.length) {
           <span> · {{ allDevices.length }} en total</span>
         }
-        @if (isMockMode) {
-          <span class="cf-badge cf-badge-warn" style="margin-left:8px"><span class="dot"></span>Mock Data</span>
-        } @else {
-          <span class="cf-badge cf-badge-info" style="margin-left:8px"><span class="dot"></span>Real Data</span>
-        }
       </p>
     </div>
   </header>
@@ -21,16 +16,16 @@
       <span class="mi">filter_alt</span>
       <span>Vista filtrada desde el tablero</span>
       @if (activeStatusFilter !== 'all') {
-        <span class="url-filter-tag">Status: {{ activeStatusFilter }}</span>
+        <span class="url-filter-tag">Estado: {{ statusLabel(activeStatusFilter) }}</span>
       }
       @if (filterTenantId) {
-        <span class="url-filter-tag">Tenant: {{ filterTenantId }}</span>
+        <span class="url-filter-tag">Organización: {{ filterTenantId }}</span>
       }
       @if (filterMerchantId) {
-        <span class="url-filter-tag">Merchant: {{ filterMerchantId }}</span>
+        <span class="url-filter-tag">Comercio: {{ filterMerchantId }}</span>
       }
       @if (filterStaleSyncOnly) {
-        <span class="url-filter-tag">Stale sync only</span>
+        <span class="url-filter-tag">Solo sincronización desactualizada</span>
       }
       <button
         type="button"
@@ -51,15 +46,15 @@
         </button>
         <button type="button" class="kpi-chip online" [class.active]="activeStatusFilter === 'online'" (click)="setStatusFilter('online')">
           <span class="kpi-count">{{ countByStatus('online') }}</span>
-          <span class="kpi-label">Online</span>
+          <span class="kpi-label">En línea</span>
         </button>
         <button type="button" class="kpi-chip delayed" [class.active]="activeStatusFilter === 'delayed'" (click)="setStatusFilter('delayed')">
           <span class="kpi-count">{{ countByStatus('delayed') }}</span>
-          <span class="kpi-label">Delayed</span>
+          <span class="kpi-label">Retrasado</span>
         </button>
         <button type="button" class="kpi-chip offline" [class.active]="activeStatusFilter === 'offline'" (click)="setStatusFilter('offline')">
           <span class="kpi-count">{{ countByStatus('offline') }}</span>
-          <span class="kpi-label">Offline</span>
+          <span class="kpi-label">Fuera de línea</span>
         </button>
       </div>
 
@@ -68,7 +63,7 @@
         <input
           type="search"
           [formControl]="searchCtrl"
-          placeholder="Buscar alias, Device ID, Merchant, Tenant…"
+          placeholder="Buscar alias, ID de dispositivo, comercio, organización…"
           autocomplete="off"
           spellcheck="false" />
       </label>
@@ -93,22 +88,22 @@
         <app-empty-state
           navIcon="devices"
           icon="devices_off"
-          title="No devices match your search"
-          subtitle="Try adjusting the filters or search query"></app-empty-state>
+          title="Ningún dispositivo coincide con la búsqueda"
+          subtitle="Prueba ajustando los filtros o el texto de búsqueda"></app-empty-state>
       } @else {
         <div class="admin-table-wrap">
           <table class="cf-table">
             <thead>
               <tr>
-                <th>Device Alias</th>
-                <th>Tenant</th>
-                <th>Merchant</th>
-                <th>Battery</th>
-                <th>Network</th>
-                <th>Last Seen</th>
+                <th>Alias del dispositivo</th>
+                <th>Organización</th>
+                <th>Comercio</th>
+                <th>Batería</th>
+                <th>Red</th>
+                <th>Última vez visto</th>
                 <th>Lat</th>
                 <th>Lng</th>
-                <th>Status</th>
+                <th>Estado</th>
                 <th class="th-actions">Acciones</th>
               </tr>
             </thead>

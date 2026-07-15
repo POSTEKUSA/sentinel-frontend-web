@@ -24,7 +24,7 @@ interface BulkRow {
   styleUrl: './receiving.component.css',
 })
 export class ReceivingComponent implements OnInit {
-  activeTab: 'single' | 'bulk' = 'single';
+  activeTab: 'single' | 'bulk' = 'bulk';
 
   locationOptions = Object.entries(POS_LOCATION_LABELS).map(([value, label]) => ({
     value: value as PosLocationType,
@@ -78,6 +78,7 @@ export class ReceivingComponent implements OnInit {
 
     const poId = this.route.snapshot.queryParamMap.get('poId');
     if (poId) {
+      this.activeTab = 'single';
       this.form.patchValue({ purchaseOrderId: poId });
       this.onOrderChange(poId, this.form);
     }

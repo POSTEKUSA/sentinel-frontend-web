@@ -13,7 +13,6 @@ import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.com
 import { BatteryIndicatorComponent } from '../../shared/battery-indicator/battery-indicator.component';
 import { EmptyStateComponent } from '../../shared/empty-state/empty-state.component';
 import { BusyLoaderComponent } from '../../shared/busy-loader/busy-loader.component';
-import { environment } from '../../../environments/environment';
 
 type StatusFilter = DeviceStatus | 'all';
 
@@ -41,7 +40,6 @@ export class DeviceListComponent implements OnInit, OnDestroy {
   loading = true;
   allDevices: DeviceSummary[] = [];
   filtered: DeviceSummary[] = [];
-  isMockMode = environment.useMockData;
   filterTenantId: string | null = null;
   filterMerchantId: string | null = null;
   filterStaleSyncOnly = false;
@@ -119,6 +117,11 @@ export class DeviceListComponent implements OnInit, OnDestroy {
 
   countByStatus(status: DeviceStatus): number {
     return this.allDevices.filter(d => d.status === status).length;
+  }
+
+  statusLabel(status: StatusFilter): string {
+    if (status === 'all') return 'Total';
+    return this.statusSvc.getLabel(status);
   }
 
   private applyFilters(
