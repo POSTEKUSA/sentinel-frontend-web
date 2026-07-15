@@ -36,7 +36,11 @@
         <div><span class="info-label">Departamento</span><span class="info-value">{{ merchant.department }}</span></div>
         <div><span class="info-label">Municipio</span><span class="info-value">{{ merchant.municipality }}</span></div>
         <div><span class="info-label">Dirección</span><span class="info-value">{{ merchant.address }}</span></div>
-        <div><span class="info-label">Estado</span><span class="info-value">{{ statusLabels[merchant.status] }}</span></div>
+        <div><span class="info-label">Estado</span>
+          <span class="status-chip" [ngClass]="merchant.status === 'active' ? 'chip-green' : 'chip-red'">
+            {{ statusLabels[merchant.status] }}
+          </span>
+        </div>
         <div><span class="info-label">Fecha de alta</span><span class="info-value">{{ merchant.createdAt | date:'mediumDate' }}</span></div>
         <div><span class="info-label">Responsable</span><span class="info-value">{{ merchant.responsibleName || '—' }}</span></div>
       </mat-card-content>

@@ -2,7 +2,7 @@ import { PurchaseOrder } from '../../models/pos-admin';
 
 export const MOCK_PURCHASE_ORDERS: PurchaseOrder[] = [
   {
-    id: 'po-1', orderNumber: 'OC-2026-0001', supplierId: 'sup-1', supplierName: 'PAX Technology LATAM',
+    id: 'po-1', orderNumber: 'OC-2026-0001', supplierId: 'sup-1', supplierName: 'PAX Technology',
     orderDate: '2026-05-01T08:00:00.000Z', estimatedReceiptDate: '2026-05-20T08:00:00.000Z',
     deliveryLocation: 'Almacén Central Managua', status: 'received', createdBy: 'operador.andrea', createdAt: '2026-05-01T08:00:00.000Z',
     receivedBy: 'operador.carlos',
@@ -12,7 +12,7 @@ export const MOCK_PURCHASE_ORDERS: PurchaseOrder[] = [
     ],
   },
   {
-    id: 'po-2', orderNumber: 'OC-2026-0002', supplierId: 'sup-2', supplierName: 'Sunmi Distribuidora Centroamérica',
+    id: 'po-2', orderNumber: 'OC-2026-0002', supplierId: 'sup-2', supplierName: 'Sunmi',
     orderDate: '2026-06-10T08:00:00.000Z', estimatedReceiptDate: '2026-06-30T08:00:00.000Z',
     deliveryLocation: 'Almacén Central Managua', status: 'partially_received', createdBy: 'operador.andrea', createdAt: '2026-06-10T08:00:00.000Z',
     lines: [
@@ -21,7 +21,7 @@ export const MOCK_PURCHASE_ORDERS: PurchaseOrder[] = [
     ],
   },
   {
-    id: 'po-3', orderNumber: 'OC-2026-0003', supplierId: 'sup-3', supplierName: 'Ingenico Comercial S.A.',
+    id: 'po-3', orderNumber: 'OC-2026-0003', supplierId: 'sup-3', supplierName: 'Ingenico S.A.',
     orderDate: '2026-06-25T08:00:00.000Z', estimatedReceiptDate: '2026-07-15T08:00:00.000Z',
     deliveryLocation: 'Almacén Regional León', status: 'in_transit', createdBy: 'operador.jose', createdAt: '2026-06-25T08:00:00.000Z',
     lines: [
@@ -29,7 +29,7 @@ export const MOCK_PURCHASE_ORDERS: PurchaseOrder[] = [
     ],
   },
   {
-    id: 'po-4', orderNumber: 'OC-2026-0004', supplierId: 'sup-1', supplierName: 'PAX Technology LATAM',
+    id: 'po-4', orderNumber: 'OC-2026-0004', supplierId: 'sup-1', supplierName: 'PAX Technology',
     orderDate: '2026-07-01T08:00:00.000Z', estimatedReceiptDate: '2026-07-18T08:00:00.000Z',
     deliveryLocation: 'Almacén Central Managua', status: 'created', createdBy: 'operador.andrea', createdAt: '2026-07-01T08:00:00.000Z',
     lines: [
@@ -38,7 +38,7 @@ export const MOCK_PURCHASE_ORDERS: PurchaseOrder[] = [
     ],
   },
   {
-    id: 'po-5', orderNumber: 'OC-2026-0005', supplierId: 'sup-4', supplierName: 'Urovo Import & Export',
+    id: 'po-5', orderNumber: 'OC-2026-0005', supplierId: 'sup-4', supplierName: 'Urovo',
     orderDate: '2026-03-01T08:00:00.000Z', estimatedReceiptDate: '2026-03-25T08:00:00.000Z',
     deliveryLocation: 'Almacén Central Managua', status: 'cancelled', createdBy: 'operador.jose', createdAt: '2026-03-01T08:00:00.000Z',
     lines: [

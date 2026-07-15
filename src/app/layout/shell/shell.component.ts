@@ -51,20 +51,21 @@ export class ShellComponent {
 
   navSections: NavSection[] = [
     {
+      title: 'Monitoreo',
       items: [
-        { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
-        { label: 'Device List', icon: 'smartphone', route: '/device-list' },
-        { label: 'Device Map', icon: 'map', route: '/device-map' },
+        { label: 'Tablero', icon: 'dashboard', route: '/dashboard' },
+        { label: 'Dispositivos', icon: 'smartphone', route: '/device-list' },
+        { label: 'Mapa', icon: 'map', route: '/device-map' },
       ],
     },
     {
-      title: 'Administración POS',
+      title: 'Administración',
       items: [
-        { label: 'Catálogo Maestro', icon: 'category', route: '/pos-admin/catalog' },
-        { label: 'Órdenes de Compra', icon: 'receipt_long', route: '/pos-admin/purchase-orders' },
-        { label: 'Recepción de Equipos', icon: 'move_to_inbox', route: '/pos-admin/receiving' },
+        { label: 'Catálogos', icon: 'category', route: '/pos-admin/catalog' },
+        { label: 'Compras', icon: 'receipt_long', route: '/pos-admin/purchase-orders' },
+        { label: 'Recepción', icon: 'move_to_inbox', route: '/pos-admin/receiving' },
         { label: 'Inventario', icon: 'inventory_2', route: '/pos-admin/inventory' },
-        { label: 'Afiliados / Comercios', icon: 'storefront', route: '/pos-admin/merchants' },
+        { label: 'Comercios', icon: 'storefront', route: '/pos-admin/merchants' },
       ],
     },
   ];

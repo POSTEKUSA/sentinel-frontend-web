@@ -92,8 +92,7 @@ export class MerchantListComponent implements OnInit {
   statusChipClass(status: string): string {
     switch (status) {
       case 'active': return 'chip-green';
-      case 'inactive': return 'chip-grey';
-      case 'suspended': return 'chip-red';
+      case 'inactive': return 'chip-red';
       default: return 'chip-grey';
     }
   }

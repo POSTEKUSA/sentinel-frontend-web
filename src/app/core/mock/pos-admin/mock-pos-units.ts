@@ -105,12 +105,12 @@ export const MOCK_POS_UNITS: PosUnit[] = [
   },
   {
     id: 'unit-11', serialNumber: 'INGE-MOVE5000-000601', brand: 'Ingenico', model: 'Move 5000', posType: 'mPOS (Móvil)',
-    status: 'installed', locationType: 'merchant', locationLabel: 'Comercio: Restaurante El Portón',
+    status: 'installed', locationType: 'merchant', locationLabel: 'Comercio: Restaurante La Finca',
     purchaseOrderId: 'po-3', purchaseOrderNumber: 'OC-2026-0003', receivedAt: daysAgoIso(30), receivedBy: 'operador.jose',
-    initialCondition: 'Nuevo', merchantId: 'mer-3', merchantName: 'Restaurante El Portón', installedAt: daysAgoIso(22),
+    initialCondition: 'Nuevo', merchantId: 'mer-3', merchantName: 'Restaurante La Finca', installedAt: daysAgoIso(22),
     history: [
       { id: 'h1', timestamp: daysAgoIso(30), eventType: 'received', description: 'Recepción desde OC-2026-0003', userName: 'operador.jose' },
-      { id: 'h2', timestamp: daysAgoIso(22), eventType: 'installed', description: 'Instalado en Restaurante El Portón', userName: 'tecnico.mendoza' },
+      { id: 'h2', timestamp: daysAgoIso(22), eventType: 'installed', description: 'Instalado en Restaurante La Finca', userName: 'tecnico.mendoza' },
     ],
   },
   {

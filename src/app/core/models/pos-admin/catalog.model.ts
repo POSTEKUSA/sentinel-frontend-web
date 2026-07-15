@@ -9,9 +9,9 @@ export const CATALOG_STATUS_LABELS: Record<CatalogStatus, string> = {
 };
 
 export const POS_TYPES = [
-  'POS Tradicional',
-  'Android POS',
-  'mPOS (Móvil)',
+  'POS (Legacy)',
+  'POS (Android)',
+  'mPOS (Android)',
   'PIN Pad',
   'Kiosko',
 ] as const;

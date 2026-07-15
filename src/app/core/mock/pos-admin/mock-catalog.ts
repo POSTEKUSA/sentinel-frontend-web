@@ -1,33 +1,33 @@
 import { AccessoryCatalogItem, PosCatalogItem, Supplier } from '../../models/pos-admin';
 
 export const MOCK_POS_CATALOG: PosCatalogItem[] = [
-  { id: 'cat-1', brand: 'PAX', model: 'A920', posType: 'Android POS', description: 'Terminal Android con impresora integrada', status: 'active', createdAt: '2024-01-10T09:00:00.000Z', createdBy: 'admin' },
-  { id: 'cat-2', brand: 'PAX', model: 'A80', posType: 'POS Tradicional', description: 'Terminal tradicional con pantalla monocromática', status: 'active', createdAt: '2024-01-10T09:05:00.000Z', createdBy: 'admin' },
-  { id: 'cat-3', brand: 'Sunmi', model: 'V2 Pro', posType: 'Android POS', description: 'Terminal Android portátil', status: 'active', createdAt: '2024-01-12T10:00:00.000Z', createdBy: 'admin' },
-  { id: 'cat-4', brand: 'Sunmi', model: 'T2s', posType: 'Android POS', description: 'Terminal Android de mostrador', status: 'active', createdAt: '2024-01-12T10:10:00.000Z', createdBy: 'admin' },
-  { id: 'cat-5', brand: 'Urovo', model: 'DT40', posType: 'mPOS (Móvil)', description: 'Terminal móvil de mano', status: 'obsolete', createdAt: '2023-06-01T08:00:00.000Z', createdBy: 'admin' },
-  { id: 'cat-6', brand: 'Ingenico', model: 'Move 5000', posType: 'mPOS (Móvil)', description: 'Terminal móvil GPRS/WiFi', status: 'active', createdAt: '2024-02-01T08:00:00.000Z', createdBy: 'admin' },
-  { id: 'cat-7', brand: 'Verifone', model: 'VX520', posType: 'POS Tradicional', description: 'Terminal de línea fija', status: 'discontinued', createdAt: '2022-05-01T08:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-1', brand: 'PAX', model: 'A920', posType: 'POS (Android)', description: 'Terminal Android con impresora integrada', status: 'active', createdAt: '2024-01-10T09:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-2', brand: 'PAX', model: 'A80', posType: 'POS (Legacy)', description: 'Terminal tradicional con pantalla monocromática', status: 'active', createdAt: '2024-01-10T09:05:00.000Z', createdBy: 'admin' },
+  { id: 'cat-3', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS (Android)', description: 'Terminal Android portátil', status: 'active', createdAt: '2024-01-12T10:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-4', brand: 'Sunmi', model: 'T2s', posType: 'POS (Android)', description: 'Terminal Android de mostrador', status: 'active', createdAt: '2024-01-12T10:10:00.000Z', createdBy: 'admin' },
+  { id: 'cat-5', brand: 'Urovo', model: 'DT40', posType: 'mPOS (Android)', description: 'Terminal móvil de mano', status: 'obsolete', createdAt: '2023-06-01T08:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-6', brand: 'Ingenico', model: 'Move 5000', posType: 'mPOS (Android)', description: 'Terminal móvil GPRS/WiFi', status: 'active', createdAt: '2024-02-01T08:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-7', brand: 'Verifone', model: 'VX520', posType: 'POS (Legacy)', description: 'Terminal de línea fija', status: 'discontinued', createdAt: '2022-05-01T08:00:00.000Z', createdBy: 'admin' },
 ];
 
 export const MOCK_SUPPLIERS: Supplier[] = [
   {
-    id: 'sup-1', name: 'PAX Technology LATAM', country: 'Panamá',
-    contactName: 'María Gómez', phone: '+507 6000-1111', email: 'ventas@pax-latam.com',
+    id: 'sup-1', name: 'PAX Technology', country: 'China',
+    contactName: 'María Gómez', phone: '+507 6000-1111', email: 'ventas@pax.com',
     suppliedBrands: ['PAX'], suppliedModels: ['PAX A920', 'PAX A80'], status: 'active',
   },
   {
-    id: 'sup-2', name: 'Sunmi Distribuidora Centroamérica', country: 'Guatemala',
+    id: 'sup-2', name: 'Sunmi', country: 'China',
     contactName: 'Carlos Ruiz', phone: '+502 5555-2222', email: 'contacto@sunmi-ca.com',
     suppliedBrands: ['Sunmi'], suppliedModels: ['Sunmi V2 Pro', 'Sunmi T2s'], status: 'active',
   },
   {
-    id: 'sup-3', name: 'Ingenico Comercial S.A.', country: 'Costa Rica',
+    id: 'sup-3', name: 'Ingenico S.A.', country: 'Francia',
     contactName: 'Laura Jiménez', phone: '+506 8888-3333', email: 'laura.jimenez@ingenico-cr.com',
     suppliedBrands: ['Ingenico', 'Verifone'], suppliedModels: ['Ingenico Move 5000', 'Verifone VX520'], status: 'active',
   },
   {
-    id: 'sup-4', name: 'Urovo Import & Export', country: 'China',
+    id: 'sup-4', name: 'Urovo', country: 'China',
     contactName: 'Wei Zhang', phone: '+86 138-0000-4444', email: 'wei.zhang@urovo-export.com',
     suppliedBrands: ['Urovo'], suppliedModels: ['Urovo DT40'], status: 'inactive',
   },

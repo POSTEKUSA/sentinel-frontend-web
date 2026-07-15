@@ -58,7 +58,6 @@ export interface MerchantDialogData {
           <mat-select formControlName="status">
             <mat-option value="active">Activo</mat-option>
             <mat-option value="inactive">Inactivo</mat-option>
-            <mat-option value="suspended">Suspendido</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="admin-form-field" appearance="outline">

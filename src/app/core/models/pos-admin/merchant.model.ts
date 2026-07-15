@@ -1,11 +1,10 @@
 /** EPIC 5 — Afiliados / comercios */
 
-export type MerchantStatus = 'active' | 'inactive' | 'suspended';
+export type MerchantStatus = 'active' | 'inactive';
 
 export const MERCHANT_STATUS_LABELS: Record<MerchantStatus, string> = {
   active: 'Activo',
   inactive: 'Inactivo',
-  suspended: 'Suspendido',
 };
 
 /** HU-012 — Comercio / afiliado */

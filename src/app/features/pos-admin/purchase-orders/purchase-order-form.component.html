@@ -40,7 +40,7 @@
         <form [formGroup]="form" class="po-header-grid">
           <mat-form-field appearance="outline">
             <mat-label>Proveedor</mat-label>
-            <mat-select formControlName="supplierId" (selectionChange)="onSupplierChange($event.value, suppliers)">
+            <mat-select formControlName="supplierId" (selectionChange)="onSupplierChange($event.value)">
               @for (s of suppliers; track s.id) {
                 <mat-option [value]="s.id">{{ s.name }}</mat-option>
               }
@@ -73,17 +73,42 @@
             @for (line of lines.controls; track line; let i = $index) {
               <div class="line-row" [formGroupName]="i">
                 <mat-form-field appearance="outline" class="dense-field">
-                  <mat-select formControlName="itemType">
+                  <mat-select formControlName="itemType" (selectionChange)="onItemTypeChange(i)">
                     <mat-option value="pos">POS</mat-option>
                     <mat-option value="accessory">Accesorio</mat-option>
                   </mat-select>
                 </mat-form-field>
-                <mat-form-field appearance="outline" class="dense-field">
-                  <input matInput formControlName="brand" placeholder="Marca">
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="dense-field">
-                  <input matInput formControlName="model" placeholder="Modelo">
-                </mat-form-field>
+                @if (line.get('itemType')?.value === 'pos') {
+                  <mat-form-field appearance="outline" class="dense-field">
+                    <mat-select formControlName="brand" (selectionChange)="onPosBrandChange(i)" placeholder="Marca">
+                      @for (b of posBrands(); track b) {
+                        <mat-option [value]="b">{{ b }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="dense-field">
+                    <mat-select formControlName="model" placeholder="Modelo">
+                      @for (m of posModels(line.get('brand')?.value); track m) {
+                        <mat-option [value]="m">{{ m }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                } @else {
+                  <mat-form-field appearance="outline" class="dense-field">
+                    <input matInput formControlName="brand" readonly placeholder="Marca">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="dense-field">
+                    <mat-select
+                      [value]="accessoryIdForLine(line.get('brand')?.value, line.get('model')?.value)"
+                      (selectionChange)="onAccessoryChange(i, $event.value)"
+                      [disabled]="!isNew"
+                      placeholder="Accesorio / consumible">
+                      @for (a of accessories; track a.id) {
+                        <mat-option [value]="a.id">{{ a.type }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                }
                 <mat-form-field appearance="outline" class="dense-field">
                   <input matInput type="number" min="1" formControlName="requestedQty">
                 </mat-form-field>

@@ -16,7 +16,7 @@ export const MOCK_MERCHANTS: Merchant[] = [
     status: 'active', createdAt: daysAgoIso(30), responsibleName: 'Patricia Morales',
   },
   {
-    id: 'mer-3', affiliateCode: 'AF-00103', tradeName: 'Restaurante El Portón', mcc: '5812', mccDescription: 'Restaurantes',
+    id: 'mer-3', affiliateCode: 'AF-00103', tradeName: 'Restaurante La Finca', mcc: '5812', mccDescription: 'Restaurantes',
     department: 'Managua', municipality: 'Managua', address: 'Carretera Masaya Km 8.5, Managua',
     status: 'active', createdAt: daysAgoIso(35), responsibleName: 'Roberto Mendoza',
   },
@@ -33,7 +33,7 @@ export const MOCK_MERCHANTS: Merchant[] = [
   {
     id: 'mer-6', affiliateCode: 'AF-00106', tradeName: 'Clínica Vida Sana', mcc: '8011', mccDescription: 'Servicios médicos',
     department: 'Chinandega', municipality: 'Chinandega', address: 'Reparto San Antonio, Chinandega',
-    status: 'suspended', createdAt: daysAgoIso(200),
+    status: 'inactive', createdAt: daysAgoIso(200),
   },
 ];
 
@@ -52,7 +52,7 @@ export const MOCK_INSTALLATIONS: Installation[] = [
   },
   {
     id: 'ins-3', posUnitId: 'unit-11', serialNumber: 'INGE-MOVE5000-000601', brand: 'Ingenico', model: 'Move 5000',
-    merchantId: 'mer-3', merchantName: 'Restaurante El Portón', installedAt: daysAgoIso(22),
+    merchantId: 'mer-3', merchantName: 'Restaurante La Finca', installedAt: daysAgoIso(22),
     responsibleUserId: 'tec-1', responsibleName: 'Roberto Mendoza', responsibleRole: 'technician',
     latitude: 12.0850, longitude: -86.1650, initialStatus: 'Operativo',
   },

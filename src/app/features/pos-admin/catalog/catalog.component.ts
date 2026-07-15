@@ -141,7 +141,7 @@ export class CatalogComponent implements OnInit {
       case 'active': return 'chip-green';
       case 'obsolete': return 'chip-orange';
       case 'discontinued': return 'chip-red';
-      case 'inactive': return 'chip-grey';
+      case 'inactive': return 'chip-red';
       default: return 'chip-grey';
     }
   }

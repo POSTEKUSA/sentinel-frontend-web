@@ -56,10 +56,10 @@
 }
 
 .brand-icon {
-  color: var(--mat-primary);
-  font-size: 26px;
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .brand-text {

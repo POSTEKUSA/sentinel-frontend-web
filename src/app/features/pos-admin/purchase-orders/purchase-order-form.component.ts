@@ -14,7 +14,14 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
 
-import { PurchaseOrder, PurchaseOrderStatus, PURCHASE_ORDER_STATUS_LABELS } from '../../../core/models/pos-admin';
+import {
+  AccessoryCatalogItem,
+  PosCatalogItem,
+  PurchaseOrder,
+  PurchaseOrderStatus,
+  PURCHASE_ORDER_STATUS_LABELS,
+  Supplier,
+} from '../../../core/models/pos-admin';
 import { PurchaseOrderService } from '../../../core/services/pos-admin/purchase-order.service';
 import { PosCatalogService } from '../../../core/services/pos-admin/pos-catalog.service';
 
@@ -37,8 +44,10 @@ export class PurchaseOrderFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private catalogSvc = inject(PosCatalogService);
 
-  suppliers: { id: string; name: string }[] = [];
-  brandModelOptions = this.catalogSvc.brandModelOptions;
+  suppliers: Supplier[] = [];
+  catalogItems: PosCatalogItem[] = [];
+  accessories: AccessoryCatalogItem[] = [];
+  selectedSupplier?: Supplier;
 
   form = this.fb.group({
     supplierId: ['', Validators.required],
@@ -60,16 +69,26 @@ export class PurchaseOrderFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.catalogSvc.suppliers$.subscribe(suppliers => {
-      this.suppliers = suppliers;
-    });
-
     const id = this.route.snapshot.paramMap.get('id');
     this.isNew = !id || id === 'new';
+
+    this.catalogSvc.suppliers$.subscribe(suppliers => {
+      this.suppliers = this.isNew ? suppliers.filter(s => s.status === 'active') : suppliers;
+      if (this.order) {
+        this.selectedSupplier = this.suppliers.find(s => s.id === this.order!.supplierId);
+      }
+    });
+    this.catalogSvc.catalog$.subscribe(items => {
+      this.catalogItems = this.isNew ? items.filter(i => i.status === 'active') : items;
+    });
+    this.catalogSvc.accessories$.subscribe(items => {
+      this.accessories = this.isNew ? items.filter(i => i.status === 'active') : items;
+    });
 
     if (!this.isNew && id) {
       this.order = this.poSvc.getById(id);
       if (this.order) {
+        this.selectedSupplier = this.suppliers.find(s => s.id === this.order!.supplierId);
         this.form.patchValue({
           supplierId: this.order.supplierId,
           supplierName: this.order.supplierName,
@@ -106,9 +125,54 @@ export class PurchaseOrderFormComponent implements OnInit {
     if (this.lines.length > 1) this.lines.removeAt(index);
   }
 
-  onSupplierChange(supplierId: string, suppliers: { id: string; name: string }[]): void {
-    const supplier = suppliers.find(s => s.id === supplierId);
-    this.form.patchValue({ supplierName: supplier?.name ?? '' });
+  onSupplierChange(supplierId: string): void {
+    this.selectedSupplier = this.suppliers.find(s => s.id === supplierId);
+    this.form.patchValue({ supplierName: this.selectedSupplier?.name ?? '' });
+    // Reset POS lines so brand/model stay within supplier catalog
+    this.lines.controls.forEach(line => {
+      if (line.get('itemType')?.value === 'pos') {
+        line.patchValue({ brand: '', model: '' });
+      }
+    });
+  }
+
+  onItemTypeChange(index: number): void {
+    this.lines.at(index).patchValue({ brand: '', model: '' });
+  }
+
+  posBrands(): string[] {
+    const items = this.posItemsForSupplier();
+    return [...new Set(items.map(i => i.brand))].sort();
+  }
+
+  posModels(brand: string): string[] {
+    if (!brand) return [];
+    return this.posItemsForSupplier()
+      .filter(i => i.brand === brand)
+      .map(i => i.model);
+  }
+
+  private posItemsForSupplier(): PosCatalogItem[] {
+    if (!this.selectedSupplier) return this.catalogItems;
+    const brands = new Set(this.selectedSupplier.suppliedBrands.map(b => b.toLowerCase()));
+    return this.catalogItems.filter(i => brands.has(i.brand.toLowerCase()));
+  }
+
+  onPosBrandChange(index: number): void {
+    this.lines.at(index).patchValue({ model: '' });
+  }
+
+  onAccessoryChange(index: number, accessoryId: string): void {
+    const acc = this.accessories.find(a => a.id === accessoryId);
+    if (!acc) return;
+    const brand = acc.compatibleBrandModel === 'Universal'
+      ? 'Universal'
+      : acc.compatibleBrandModel.split(' ')[0];
+    this.lines.at(index).patchValue({ brand, model: acc.type });
+  }
+
+  accessoryIdForLine(brand: string, model: string): string {
+    return this.accessories.find(a => a.type === model)?.id ?? '';
   }
 
   save(): void {
