@@ -80,7 +80,7 @@ export class LoginComponent implements AfterViewInit {
     this.submitting.set(true);
     this.busy.suspendNavTracking();
     this.busy.reset();
-    this.busy.show();
+    this.busy.show('Iniciando sesión');
     this.spinLogo();
     this.auth.login(this.email, this.password);
 

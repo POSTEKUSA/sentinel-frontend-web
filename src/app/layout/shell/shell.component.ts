@@ -167,7 +167,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
   async logout(): Promise<void> {
     this.busy.suspendNavTracking();
     this.busy.reset();
-    this.busy.show();
+    this.busy.show('Cerrando sesión');
     await new Promise(resolve => setTimeout(resolve, 2000));
     this.auth.logout();
     this.busy.reset();
