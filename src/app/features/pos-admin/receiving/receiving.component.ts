@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -36,9 +36,9 @@ export class ReceivingComponent implements OnInit {
   lastReceived: string | null = null;
 
   bulkRows: BulkRow[] = [];
-  bulkValidation: BulkReceiveResultRow[] = [];
+  readonly bulkValidation = signal<BulkReceiveResultRow[]>([]);
+  readonly bulkFileName = signal('');
   bulkImported: { created: number; skipped: number } | null = null;
-  bulkFileName = '';
 
   private fb = inject(FormBuilder);
 
@@ -140,20 +140,17 @@ export class ReceivingComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: Event): void {
+  async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-    this.bulkFileName = file.name;
-    this.bulkImported = null;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const text = String(reader.result ?? '');
-      this.bulkRows = this.parseCsv(text);
-      this.bulkValidation = this.inventorySvc.validateBulkRows(this.bulkRows);
-    };
-    reader.readAsText(file);
+    const text = await file.text();
+    this.bulkFileName.set(file.name);
+    this.bulkImported = null;
+    this.bulkRows = this.parseCsv(text);
+    this.bulkValidation.set(this.inventorySvc.validateBulkRows(this.bulkRows));
+    input.value = '';
   }
 
   private parseCsv(text: string): BulkRow[] {
@@ -180,11 +177,11 @@ export class ReceivingComponent implements OnInit {
   }
 
   get validCount(): number {
-    return this.bulkValidation.filter(r => r.status === 'valid').length;
+    return this.bulkValidation().filter(r => r.status === 'valid').length;
   }
 
   get errorCount(): number {
-    return this.bulkValidation.filter(r => r.status === 'error').length;
+    return this.bulkValidation().filter(r => r.status === 'error').length;
   }
 
   confirmBulkImport(): void {
@@ -204,12 +201,21 @@ export class ReceivingComponent implements OnInit {
       { duration: 5000 },
     );
     this.bulkRows = [];
-    this.bulkValidation = [];
-    this.bulkFileName = '';
+    this.bulkValidation.set([]);
+    this.bulkFileName.set('');
   }
 
   downloadTemplate(): void {
-    const csv = 'numeroSerie,marca,modelo,tipoPos\nPAX-A920-000999,PAX,A920,POS Android\n';
+    const csv = [
+      'numeroSerie,marca,modelo,tipoPos',
+      'PAX-A920-000901,PAX,A920,POS Android',
+      'PAX-A920-000902,PAX,A920,POS Android',
+      'PAX-A80-000903,PAX,A80,POS Legacy',
+      'SUNMI-V2P-000904,Sunmi,V2 Pro,POS Android',
+      'INGE-MOVE5000-000905,Ingenico,Move 5000,MPOS Android',
+      'SUNMI-T2S-000906,Sunmi,T2s,POS Android',
+      '',
+    ].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

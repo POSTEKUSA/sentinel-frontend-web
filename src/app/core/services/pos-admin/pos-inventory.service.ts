@@ -122,7 +122,7 @@ export class PosInventoryService {
     const seenInFile = new Set<string>();
     return rows.map((row, index) => {
       const serial = row.serialNumber?.trim() ?? '';
-      const rowNumber = index + 2; // +2: encabezado + índice 1-based
+      const rowNumber = index + 1;
 
       if (!serial) {
         return { row: rowNumber, serialNumber: serial, brand: row.brand, model: row.model, posType: row.posType, status: 'error', error: 'Número de serie vacío' };

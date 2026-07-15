@@ -28,10 +28,6 @@
     <div class="panel">
       <div class="panel-head">Parámetros de la carga</div>
       <div class="panel-body">
-        @if (bulkFileName) {
-          <p class="file-name-chip">Archivo: <span class="file-name">{{ bulkFileName }}</span></p>
-        }
-
         <form [formGroup]="bulkForm" class="cf-form-grid">
           <div class="field">
             <label for="bulkPoId">Orden de compra asociada (opcional)</label>
@@ -71,10 +67,11 @@
       </div>
     </div>
 
-    @if (bulkValidation.length > 0) {
+    @if (bulkValidation().length > 0) {
       <div class="panel">
         <div class="panel-head">
-          Validación del archivo
+          Validación del archivo:
+          <span class="file-name">{{ bulkFileName() }}</span>
           <span class="cf-badge cf-badge-ok"><span class="dot"></span>{{ validCount }} válidos</span>
           <span class="cf-badge cf-badge-off"><span class="dot"></span>{{ errorCount }} con error</span>
         </div>
@@ -90,7 +87,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (r of bulkValidation; track r.row) {
+              @for (r of bulkValidation(); track r.row) {
                 <tr>
                   <td>{{ r.row }}</td>
                   <td><span class="code">{{ r.serialNumber }}</span></td>
