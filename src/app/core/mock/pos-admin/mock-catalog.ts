@@ -1,13 +1,13 @@
 import { AccessoryCatalogItem, PosCatalogItem, Supplier } from '../../models/pos-admin';
 
 export const MOCK_POS_CATALOG: PosCatalogItem[] = [
-  { id: 'cat-1', brand: 'PAX', model: 'A920', posType: 'POS (Android)', description: 'Terminal Android con impresora integrada', status: 'active', createdAt: '2024-01-10T09:00:00.000Z', createdBy: 'admin' },
-  { id: 'cat-2', brand: 'PAX', model: 'A80', posType: 'POS (Legacy)', description: 'Terminal tradicional con pantalla monocromática', status: 'active', createdAt: '2024-01-10T09:05:00.000Z', createdBy: 'admin' },
-  { id: 'cat-3', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS (Android)', description: 'Terminal Android portátil', status: 'active', createdAt: '2024-01-12T10:00:00.000Z', createdBy: 'admin' },
-  { id: 'cat-4', brand: 'Sunmi', model: 'T2s', posType: 'POS (Android)', description: 'Terminal Android de mostrador', status: 'active', createdAt: '2024-01-12T10:10:00.000Z', createdBy: 'admin' },
-  { id: 'cat-5', brand: 'Urovo', model: 'DT40', posType: 'mPOS (Android)', description: 'Terminal móvil de mano', status: 'obsolete', createdAt: '2023-06-01T08:00:00.000Z', createdBy: 'admin' },
-  { id: 'cat-6', brand: 'Ingenico', model: 'Move 5000', posType: 'mPOS (Android)', description: 'Terminal móvil GPRS/WiFi', status: 'active', createdAt: '2024-02-01T08:00:00.000Z', createdBy: 'admin' },
-  { id: 'cat-7', brand: 'Verifone', model: 'VX520', posType: 'POS (Legacy)', description: 'Terminal de línea fija', status: 'discontinued', createdAt: '2022-05-01T08:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-1', brand: 'PAX', model: 'A920', posType: 'POS Android', description: 'Terminal Android con impresora integrada', status: 'active', createdAt: '2024-01-10T09:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-2', brand: 'PAX', model: 'A80', posType: 'POS Legacy', description: 'Terminal tradicional con pantalla monocromática', status: 'active', createdAt: '2024-01-10T09:05:00.000Z', createdBy: 'admin' },
+  { id: 'cat-3', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS Android', description: 'Terminal Android portátil', status: 'active', createdAt: '2024-01-12T10:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-4', brand: 'Sunmi', model: 'T2s', posType: 'POS Android', description: 'Terminal Android de mostrador', status: 'active', createdAt: '2024-01-12T10:10:00.000Z', createdBy: 'admin' },
+  { id: 'cat-5', brand: 'Urovo', model: 'DT40', posType: 'MPOS Android', description: 'Terminal móvil de mano', status: 'obsolete', createdAt: '2023-06-01T08:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-6', brand: 'Ingenico', model: 'Move 5000', posType: 'MPOS Android', description: 'Terminal móvil GPRS/WiFi', status: 'active', createdAt: '2024-02-01T08:00:00.000Z', createdBy: 'admin' },
+  { id: 'cat-7', brand: 'Verifone', model: 'VX520', posType: 'POS Legacy', description: 'Terminal de línea fija', status: 'discontinued', createdAt: '2022-05-01T08:00:00.000Z', createdBy: 'admin' },
 ];
 
 export const MOCK_SUPPLIERS: Supplier[] = [

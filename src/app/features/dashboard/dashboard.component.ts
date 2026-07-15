@@ -4,18 +4,12 @@ import { RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatTableModule } from '@angular/material/table';
-
 import { TelemetryService } from '../../core/services/telemetry.service';
 import { DeviceStatusService } from '../../core/services/device-status.service';
 import { DeviceSummary, DeviceStatus } from '../../core/models/device-summary.model';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 import { BatteryIndicatorComponent } from '../../shared/battery-indicator/battery-indicator.component';
+import { BusyLoaderComponent } from '../../shared/busy-loader/busy-loader.component';
 import { DashboardMiniMapComponent } from './dashboard-mini-map.component';
 import {
   FleetGroupSummary,
@@ -31,14 +25,9 @@ import { environment } from '../../../environments/environment';
   imports: [
     CommonModule,
     RouterModule,
-    MatIconModule,
-    MatButtonModule,
-    MatCardModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule,
-    MatTableModule,
     StatusBadgeComponent,
     BatteryIndicatorComponent,
+    BusyLoaderComponent,
     DashboardMiniMapComponent,
   ],
   templateUrl: './dashboard.component.html',
@@ -53,8 +42,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   lastUpdatedAt: Date | null = null;
   mapMaximized = false;
 
-  readonly breakdownColumns = ['groupId', 'online', 'delayed', 'offline', 'total'];
-  readonly attentionColumns = ['alias', 'battery', 'lastSeen', 'status', 'actions'];
   readonly attentionPanelHint = '(Offline or delayed devices)';
 
   constructor(
@@ -64,14 +51,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.telemetry.devices$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(devices => {
-        this.devices = devices;
-        this.loading = false;
-        this.lastUpdatedAt = new Date();
-        this.cdr.detectChanges();
-      });
+    this.telemetry.devices$.pipe(takeUntil(this.destroy$)).subscribe(devices => {
+      this.devices = devices;
+      this.loading = false;
+      this.lastUpdatedAt = new Date();
+      this.cdr.detectChanges();
+    });
   }
 
   get lastUpdatedLabel(): string {

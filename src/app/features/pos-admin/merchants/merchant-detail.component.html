@@ -1,119 +1,125 @@
 <div class="admin-page">
-
   @if (!merchant) {
-    <mat-card class="admin-card">
-      <mat-card-content>
-        <p>No se encontró el comercio/afiliado solicitado.</p>
-        <a mat-button [routerLink]="['/pos-admin/merchants']">
-          <mat-icon>arrow_back</mat-icon> Volver al listado
-        </a>
-      </mat-card-content>
-    </mat-card>
+    <div class="panel">
+      <p>No se encontró el comercio/afiliado solicitado.</p>
+      <a class="btn-ghost" [routerLink]="['/pos-admin/merchants']">Volver al listado</a>
+    </div>
   } @else {
-
-    <div class="admin-page-header">
+    <header class="cf-head">
       <div>
-        <h1 class="admin-page-title">
-          <mat-icon>storefront</mat-icon>
-          {{ merchant.tradeName }}
-        </h1>
-        <p class="admin-page-subtitle">
-          Código {{ merchant.affiliateCode }} · MCC {{ merchant.mcc }} ({{ merchant.mccDescription }})
+        <p class="entity-name">{{ merchant.tradeName }}</p>
+        <p class="count">
+          Código <span class="code">{{ merchant.affiliateCode }}</span>
+          · MCC {{ merchant.mcc }} ({{ merchant.mccDescription }})
         </p>
       </div>
-      <div class="admin-header-actions">
-        <a mat-button [routerLink]="['/pos-admin/merchants']">
-          <mat-icon>arrow_back</mat-icon> Volver
-        </a>
-        <button mat-raised-button color="primary" (click)="openInstallDialog()">
-          <mat-icon>add_business</mat-icon> Instalar POS
+      <div class="head-actions">
+        <a class="btn-secondary" [routerLink]="['/pos-admin/merchants']">Volver</a>
+        <button type="button" class="btn-primary" (click)="openInstallDialog()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Instalar POS
         </button>
+      </div>
+    </header>
+
+    <div class="panel info-panel">
+      <div class="info-grid">
+        <div>
+          <span class="info-label">Departamento</span>
+          <span class="info-value">{{ merchant.department }}</span>
+        </div>
+        <div>
+          <span class="info-label">Municipio</span>
+          <span class="info-value">{{ merchant.municipality }}</span>
+        </div>
+        <div>
+          <span class="info-label">Dirección</span>
+          <span class="info-value">{{ merchant.address }}</span>
+        </div>
+        <div>
+          <span class="info-label">Estado</span>
+          <span class="cf-badge" [ngClass]="merchant.status === 'active' ? 'cf-badge-ok' : 'cf-badge-off'">
+            <span class="dot"></span>{{ statusLabels[merchant.status] }}
+          </span>
+        </div>
+        <div>
+          <span class="info-label">Fecha de alta</span>
+          <span class="info-value">{{ merchant.createdAt | date: 'mediumDate' }}</span>
+        </div>
+        <div>
+          <span class="info-label">Responsable</span>
+          <span class="info-value">{{ merchant.responsibleName || '—' }}</span>
+        </div>
       </div>
     </div>
 
-    <mat-card class="admin-card">
-      <mat-card-content class="info-grid">
-        <div><span class="info-label">Departamento</span><span class="info-value">{{ merchant.department }}</span></div>
-        <div><span class="info-label">Municipio</span><span class="info-value">{{ merchant.municipality }}</span></div>
-        <div><span class="info-label">Dirección</span><span class="info-value">{{ merchant.address }}</span></div>
-        <div><span class="info-label">Estado</span>
-          <span class="status-chip" [ngClass]="merchant.status === 'active' ? 'chip-green' : 'chip-red'">
-            {{ statusLabels[merchant.status] }}
-          </span>
-        </div>
-        <div><span class="info-label">Fecha de alta</span><span class="info-value">{{ merchant.createdAt | date:'mediumDate' }}</span></div>
-        <div><span class="info-label">Responsable</span><span class="info-value">{{ merchant.responsibleName || '—' }}</span></div>
-      </mat-card-content>
-    </mat-card>
-
     <div class="two-col-grid">
-      <mat-card class="admin-card">
-        <mat-card-content>
-          <h3 class="section-title"><mat-icon>devices</mat-icon> POS activos ({{ activeUnits.length }})</h3>
-          @if (activeUnits.length === 0) {
-            <app-empty-state icon="devices_other" title="Sin equipos activos"></app-empty-state>
-          } @else {
-            <div class="admin-table-wrap">
-              <table mat-table [dataSource]="activeUnits" class="admin-table">
-                <ng-container matColumnDef="serialNumber">
-                  <th mat-header-cell *matHeaderCellDef>N° Serie</th>
-                  <td mat-cell *matCellDef="let u"><strong>{{ u.serialNumber }}</strong></td>
-                </ng-container>
-                <ng-container matColumnDef="brand">
-                  <th mat-header-cell *matHeaderCellDef>Marca</th>
-                  <td mat-cell *matCellDef="let u">{{ u.brand }}</td>
-                </ng-container>
-                <ng-container matColumnDef="model">
-                  <th mat-header-cell *matHeaderCellDef>Modelo</th>
-                  <td mat-cell *matCellDef="let u">{{ u.model }}</td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Estado</th>
-                  <td mat-cell *matCellDef="let u"><span class="status-chip chip-green">{{ posStatusLabels[u.status] }}</span></td>
-                </ng-container>
-                <ng-container matColumnDef="installedAt">
-                  <th mat-header-cell *matHeaderCellDef>Instalado</th>
-                  <td mat-cell *matCellDef="let u">{{ u.installedAt | date:'mediumDate' }}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="unitColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: unitColumns;"></tr>
-              </table>
-            </div>
-          }
-        </mat-card-content>
-      </mat-card>
+      <div class="panel">
+        <div class="panel-head">POS activos ({{ activeUnits.length }})</div>
+        @if (activeUnits.length === 0) {
+          <app-empty-state icon="devices_other" title="Sin equipos activos"></app-empty-state>
+        } @else {
+          <div class="admin-table-wrap">
+            <table class="cf-table">
+              <thead>
+                <tr>
+                  <th>N° Serie</th>
+                  <th>Marca</th>
+                  <th>Modelo</th>
+                  <th>Estado</th>
+                  <th>Instalado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (u of activeUnits; track u.id) {
+                  <tr>
+                    <td><span class="code">{{ u.serialNumber }}</span></td>
+                    <td class="td-name">{{ u.brand }}</td>
+                    <td>{{ u.model }}</td>
+                    <td>
+                      <span class="cf-badge cf-badge-ok"><span class="dot"></span>{{ posStatusLabels[u.status] }}</span>
+                    </td>
+                    <td>{{ u.installedAt | date: 'mediumDate' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
 
-      <mat-card class="admin-card">
-        <mat-card-content>
-          <h3 class="section-title"><mat-icon>history</mat-icon> Historial de instalaciones ({{ installations.length }})</h3>
-          @if (installations.length === 0) {
-            <app-empty-state icon="history" title="Sin instalaciones registradas"></app-empty-state>
-          } @else {
-            <div class="admin-table-wrap">
-              <table mat-table [dataSource]="installations" class="admin-table">
-                <ng-container matColumnDef="installedAt">
-                  <th mat-header-cell *matHeaderCellDef>Fecha</th>
-                  <td mat-cell *matCellDef="let i">{{ i.installedAt | date:'medium' }}</td>
-                </ng-container>
-                <ng-container matColumnDef="serialNumber">
-                  <th mat-header-cell *matHeaderCellDef>Equipo</th>
-                  <td mat-cell *matCellDef="let i">{{ i.serialNumber }}<br><small>{{ i.brand }} {{ i.model }}</small></td>
-                </ng-container>
-                <ng-container matColumnDef="responsibleName">
-                  <th mat-header-cell *matHeaderCellDef>Responsable</th>
-                  <td mat-cell *matCellDef="let i">{{ i.responsibleName }}</td>
-                </ng-container>
-                <ng-container matColumnDef="initialStatus">
-                  <th mat-header-cell *matHeaderCellDef>Estado inicial</th>
-                  <td mat-cell *matCellDef="let i">{{ i.initialStatus }}</td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="installationColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: installationColumns;"></tr>
-              </table>
-            </div>
-          }
-        </mat-card-content>
-      </mat-card>
+      <div class="panel">
+        <div class="panel-head">Historial de instalaciones ({{ installations.length }})</div>
+        @if (installations.length === 0) {
+          <app-empty-state icon="history" title="Sin instalaciones registradas"></app-empty-state>
+        } @else {
+          <div class="admin-table-wrap">
+            <table class="cf-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Equipo</th>
+                  <th>Responsable</th>
+                  <th>Estado inicial</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (i of installations; track i.id) {
+                  <tr>
+                    <td>{{ i.installedAt | date: 'medium' }}</td>
+                    <td>
+                      <div class="code">{{ i.serialNumber }}</div>
+                      <div class="td-sub">{{ i.brand }} {{ i.model }}</div>
+                    </td>
+                    <td>{{ i.responsibleName }}</td>
+                    <td>{{ i.initialStatus }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
     </div>
   }
 </div>

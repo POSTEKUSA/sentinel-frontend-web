@@ -2,14 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { PosUnit, POS_LOCATION_LABELS, POS_UNIT_STATUS_LABELS } from '../../../core/models/pos-admin';
 import { PosInventoryService } from '../../../core/services/pos-admin/pos-inventory.service';
@@ -18,11 +10,7 @@ import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.com
 @Component({
   selector: 'app-central-inventory-tab',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatFormFieldModule,
-    MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatTableModule,
-    MatTooltipModule, EmptyStateComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, EmptyStateComponent],
   templateUrl: './central-inventory-tab.component.html',
   styleUrl: './central-inventory-tab.component.css',
 })
@@ -34,8 +22,6 @@ export class CentralInventoryTabComponent implements OnInit {
 
   all: PosUnit[] = [];
   filtered: PosUnit[] = [];
-
-  columns = ['serialNumber', 'brand', 'model', 'posType', 'status', 'locationLabel', 'receivedAt', 'purchaseOrderNumber'];
 
   private fb = inject(FormBuilder);
 
@@ -61,32 +47,62 @@ export class CentralInventoryTabComponent implements OnInit {
 
   applyFilters(): void {
     const f = this.filterForm.getRawValue();
-    this.filtered = this.all.filter(u => {
-      return (
+    this.filtered = this.all.filter(
+      u =>
+        (!f.serialNumber || u.serialNumber.toLowerCase().includes(f.serialNumber.toLowerCase())) &&
         (!f.brand || u.brand.toLowerCase().includes(f.brand.toLowerCase())) &&
         (!f.model || u.model.toLowerCase().includes(f.model.toLowerCase())) &&
         (!f.posType || u.posType.toLowerCase().includes(f.posType.toLowerCase())) &&
         (!f.status || u.status === f.status) &&
         (!f.locationType || u.locationType === f.locationType) &&
-        (!f.purchaseOrderNumber || (u.purchaseOrderNumber ?? '').toLowerCase().includes(f.purchaseOrderNumber.toLowerCase())) &&
-        (!f.serialNumber || u.serialNumber.toLowerCase().includes(f.serialNumber.toLowerCase()))
-      );
-    });
+        (!f.purchaseOrderNumber ||
+          (u.purchaseOrderNumber ?? '').toLowerCase().includes(f.purchaseOrderNumber.toLowerCase())),
+    );
   }
 
   clearFilters(): void {
-    this.filterForm.reset({ brand: '', model: '', posType: '', status: '', locationType: '', purchaseOrderNumber: '', serialNumber: '' });
+    this.filterForm.reset({
+      brand: '',
+      model: '',
+      posType: '',
+      status: '',
+      locationType: '',
+      purchaseOrderNumber: '',
+      serialNumber: '',
+    });
   }
 
-  statusChipClass(status: string): string {
+  get hasActiveFilters(): boolean {
+    const f = this.filterForm.getRawValue();
+    return !!(
+      f.serialNumber ||
+      f.brand ||
+      f.model ||
+      f.posType ||
+      f.status ||
+      f.locationType ||
+      f.purchaseOrderNumber
+    );
+  }
+
+  statusBadgeClass(status: string): string {
     switch (status) {
-      case 'in_stock': return 'chip-blue';
-      case 'installed': return 'chip-green';
-      case 'with_technician': case 'with_executive': return 'chip-purple';
-      case 'in_transit': return 'chip-teal';
-      case 'in_workshop': return 'chip-orange';
-      case 'decommissioned': case 'destroyed': return 'chip-red';
-      default: return 'chip-grey';
+      case 'in_stock':
+        return 'cf-badge-info';
+      case 'installed':
+        return 'cf-badge-ok';
+      case 'with_technician':
+      case 'with_executive':
+        return 'cf-badge-info';
+      case 'in_transit':
+        return 'cf-badge-info';
+      case 'in_workshop':
+        return 'cf-badge-warn';
+      case 'decommissioned':
+      case 'destroyed':
+        return 'cf-badge-off';
+      default:
+        return 'cf-badge-muted';
     }
   }
 }

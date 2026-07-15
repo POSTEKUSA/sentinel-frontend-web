@@ -1,194 +1,258 @@
 <div class="admin-page">
-
-  <div class="admin-page-header">
+  <header class="cf-head">
     <div>
-      <h1 class="admin-page-title">
-        <mat-icon>category</mat-icon>
-        Catálogo Maestro
-      </h1>
-      <p class="admin-page-subtitle">Marcas, modelos, proveedores, accesorios y consumibles de POS</p>
+      <h1>Catálogo Maestro</h1>
+      <p class="count">Marcas, modelos, proveedores, accesorios y consumibles de POS</p>
     </div>
+    <div class="head-actions">
+      @if (activeTab === 'brands') {
+        <button type="button" class="btn-primary" (click)="openBrandModelDialog()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Nueva marca/modelo
+        </button>
+      }
+      @if (activeTab === 'suppliers') {
+        <button type="button" class="btn-primary" (click)="openSupplierDialog()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Nuevo proveedor
+        </button>
+      }
+      @if (activeTab === 'accessories') {
+        <button type="button" class="btn-primary" (click)="openAccessoryDialog()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Nuevo accesorio/consumible
+        </button>
+      }
+    </div>
+  </header>
+
+  <div class="cf-tabs" role="tablist">
+    <button type="button" class="cf-tab" role="tab" [class.active]="activeTab === 'brands'" (click)="activeTab = 'brands'">Marcas y Modelos</button>
+    <button type="button" class="cf-tab" role="tab" [class.active]="activeTab === 'suppliers'" (click)="activeTab = 'suppliers'">Proveedores</button>
+    <button type="button" class="cf-tab" role="tab" [class.active]="activeTab === 'accessories'" (click)="activeTab = 'accessories'">Accesorios y Consumibles</button>
   </div>
 
-  <mat-tab-group animationDuration="150ms">
-
-    <!-- ── Marcas y Modelos (HU-001) ── -->
-    <mat-tab label="Marcas y Modelos">
-      <div class="tab-body">
-        <div class="tab-toolbar">
-          <mat-form-field appearance="outline" class="search-field">
-            <mat-icon matPrefix>search</mat-icon>
-            <mat-label>Buscar marca, modelo o tipo</mat-label>
-            <input matInput [formControl]="brandModelSearch">
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="openBrandModelDialog()">
-            <mat-icon>add</mat-icon> Nueva marca/modelo
-          </button>
-        </div>
-
-        <mat-card class="admin-card">
-          @if (filteredCatalog.length === 0) {
-            <app-empty-state icon="category" title="Sin registros" subtitle="No hay marcas/modelos que coincidan con la búsqueda."></app-empty-state>
-          } @else {
-            <div class="admin-table-wrap">
-              <table mat-table [dataSource]="filteredCatalog" class="admin-table">
-                <ng-container matColumnDef="brand">
-                  <th mat-header-cell *matHeaderCellDef>Marca</th>
-                  <td mat-cell *matCellDef="let row"><strong>{{ row.brand }}</strong></td>
-                </ng-container>
-                <ng-container matColumnDef="model">
-                  <th mat-header-cell *matHeaderCellDef>Modelo</th>
-                  <td mat-cell *matCellDef="let row">{{ row.model }}</td>
-                </ng-container>
-                <ng-container matColumnDef="posType">
-                  <th mat-header-cell *matHeaderCellDef>Tipo de POS</th>
-                  <td mat-cell *matCellDef="let row">{{ row.posType }}</td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Estado</th>
-                  <td mat-cell *matCellDef="let row">
-                    <span class="status-chip" [ngClass]="statusChipClass(row.status)">{{ statusLabels[row.status] }}</span>
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="createdAt">
-                  <th mat-header-cell *matHeaderCellDef>Creado</th>
-                  <td mat-cell *matCellDef="let row">{{ row.createdAt | date:'short' }}<br><small>{{ row.createdBy }}</small></td>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef></th>
-                  <td mat-cell *matCellDef="let row">
-                    <button mat-icon-button matTooltip="Editar" (click)="openBrandModelDialog(row)"><mat-icon>edit</mat-icon></button>
-                    <button mat-icon-button matTooltip="Eliminar" (click)="deleteBrandModel(row)"><mat-icon>delete_outline</mat-icon></button>
-                  </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="catalogColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: catalogColumns;"></tr>
-              </table>
-            </div>
-          }
-        </mat-card>
+  @if (activeTab === 'brands') {
+    <div class="panel toolbar-panel">
+      <div class="toolbar">
+        <label class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" [formControl]="brandModelSearch" placeholder="Buscar marca, modelo o tipo…" autocomplete="off" spellcheck="false" />
+        </label>
+        <button
+          type="button"
+          [class]="!!brandModelSearch.value ? 'btn-primary' : 'btn-secondary'"
+          (click)="brandModelSearch.setValue('')">
+          <span class="mi">filter_alt_off</span>
+          Limpiar
+        </button>
       </div>
-    </mat-tab>
-
-    <!-- ── Proveedores (HU-002) ── -->
-    <mat-tab label="Proveedores">
-      <div class="tab-body">
-        <div class="tab-toolbar">
-          <mat-form-field appearance="outline" class="search-field">
-            <mat-icon matPrefix>search</mat-icon>
-            <mat-label>Buscar proveedor, marca o modelo</mat-label>
-            <input matInput [formControl]="supplierSearch">
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="openSupplierDialog()">
-            <mat-icon>add</mat-icon> Nuevo proveedor
-          </button>
+    </div>
+    <div class="panel">
+      @if (filteredCatalog.length === 0) {
+        <app-empty-state navIcon="catalog" title="Sin registros" subtitle="No hay marcas/modelos que coincidan con la búsqueda."></app-empty-state>
+      } @else {
+        <div class="admin-table-wrap">
+          <table class="cf-table">
+            <thead>
+              <tr>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Tipo de POS</th>
+                <th>Estado</th>
+                <th>Creado</th>
+                <th class="th-actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of filteredCatalog; track row.id) {
+                <tr>
+                  <td class="td-name">{{ row.brand }}</td>
+                  <td>{{ row.model }}</td>
+                  <td>{{ row.posType }}</td>
+                  <td>
+                    <span class="cf-badge" [ngClass]="statusBadgeClass(row.status)">
+                      <span class="dot"></span>{{ statusLabels[row.status] }}
+                    </span>
+                  </td>
+                  <td>
+                    <div>{{ row.createdAt | date:'short' }}</div>
+                    <div class="td-sub">{{ row.createdBy }}</div>
+                  </td>
+                  <td class="td-actions">
+                    <div class="row-actions">
+                      <button type="button" class="btn-primary btn-sm" (click)="openBrandModelDialog(row)">
+                        <span class="mi">edit</span>
+                        Editar
+                      </button>
+                      <div class="cf-menu" [class.open]="openMenuId === 'brand-' + row.id">
+                        <button type="button" class="cf-icon-btn" aria-label="Más acciones" (click)="toggleMenu('brand-' + row.id, $event)">
+                          <span class="mi">more_vert</span>
+                        </button>
+                        <div class="cf-menu-panel">
+                          <button type="button" class="cf-menu-item danger" (click)="deleteBrandModel(row); closeMenus()">
+                            <span class="mi">delete_outline</span> Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
+      }
+    </div>
+  }
 
-        <mat-card class="admin-card">
-          @if (filteredSuppliers.length === 0) {
-            <app-empty-state icon="local_shipping" title="Sin proveedores" subtitle="No hay proveedores que coincidan con la búsqueda."></app-empty-state>
-          } @else {
-            <div class="admin-table-wrap">
-              <table mat-table [dataSource]="filteredSuppliers" class="admin-table">
-                <ng-container matColumnDef="name">
-                  <th mat-header-cell *matHeaderCellDef>Proveedor</th>
-                  <td mat-cell *matCellDef="let row"><strong>{{ row.name }}</strong></td>
-                </ng-container>
-                <ng-container matColumnDef="country">
-                  <th mat-header-cell *matHeaderCellDef>País</th>
-                  <td mat-cell *matCellDef="let row">{{ row.country }}</td>
-                </ng-container>
-                <ng-container matColumnDef="contact">
-                  <th mat-header-cell *matHeaderCellDef>Contacto</th>
-                  <td mat-cell *matCellDef="let row">{{ row.contactName }}<br><small>{{ row.phone }} · {{ row.email }}</small></td>
-                </ng-container>
-                <ng-container matColumnDef="brands">
-                  <th mat-header-cell *matHeaderCellDef>Marcas / Modelos</th>
-                  <td mat-cell *matCellDef="let row">{{ row.suppliedBrands.join(', ') }}<br><small>{{ row.suppliedModels.join(', ') }}</small></td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Estado</th>
-                  <td mat-cell *matCellDef="let row">
-                    <span class="status-chip" [ngClass]="statusChipClass(row.status)">{{ row.status === 'active' ? 'Activo' : 'Inactivo' }}</span>
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef></th>
-                  <td mat-cell *matCellDef="let row">
-                    <button mat-icon-button matTooltip="Editar" (click)="openSupplierDialog(row)"><mat-icon>edit</mat-icon></button>
-                    <button mat-icon-button matTooltip="Eliminar" (click)="deleteSupplier(row)"><mat-icon>delete_outline</mat-icon></button>
-                  </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="supplierColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: supplierColumns;"></tr>
-              </table>
-            </div>
-          }
-        </mat-card>
+  @if (activeTab === 'suppliers') {
+    <div class="panel toolbar-panel">
+      <div class="toolbar">
+        <label class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" [formControl]="supplierSearch" placeholder="Buscar proveedor, marca o modelo…" autocomplete="off" spellcheck="false" />
+        </label>
+        <button
+          type="button"
+          [class]="!!supplierSearch.value ? 'btn-primary' : 'btn-secondary'"
+          (click)="supplierSearch.setValue('')">
+          <span class="mi">filter_alt_off</span>
+          Limpiar
+        </button>
       </div>
-    </mat-tab>
-
-    <!-- ── Accesorios y Consumibles (HU-003) ── -->
-    <mat-tab label="Accesorios y Consumibles">
-      <div class="tab-body">
-        <div class="tab-toolbar">
-          <mat-form-field appearance="outline" class="search-field">
-            <mat-icon matPrefix>search</mat-icon>
-            <mat-label>Buscar accesorio o consumible</mat-label>
-            <input matInput [formControl]="accessorySearch">
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="openAccessoryDialog()">
-            <mat-icon>add</mat-icon> Nuevo accesorio/consumible
-          </button>
+    </div>
+    <div class="panel">
+      @if (filteredSuppliers.length === 0) {
+        <app-empty-state navIcon="catalog" title="Sin proveedores" subtitle="No hay proveedores que coincidan con la búsqueda."></app-empty-state>
+      } @else {
+        <div class="admin-table-wrap">
+          <table class="cf-table">
+            <thead>
+              <tr>
+                <th>Proveedor</th>
+                <th>País</th>
+                <th>Contacto</th>
+                <th>Marcas / Modelos</th>
+                <th>Estado</th>
+                <th class="th-actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of filteredSuppliers; track row.id) {
+                <tr>
+                  <td class="td-name">{{ row.name }}</td>
+                  <td>{{ row.country }}</td>
+                  <td>
+                    <div>{{ row.contactName }}</div>
+                    <div class="td-sub">{{ row.phone }} · {{ row.email }}</div>
+                  </td>
+                  <td>
+                    <div>{{ row.suppliedBrands.join(', ') }}</div>
+                    <div class="td-sub">{{ row.suppliedModels.join(', ') }}</div>
+                  </td>
+                  <td>
+                    <span class="cf-badge" [ngClass]="row.status === 'active' ? 'cf-badge-ok' : 'cf-badge-off'">
+                      <span class="dot"></span>{{ row.status === 'active' ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </td>
+                  <td class="td-actions">
+                    <div class="row-actions">
+                      <button type="button" class="btn-primary btn-sm" (click)="openSupplierDialog(row)">
+                        <span class="mi">edit</span>
+                        Editar
+                      </button>
+                      <div class="cf-menu" [class.open]="openMenuId === 'sup-' + row.id">
+                        <button type="button" class="cf-icon-btn" aria-label="Más acciones" (click)="toggleMenu('sup-' + row.id, $event)">
+                          <span class="mi">more_vert</span>
+                        </button>
+                        <div class="cf-menu-panel">
+                          <button type="button" class="cf-menu-item danger" (click)="deleteSupplier(row); closeMenus()">
+                            <span class="mi">delete_outline</span> Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
         </div>
+      }
+    </div>
+  }
 
-        <mat-card class="admin-card">
-          @if (filteredAccessories.length === 0) {
-            <app-empty-state icon="inventory_2" title="Sin registros" subtitle="No hay accesorios/consumibles que coincidan con la búsqueda."></app-empty-state>
-          } @else {
-            <div class="admin-table-wrap">
-              <table mat-table [dataSource]="filteredAccessories" class="admin-table">
-                <ng-container matColumnDef="type">
-                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
-                  <td mat-cell *matCellDef="let row"><strong>{{ row.type }}</strong></td>
-                </ng-container>
-                <ng-container matColumnDef="category">
-                  <th mat-header-cell *matHeaderCellDef>Categoría</th>
-                  <td mat-cell *matCellDef="let row">{{ categoryLabels[row.category] }}</td>
-                </ng-container>
-                <ng-container matColumnDef="compatibleBrandModel">
-                  <th mat-header-cell *matHeaderCellDef>Marca/modelo compatible</th>
-                  <td mat-cell *matCellDef="let row">{{ row.compatibleBrandModel }}</td>
-                </ng-container>
-                <ng-container matColumnDef="unitOfMeasure">
-                  <th mat-header-cell *matHeaderCellDef>Unidad</th>
-                  <td mat-cell *matCellDef="let row">{{ row.unitOfMeasure }}</td>
-                </ng-container>
-                <ng-container matColumnDef="minStock">
-                  <th mat-header-cell *matHeaderCellDef>Stock mínimo</th>
-                  <td mat-cell *matCellDef="let row">{{ row.minStock }}</td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Estado</th>
-                  <td mat-cell *matCellDef="let row">
-                    <span class="status-chip" [ngClass]="statusChipClass(row.status)">{{ statusLabels[row.status] }}</span>
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef></th>
-                  <td mat-cell *matCellDef="let row">
-                    <button mat-icon-button matTooltip="Editar" (click)="openAccessoryDialog(row)"><mat-icon>edit</mat-icon></button>
-                    <button mat-icon-button matTooltip="Eliminar" (click)="deleteAccessory(row)"><mat-icon>delete_outline</mat-icon></button>
-                  </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="accessoryColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: accessoryColumns;"></tr>
-              </table>
-            </div>
-          }
-        </mat-card>
+  @if (activeTab === 'accessories') {
+    <div class="panel toolbar-panel">
+      <div class="toolbar">
+        <label class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="search" [formControl]="accessorySearch" placeholder="Buscar accesorio o consumible…" autocomplete="off" spellcheck="false" />
+        </label>
+        <button
+          type="button"
+          [class]="!!accessorySearch.value ? 'btn-primary' : 'btn-secondary'"
+          (click)="accessorySearch.setValue('')">
+          <span class="mi">filter_alt_off</span>
+          Limpiar
+        </button>
       </div>
-    </mat-tab>
-
-  </mat-tab-group>
+    </div>
+    <div class="panel">
+      @if (filteredAccessories.length === 0) {
+        <app-empty-state navIcon="catalog" title="Sin registros" subtitle="No hay accesorios/consumibles que coincidan con la búsqueda."></app-empty-state>
+      } @else {
+        <div class="admin-table-wrap">
+          <table class="cf-table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Categoría</th>
+                <th>Marca/modelo compatible</th>
+                <th>Unidad</th>
+                <th class="num">Stock mínimo</th>
+                <th>Estado</th>
+                <th class="th-actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of filteredAccessories; track row.id) {
+                <tr>
+                  <td class="td-name">{{ row.type }}</td>
+                  <td>{{ categoryLabels[row.category] }}</td>
+                  <td>{{ row.compatibleBrandModel }}</td>
+                  <td>{{ row.unitOfMeasure }}</td>
+                  <td class="num">{{ row.minStock }}</td>
+                  <td>
+                    <span class="cf-badge" [ngClass]="statusBadgeClass(row.status)">
+                      <span class="dot"></span>{{ statusLabels[row.status] }}
+                    </span>
+                  </td>
+                  <td class="td-actions">
+                    <div class="row-actions">
+                      <button type="button" class="btn-primary btn-sm" (click)="openAccessoryDialog(row)">
+                        <span class="mi">edit</span>
+                        Editar
+                      </button>
+                      <div class="cf-menu" [class.open]="openMenuId === 'acc-' + row.id">
+                        <button type="button" class="cf-icon-btn" aria-label="Más acciones" (click)="toggleMenu('acc-' + row.id, $event)">
+                          <span class="mi">more_vert</span>
+                        </button>
+                        <div class="cf-menu-panel">
+                          <button type="button" class="cf-menu-item danger" (click)="deleteAccessory(row); closeMenus()">
+                            <span class="mi">delete_outline</span> Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
 </div>

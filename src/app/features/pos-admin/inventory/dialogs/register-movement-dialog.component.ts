@@ -2,10 +2,6 @@ import { Component, inject, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 
 import { AccessoryCatalogItem, AccessoryMovementType } from '../../../../core/models/pos-admin';
 import { AccessoryStockService } from '../../../../core/services/pos-admin/accessory-stock.service';
@@ -17,55 +13,58 @@ export interface RegisterMovementDialogData {
 @Component({
   selector: 'app-register-movement-dialog',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule],
   template: `
-    <h2 mat-dialog-title>Registrar movimiento de accesorio/consumible</h2>
-    <mat-dialog-content class="admin-form-dialog">
-      <form [formGroup]="form" class="admin-form-grid">
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Accesorio/consumible</mat-label>
-          <mat-select formControlName="accessoryId">
+    <div class="cf-modal">
+      <div class="modal-head">
+        <span class="modal-title">Registrar movimiento</span>
+        <button type="button" class="modal-close" aria-label="Cerrar" (click)="dialogRef.close()">&times;</button>
+      </div>
+      <form [formGroup]="form" class="modal-body" (ngSubmit)="save()">
+        <div class="field">
+          <label for="accessoryId">Accesorio/consumible</label>
+          <select id="accessoryId" formControlName="accessoryId">
+            <option value="">Seleccionar…</option>
             @for (a of data.accessories; track a.id) {
-              <mat-option [value]="a.id">{{ a.type }}</mat-option>
+              <option [value]="a.id">{{ a.type }}</option>
             }
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Tipo de movimiento</mat-label>
-          <mat-select formControlName="movementType">
-            <mat-option value="in">Entrada</mat-option>
-            <mat-option value="out">Salida</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Cantidad</mat-label>
-          <input matInput type="number" min="1" formControlName="quantity">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Comercio/afiliado (opcional)</mat-label>
-          <input matInput formControlName="merchantName">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Ejecutivo/técnico (opcional)</mat-label>
-          <input matInput formControlName="executiveName">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Zona</mat-label>
-          <input matInput formControlName="zone">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Observaciones</mat-label>
-          <textarea matInput formControlName="observations" rows="2"></textarea>
-        </mat-form-field>
+          </select>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="movementType">Tipo de movimiento</label>
+            <select id="movementType" formControlName="movementType">
+              <option value="in">Entrada</option>
+              <option value="out">Salida</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="quantity">Cantidad</label>
+            <input id="quantity" type="number" min="1" formControlName="quantity" />
+          </div>
+          <div class="field">
+            <label for="merchantName">Comercio/afiliado (opcional)</label>
+            <input id="merchantName" formControlName="merchantName" />
+          </div>
+          <div class="field">
+            <label for="executiveName">Ejecutivo/técnico (opcional)</label>
+            <input id="executiveName" formControlName="executiveName" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="zone">Zona</label>
+          <input id="zone" formControlName="zone" />
+        </div>
+        <div class="field">
+          <label for="observations">Observaciones</label>
+          <textarea id="observations" formControlName="observations" rows="2"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="dialogRef.close()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">Registrar</button>
+        </div>
       </form>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="dialogRef.close()">Cancelar</button>
-      <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">Registrar</button>
-    </mat-dialog-actions>
+    </div>
   `,
 })
 export class RegisterMovementDialogComponent {

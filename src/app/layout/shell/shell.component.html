@@ -1,47 +1,177 @@
-<mat-sidenav-container class="shell-container">
+<div class="shell">
+  <app-busy-loader [show]="loaderVisible"></app-busy-loader>
 
-  <!-- ── Sidenav ── -->
-  <mat-sidenav mode="side" opened class="sidenav">
+  <div
+    class="scrim"
+    [class.open]="sidebarOpen()"
+    (click)="closeSidebar()"
+    aria-hidden="true"></div>
+
+  <aside class="sidebar" [class.open]="sidebarOpen()">
     <div class="brand">
-      <img class="brand-icon" src="logo-postek.png" alt="POSTEK" />
+      <div class="logo-stage">
+        <img
+          #logoImg
+          class="logo"
+          src="logo-postek.png"
+          width="34"
+          height="34"
+          alt="POSTEK"
+          (click)="spinLogo()" />
+      </div>
       <div class="brand-words">
-        <span class="brand-text">{{ appName }}</span>
+        <span class="brand-name" translate="no">{{ appName }}</span>
         <span class="brand-sub">{{ appDescription }}</span>
       </div>
     </div>
 
-    <mat-divider></mat-divider>
+    <nav class="nav" aria-label="Principal">
+      @for (section of navSections; track section.title) {
+        @if (section.title) {
+          <div class="section-label">{{ section.title }}</div>
+        }
+        @for (item of section.items; track item.route) {
+          <a
+            class="nav-item"
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+            (click)="closeSidebar()">
+            @switch (item.icon) {
+              @case ('dashboard') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                </svg>
+              }
+              @case ('devices') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <rect x="7" y="2" width="10" height="20" rx="2" />
+                  <path d="M11 18h2" />
+                </svg>
+              }
+              @case ('map') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path d="M9 3 3 5v16l6-2 6 2 6-2V3l-6 2-6-2Z" />
+                  <path d="M9 3v16M15 5v16" />
+                </svg>
+              }
+              @case ('catalog') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path d="M4 5h7v14H4zM13 5h7v6h-7zM13 13h7v6h-7z" />
+                </svg>
+              }
+              @case ('orders') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path d="M7 3h10v18H7z" />
+                  <path d="M10 7h4M10 11h4M10 15h3" />
+                </svg>
+              }
+              @case ('receiving') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path d="M4 7h16v12H4z" />
+                  <path d="M8 7V5h8v2M12 11v5M9.5 14.5 12 17l2.5-2.5" />
+                </svg>
+              }
+              @case ('inventory') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                  <path d="M3 7 12 3l9 4v10l-9 4-9-4V7Z" />
+                  <path d="M12 12v9M3 7l9 5 9-5" />
+                </svg>
+              }
+              @case ('merchants') {
+                <span class="mi" aria-hidden="true">storefront</span>
+              }
+            }
+            <span>{{ item.label }}</span>
+          </a>
+        }
+      }
+    </nav>
 
-    <mat-nav-list>
-      <ng-container *ngFor="let section of navSections; let sectionIndex = index">
-        <div class="nav-section-title" *ngIf="section.title">{{ section.title }}</div>
-        <mat-divider *ngIf="sectionIndex > 0 && !section.title"></mat-divider>
-        <a mat-list-item *ngFor="let item of section.items" [routerLink]="item.route" routerLinkActive="active-link"
-          [routerLinkActiveOptions]="{ exact: false }">
-          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label }}</span>
-        </a>
-      </ng-container>
-    </mat-nav-list>
-
-    <div class="sidenav-footer">
-      <div class="footer-app-name">{{ appName }}™</div>
-      <div class="footer-app-copyright">{{ copyrightText }}</div>
-      <div class="footer-app-version">{{ appVersion }}</div>
+    <div class="sidebar-foot">
+      <div class="user">
+        <div class="avatar">SA</div>
+        <div class="min-w-0">
+          <div class="user-name truncate">Super Administrador</div>
+          <div class="user-role truncate">Acceso total</div>
+        </div>
+      </div>
+      <button type="button" class="logout" (click)="logout()">Cerrar sesión</button>
+      <div class="meta">
+        <div>{{ copyrightText }}</div>
+        <div class="version">{{ appVersion }}</div>
+      </div>
     </div>
-  </mat-sidenav>
+  </aside>
 
-  <!-- ── Main content ── -->
-  <mat-sidenav-content class="main-content">
-    <mat-toolbar class="app-toolbar" color="primary">
-      <span class="toolbar-title">POSTEK Sentinel</span>
-      <span class="spacer"></span>
-      <span class="toolbar-env-badge">PROTOTYPE</span>
-    </mat-toolbar>
+  <div class="main">
+    <header class="topbar">
+      <button type="button" class="burger" (click)="toggleSidebar()" aria-label="Menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke-width="2" />
+        </svg>
+      </button>
+      <div class="topbar-title">
+        <span class="topbar-icon" aria-hidden="true">
+          @switch (pageIcon()) {
+            @case ('dashboard') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+              </svg>
+            }
+            @case ('devices') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="7" y="2" width="10" height="20" rx="2" />
+                <path d="M11 18h2" />
+              </svg>
+            }
+            @case ('map') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M9 3 3 5v16l6-2 6 2 6-2V3l-6 2-6-2Z" />
+                <path d="M9 3v16M15 5v16" />
+              </svg>
+            }
+            @case ('catalog') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M4 5h7v14H4zM13 5h7v6h-7zM13 13h7v6h-7z" />
+              </svg>
+            }
+            @case ('orders') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M7 3h10v18H7z" />
+                <path d="M10 7h4M10 11h4M10 15h3" />
+              </svg>
+            }
+            @case ('receiving') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M4 7h16v12H4z" />
+                <path d="M8 7V5h8v2M12 11v5M9.5 14.5 12 17l2.5-2.5" />
+              </svg>
+            }
+            @case ('inventory') {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 7 12 3l9 4v10l-9 4-9-4V7Z" />
+                <path d="M12 12v9M3 7l9 5 9-5" />
+              </svg>
+            }
+            @case ('merchants') {
+              <span class="mi">storefront</span>
+            }
+          }
+        </span>
+        <span>{{ pageTitle() }}</span>
+      </div>
+      <span class="env-badge">PROTOTYPE</span>
+    </header>
 
-    <div class="page-content">
+    <main class="page">
       <router-outlet></router-outlet>
-    </div>
-  </mat-sidenav-content>
-
-</mat-sidenav-container>
+    </main>
+  </div>
+</div>

@@ -5,7 +5,6 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
-import { ShellComponent } from './layout/shell/shell.component';
 
 @NgModule({
   declarations: [App],
@@ -14,7 +13,6 @@ import { ShellComponent } from './layout/shell/shell.component';
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
-    ShellComponent,
   ],
   providers: [
     provideBrowserGlobalErrorListeners(),

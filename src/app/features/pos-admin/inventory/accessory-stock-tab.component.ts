@@ -1,13 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 
 import { AccessoryCatalogItem, AccessoryMovement } from '../../../core/models/pos-admin';
@@ -25,21 +18,16 @@ interface StockRow {
 @Component({
   selector: 'app-accessory-stock-tab',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatButtonModule, MatIconModule, MatTableModule, EmptyStateComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent],
   templateUrl: './accessory-stock-tab.component.html',
   styleUrl: './accessory-stock-tab.component.css',
 })
 export class AccessoryStockTabComponent implements OnInit {
   accessories: AccessoryCatalogItem[] = [];
   stockRows: StockRow[] = [];
-  stockColumns = ['type', 'category', 'currentStock', 'minStock', 'alert'];
 
   movements: AccessoryMovement[] = [];
   filteredMovements: AccessoryMovement[] = [];
-  movementColumns = ['date', 'accessoryType', 'movementType', 'quantity', 'merchantName', 'executiveName', 'zone'];
 
   private fb = inject(FormBuilder);
 
@@ -86,13 +74,29 @@ export class AccessoryStockTabComponent implements OnInit {
   applyFilters(): void {
     const f = this.filterForm.getRawValue();
     const cutoff = this.periodCutoff(f.period ?? 'all');
-    this.filteredMovements = this.movements.filter(m =>
-      (!f.accessoryId || m.accessoryId === f.accessoryId) &&
-      (!f.merchant || (m.merchantName ?? '').toLowerCase().includes(f.merchant.toLowerCase())) &&
-      (!f.executive || (m.executiveName ?? '').toLowerCase().includes(f.executive.toLowerCase())) &&
-      (!f.zone || (m.zone ?? '').toLowerCase().includes(f.zone.toLowerCase())) &&
-      (!cutoff || m.date >= cutoff),
+    this.filteredMovements = this.movements.filter(
+      m =>
+        (!f.accessoryId || m.accessoryId === f.accessoryId) &&
+        (!f.merchant || (m.merchantName ?? '').toLowerCase().includes(f.merchant.toLowerCase())) &&
+        (!f.executive || (m.executiveName ?? '').toLowerCase().includes(f.executive.toLowerCase())) &&
+        (!f.zone || (m.zone ?? '').toLowerCase().includes(f.zone.toLowerCase())) &&
+        (!cutoff || m.date >= cutoff),
     );
+  }
+
+  clearFilters(): void {
+    this.filterForm.reset({
+      accessoryId: '',
+      merchant: '',
+      executive: '',
+      zone: '',
+      period: 'all',
+    });
+  }
+
+  get hasActiveFilters(): boolean {
+    const f = this.filterForm.getRawValue();
+    return !!(f.accessoryId || f.merchant || f.executive || f.zone || (f.period && f.period !== 'all'));
   }
 
   get totalConsumption(): number {
@@ -100,6 +104,11 @@ export class AccessoryStockTabComponent implements OnInit {
   }
 
   openRegisterDialog(): void {
-    this.dialog.open(RegisterMovementDialogComponent, { width: '520px', data: { accessories: this.accessories } });
+    this.dialog.open(RegisterMovementDialogComponent, {
+      width: '520px',
+      maxWidth: '94vw',
+      panelClass: 'cf-dialog-panel',
+      data: { accessories: this.accessories },
+    });
   }
 }

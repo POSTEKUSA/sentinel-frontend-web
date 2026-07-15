@@ -1,70 +1,68 @@
 <div class="admin-page">
-
-  <div class="admin-page-header">
+  <header class="cf-head">
     <div>
-      <h1 class="admin-page-title">
-        <mat-icon>receipt_long</mat-icon>
-        {{ isNew ? 'Nueva orden de compra' : ('Orden ' + order?.orderNumber) }}
-      </h1>
-      <p class="admin-page-subtitle">
+      @if (!isNew && order) {
+        <p class="entity-name">Orden {{ order.orderNumber }}</p>
+      }
+      <p class="count">
         @if (isNew) {
           Registra una nueva orden de compra de POS, accesorios y consumibles
         } @else if (order) {
-          <span class="status-chip" [ngClass]="'chip-blue'">{{ statusLabels[order.status] }}</span>
-          · Creada por {{ order.createdBy }} el {{ order.createdAt | date:'medium' }}
+          <span class="cf-badge cf-badge-info"><span class="dot"></span>{{ statusLabels[order.status] }}</span>
+          · Creada por {{ order.createdBy }} el {{ order.createdAt | date: 'medium' }}
         }
       </p>
     </div>
-    <div class="admin-header-actions">
-      <a mat-button [routerLink]="['/pos-admin/purchase-orders']">
-        <mat-icon>arrow_back</mat-icon> Volver al listado
-      </a>
+    <div class="head-actions">
+      <a class="btn-secondary" [routerLink]="['/pos-admin/purchase-orders']">Volver al listado</a>
       @if (!isNew && order) {
-        <button mat-stroked-button color="primary" (click)="goToReceiving()">
-          <mat-icon>move_to_inbox</mat-icon> Registrar recepción
-        </button>
+        <button type="button" class="btn-primary" (click)="goToReceiving()">Registrar recepción</button>
+      }
+      @if (isNew) {
+        <button type="button" class="btn-primary" [disabled]="form.invalid" (click)="save()">Crear orden de compra</button>
       }
     </div>
-  </div>
+  </header>
 
   @if (!isNew && !order) {
-    <mat-card class="admin-card">
-      <mat-card-content>
+    <div class="panel">
+      <div class="panel-body">
         <p>No se encontró la orden de compra solicitada.</p>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   } @else {
-
-    <mat-card class="admin-card">
-      <mat-card-content>
-        <form [formGroup]="form" class="po-header-grid">
-          <mat-form-field appearance="outline">
-            <mat-label>Proveedor</mat-label>
-            <mat-select formControlName="supplierId" (selectionChange)="onSupplierChange($event.value)">
+    <div class="panel">
+      <div class="panel-head">Encabezado de la orden</div>
+      <div class="panel-body">
+        <form [formGroup]="form" class="cf-form-grid po-header-grid">
+          <div class="field">
+            <label for="supplierId">Proveedor</label>
+            <select id="supplierId" formControlName="supplierId" (change)="onSupplierChange($any($event.target).value)">
+              <option value="">Seleccionar…</option>
               @for (s of suppliers; track s.id) {
-                <mat-option [value]="s.id">{{ s.name }}</mat-option>
+                <option [value]="s.id">{{ s.name }}</option>
               }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Fecha de orden</mat-label>
-            <input matInput [matDatepicker]="orderDatePicker" formControlName="orderDate">
-            <mat-datepicker-toggle matIconSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #orderDatePicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Fecha estimada de recepción</mat-label>
-            <input matInput [matDatepicker]="estDatePicker" formControlName="estimatedReceiptDate">
-            <mat-datepicker-toggle matIconSuffix [for]="estDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #estDatePicker></mat-datepicker>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Lugar de entrega</mat-label>
-            <input matInput formControlName="deliveryLocation" placeholder="Almacén Central Managua...">
-          </mat-form-field>
+            </select>
+          </div>
+          <div class="field">
+            <label for="orderDate">Fecha de orden</label>
+            <input id="orderDate" type="date" formControlName="orderDate" />
+          </div>
+          <div class="field">
+            <label for="estimatedReceiptDate">Fecha estimada de recepción</label>
+            <input id="estimatedReceiptDate" type="date" formControlName="estimatedReceiptDate" />
+          </div>
+          <div class="field">
+            <label for="deliveryLocation">Lugar de entrega</label>
+            <input id="deliveryLocation" formControlName="deliveryLocation" placeholder="Almacén Central Managua…" />
+          </div>
         </form>
+      </div>
+    </div>
 
-        <h3 class="lines-title">Líneas de la orden</h3>
+    <div class="panel">
+      <div class="panel-head">Líneas de la orden</div>
+      <div class="panel-body">
         <div class="lines-table" [formGroup]="form">
           <div class="lines-header">
             <span>Tipo</span><span>Marca</span><span>Modelo</span><span>Cant. solicitada</span><span>Cant. recibida</span><span>Precio unit.</span><span></span>
@@ -72,55 +70,42 @@
           <div formArrayName="lines">
             @for (line of lines.controls; track line; let i = $index) {
               <div class="line-row" [formGroupName]="i">
-                <mat-form-field appearance="outline" class="dense-field">
-                  <mat-select formControlName="itemType" (selectionChange)="onItemTypeChange(i)">
-                    <mat-option value="pos">POS</mat-option>
-                    <mat-option value="accessory">Accesorio</mat-option>
-                  </mat-select>
-                </mat-form-field>
+                <select class="cf-input" formControlName="itemType" (change)="onItemTypeChange(i)">
+                  <option value="pos">POS</option>
+                  <option value="accessory">Accesorio</option>
+                </select>
                 @if (line.get('itemType')?.value === 'pos') {
-                  <mat-form-field appearance="outline" class="dense-field">
-                    <mat-select formControlName="brand" (selectionChange)="onPosBrandChange(i)" placeholder="Marca">
-                      @for (b of posBrands(); track b) {
-                        <mat-option [value]="b">{{ b }}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="dense-field">
-                    <mat-select formControlName="model" placeholder="Modelo">
-                      @for (m of posModels(line.get('brand')?.value); track m) {
-                        <mat-option [value]="m">{{ m }}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
+                  <select class="cf-input" formControlName="brand" (change)="onPosBrandChange(i)">
+                    <option value="">Marca…</option>
+                    @for (b of posBrands(); track b) {
+                      <option [value]="b">{{ b }}</option>
+                    }
+                  </select>
+                  <select class="cf-input" formControlName="model">
+                    <option value="">Modelo…</option>
+                    @for (m of posModels(line.get('brand')?.value); track m) {
+                      <option [value]="m">{{ m }}</option>
+                    }
+                  </select>
                 } @else {
-                  <mat-form-field appearance="outline" class="dense-field">
-                    <input matInput formControlName="brand" readonly placeholder="Marca">
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="dense-field">
-                    <mat-select
-                      [value]="accessoryIdForLine(line.get('brand')?.value, line.get('model')?.value)"
-                      (selectionChange)="onAccessoryChange(i, $event.value)"
-                      [disabled]="!isNew"
-                      placeholder="Accesorio / consumible">
-                      @for (a of accessories; track a.id) {
-                        <mat-option [value]="a.id">{{ a.type }}</mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
+                  <input class="cf-input" formControlName="brand" readonly placeholder="Marca" />
+                  <select
+                    class="cf-input"
+                    [value]="accessoryIdForLine(line.get('brand')?.value, line.get('model')?.value)"
+                    (change)="onAccessoryChange(i, $any($event.target).value)"
+                    [disabled]="!isNew">
+                    <option value="">Accesorio / consumible…</option>
+                    @for (a of accessories; track a.id) {
+                      <option [value]="a.id">{{ a.type }}</option>
+                    }
+                  </select>
                 }
-                <mat-form-field appearance="outline" class="dense-field">
-                  <input matInput type="number" min="1" formControlName="requestedQty">
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="dense-field">
-                  <input matInput type="number" formControlName="receivedQty" readonly>
-                </mat-form-field>
-                <mat-form-field appearance="outline" class="dense-field">
-                  <input matInput type="number" min="0" step="0.01" formControlName="unitPrice">
-                </mat-form-field>
+                <input class="cf-input" type="number" min="1" formControlName="requestedQty" />
+                <input class="cf-input" type="number" formControlName="receivedQty" readonly />
+                <input class="cf-input" type="number" min="0" step="0.01" formControlName="unitPrice" />
                 @if (isNew) {
-                  <button mat-icon-button type="button" matTooltip="Quitar línea" (click)="removeLine(i)" [disabled]="lines.length <= 1">
-                    <mat-icon>close</mat-icon>
+                  <button type="button" class="cf-icon-btn danger" title="Quitar línea" (click)="removeLine(i)" [disabled]="lines.length <= 1">
+                    <span class="mi">close</span>
                   </button>
                 } @else {
                   <span></span>
@@ -131,32 +116,27 @@
         </div>
 
         @if (isNew) {
-          <button mat-button type="button" (click)="addLine()">
-            <mat-icon>add</mat-icon> Agregar línea
+          <button type="button" class="btn-ghost add-line-btn" (click)="addLine()">
+            <span class="mi">add</span>
+            Agregar línea
           </button>
         }
 
-        <div class="form-actions">
-          @if (isNew) {
-            <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">
-              <mat-icon>save</mat-icon> Crear orden de compra
-            </button>
-          } @else if (order) {
-            <div class="status-actions">
-              <span class="status-actions-label">Cambiar estado:</span>
-              @if (canTransitionTo('in_transit')) {
-                <button mat-stroked-button (click)="changeStatus('in_transit')">Marcar en tránsito</button>
-              }
-              @if (canTransitionTo('cancelled')) {
-                <button mat-stroked-button color="warn" (click)="changeStatus('cancelled')">Cancelar orden</button>
-              }
-              @if (canTransitionTo('closed')) {
-                <button mat-stroked-button color="primary" (click)="changeStatus('closed')">Cerrar orden</button>
-              }
-            </div>
-          }
-        </div>
-      </mat-card-content>
-    </mat-card>
+        @if (!isNew && order) {
+          <div class="status-actions">
+            <span class="status-actions-label">Cambiar estado:</span>
+            @if (canTransitionTo('in_transit')) {
+              <button type="button" class="btn-secondary" (click)="changeStatus('in_transit')">Marcar en tránsito</button>
+            }
+            @if (canTransitionTo('cancelled')) {
+              <button type="button" class="btn-secondary" (click)="changeStatus('cancelled')">Cancelar orden</button>
+            }
+            @if (canTransitionTo('closed')) {
+              <button type="button" class="btn-secondary" (click)="changeStatus('closed')">Cerrar orden</button>
+            }
+          </div>
+        }
+      </div>
+    </div>
   }
 </div>

@@ -1,4 +1,4 @@
-.dashboard-wrapper {
+﻿.dashboard-wrapper {
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -39,7 +39,7 @@
   color: #94a3b8;
 }
 
-.data-freshness mat-icon {
+.data-freshness .mi {
   font-size: 16px;
   width: 16px;
   height: 16px;
@@ -84,8 +84,8 @@
   border: 1px solid #a5d6a7;
 }
 
-.mock-badge mat-icon,
-.real-badge mat-icon {
+.mock-badge .mi,
+.real-badge .mi {
   font-size: 14px;
   width: 14px;
   height: 14px;
@@ -107,11 +107,11 @@
   margin-bottom: 20px;
 }
 
-.kpi-card mat-card-content {
+.kpi-card {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 20px !important;
+  padding: 20px;
 }
 
 .kpi-icon {
@@ -140,8 +140,14 @@
 }
 
 .kpi-total {
-  color: #455a64;
-  border-left: 4px solid #607d8b;
+  color: var(--brand);
+  border-left: 4px solid var(--brand);
+}
+
+.kpi-total .kpi-value,
+.kpi-total .kpi-label,
+.kpi-total .kpi-icon {
+  color: var(--brand);
 }
 
 .kpi-online {
@@ -212,7 +218,7 @@
   background: transparent;
 }
 
-/* Match mat-card surface — Material table defaults to white */
+/* Match mat-card surface ΓÇö Material table defaults to white */
 .dashboard-data-table {
   --mat-table-row-item-outline-color: transparent;
 }
@@ -240,7 +246,7 @@
   font-size: 13px;
 }
 
-/* Sin líneas horizontales entre filas */
+/* Sin l├¡neas horizontales entre filas */
 .dashboard-data-table .mat-mdc-header-cell,
 .dashboard-data-table .mat-mdc-cell,
 .dashboard-data-table .mdc-data-table__header-cell,
@@ -325,7 +331,7 @@
   flex-direction: column;
 }
 
-.attention-card mat-card-title mat-icon {
+.attention-card mat-card-title .mi {
   color: #e65100;
 }
 
@@ -389,7 +395,7 @@
   color: #2e7d32;
 }
 
-.all-clear mat-icon {
+.all-clear .mi {
   font-size: 40px;
   width: 40px;
   height: 40px;
@@ -458,3 +464,139 @@
   min-height: 0;
 }
 
+
+/* ── Cobra adaptations (no Material) ── */
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #e4e7eb;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.panel.dashboard-panel-card {
+  background: #fff;
+  border: 1px solid #e4e7eb;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e4e7eb;
+}
+
+.panel-head.warn .mi { color: #e65100; }
+.panel-head .mi { color: #0a5fa5; font-size: 20px; }
+.panel-head-title { display: flex; align-items: center; gap: 8px; }
+
+.dash-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+}
+
+.dash-table thead th {
+  text-align: left;
+  padding: 11px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  background: #f8fafc;
+  border-bottom: 1px solid #e4e7eb;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.dash-table tbody td {
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #1a1a2e;
+  border-bottom: none;
+  background: transparent;
+}
+
+.dash-table .breakdown-row:hover td,
+.dash-table .attention-table-row:hover td {
+  background: rgba(10, 95, 165, 0.06);
+}
+
+.attention-table .alias-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.attention-table .device-icon {
+  font-size: 20px;
+  color: rgba(0,0,0,0.4);
+}
+
+.attention-table .alias-name { font-weight: 500; font-size: 14px; }
+.attention-table .alias-id { font-size: 11px; color: rgba(0,0,0,0.45); font-family: 'JetBrains Mono', monospace; }
+
+.row-action, .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #0a5fa5;
+  cursor: pointer;
+  text-decoration: none;
+}
+.row-action:hover, .icon-btn:hover {
+  background: #e8f3fa;
+}
+
+.map-card-header {
+  justify-content: space-between;
+}
+
+.breakdown-table-wrap,
+.attention-card-content,
+.map-card-content {
+  flex: 1;
+  min-height: 0;
+}
+
+.map-card-content {
+  padding: 8px 12px 16px;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-card-content app-dashboard-mini-map {
+  flex: 1;
+  min-height: 220px;
+}
+
+.loading-center {
+  position: relative;
+  min-height: 280px;
+  padding: 0;
+}
+
+.page-title .mi,
+.data-freshness .mi {
+  color: #0a5fa5;
+}
+
+.breakdown-link {
+  color: #0a5fa5;
+}

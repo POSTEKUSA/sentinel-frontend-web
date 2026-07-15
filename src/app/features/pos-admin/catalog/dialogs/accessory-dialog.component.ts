@@ -2,10 +2,6 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 import { AccessoryCatalogItem, AccessoryCategory, CatalogStatus } from '../../../../core/models/pos-admin';
 import { PosCatalogService } from '../../../../core/services/pos-admin/pos-catalog.service';
 
@@ -16,51 +12,55 @@ export interface AccessoryDialogData {
 @Component({
   selector: 'app-accessory-dialog',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule],
   template: `
-    <h2 mat-dialog-title>{{ data.item ? 'Editar' : 'Nuevo' }} accesorio / consumible</h2>
-    <mat-dialog-content class="admin-form-dialog">
-      <form [formGroup]="form" class="admin-form-grid">
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Tipo de accesorio/consumible</mat-label>
-          <input matInput formControlName="type" placeholder="Rollo de papel térmico, batería...">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Categoría</mat-label>
-          <mat-select formControlName="category">
-            <mat-option value="accessory">Accesorio</mat-option>
-            <mat-option value="consumable">Consumible</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Estado</mat-label>
-          <mat-select formControlName="status">
-            <mat-option value="active">Activo</mat-option>
-            <mat-option value="obsolete">Obsoleto</mat-option>
-            <mat-option value="discontinued">Descontinuado</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Marca/modelo compatible</mat-label>
-          <input matInput formControlName="compatibleBrandModel" placeholder="Universal, PAX A920...">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Unidad de medida</mat-label>
-          <input matInput formControlName="unitOfMeasure" placeholder="Unidad, rollo, caja...">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Stock mínimo</mat-label>
-          <input matInput type="number" min="0" formControlName="minStock">
-        </mat-form-field>
+    <div class="cf-modal">
+      <div class="modal-head">
+        <span class="modal-title">{{ data.item ? 'Editar accesorio' : 'Nuevo registro' }}</span>
+        <button type="button" class="modal-close" aria-label="Cerrar" (click)="dialogRef.close()">&times;</button>
+      </div>
+      <form [formGroup]="form" class="modal-body" (ngSubmit)="save()">
+        <div class="field">
+          <label for="type">Tipo de accesorio/consumible</label>
+          <input id="type" formControlName="type" placeholder="Rollo de papel térmico…" autocomplete="off" />
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="category">Categoría</label>
+            <select id="category" formControlName="category">
+              <option value="accessory">Accesorio</option>
+              <option value="consumable">Consumible</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="status">Estado</label>
+            <select id="status" formControlName="status">
+              <option value="active">Activo</option>
+              <option value="obsolete">Obsoleto</option>
+              <option value="discontinued">Descontinuado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="compatibleBrandModel">Marca/modelo compatible</label>
+            <input id="compatibleBrandModel" formControlName="compatibleBrandModel" placeholder="Universal…" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="unitOfMeasure">Unidad de medida</label>
+            <input id="unitOfMeasure" formControlName="unitOfMeasure" placeholder="Unidad, rollo…" autocomplete="off" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="minStock">Stock mínimo</label>
+          <input id="minStock" type="number" min="0" formControlName="minStock" inputmode="numeric" />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="dialogRef.close()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ data.item ? 'Guardar' : 'Crear' }}
+          </button>
+        </div>
       </form>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="dialogRef.close()">Cancelar</button>
-      <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">Guardar</button>
-    </mat-dialog-actions>
+    </div>
   `,
 })
 export class AccessoryDialogComponent {

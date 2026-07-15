@@ -184,9 +184,8 @@
 </div>
 
 <!-- Loading -->
-<div *ngIf="loading" class="loading-center">
-  <mat-spinner diameter="40"></mat-spinner>
-  <p>Loading device…</p>
+<div *ngIf="loading" class="relative min-h-[280px]">
+  <app-busy-loader [show]="true" [inline]="true"></app-busy-loader>
 </div>
 
 <!-- Not found -->

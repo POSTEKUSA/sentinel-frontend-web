@@ -1,31 +1,51 @@
-.tab-body {
-  padding-top: 16px;
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .location-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
   cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s;
-  border: 2px solid transparent;
+  font: inherit;
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .location-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: rgba(10, 95, 165, 0.35);
+  box-shadow: 0 4px 12px rgba(10, 95, 165, 0.08);
 }
 
 .location-card.expanded-card {
-  border-color: #1976d2;
+  border-color: var(--brand);
+  background: var(--brand-soft);
 }
 
-.location-card .admin-kpi-icon {
-  color: #1976d2;
+.location-icon {
+  font-size: 28px;
+  color: var(--brand);
 }
 
-.detail-title {
+.panel-head {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 15px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
   font-weight: 600;
-  margin: 0 0 12px;
-  color: #334155;
+  color: var(--ink);
+}
+
+.panel-head .mi {
+  color: var(--brand);
 }

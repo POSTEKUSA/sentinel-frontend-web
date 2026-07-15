@@ -2,16 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { PurchaseOrder, PURCHASE_ORDER_STATUS_LABELS } from '../../../core/models/pos-admin';
 import { PurchaseOrderService } from '../../../core/services/pos-admin/purchase-order.service';
@@ -20,11 +10,7 @@ import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.com
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, RouterModule, MatTableModule, MatCardModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule,
-    MatDatepickerModule, MatNativeDateModule, MatTooltipModule, EmptyStateComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, EmptyStateComponent],
   templateUrl: './purchase-order-list.component.html',
   styleUrl: './purchase-order-list.component.css',
 })
@@ -34,8 +20,6 @@ export class PurchaseOrderListComponent implements OnInit {
 
   all: PurchaseOrder[] = [];
   filtered: PurchaseOrder[] = [];
-
-  columns = ['orderNumber', 'supplierName', 'orderDate', 'items', 'progress', 'status', 'deliveryLocation', 'actions'];
 
   private fb = inject(FormBuilder);
 
@@ -66,13 +50,26 @@ export class PurchaseOrderListComponent implements OnInit {
       const matchesStatus = !f.status || po.status === f.status;
       const matchesBrand = !f.brand || po.lines.some(l => l.brand.toLowerCase().includes(f.brand!.toLowerCase()));
       const matchesModel = !f.model || po.lines.some(l => l.model.toLowerCase().includes(f.model!.toLowerCase()));
-      const matchesLocation = !f.deliveryLocation || po.deliveryLocation.toLowerCase().includes(f.deliveryLocation.toLowerCase());
+      const matchesLocation =
+        !f.deliveryLocation || po.deliveryLocation.toLowerCase().includes(f.deliveryLocation.toLowerCase());
       return matchesOrderNumber && matchesSupplier && matchesStatus && matchesBrand && matchesModel && matchesLocation;
     });
   }
 
   clearFilters(): void {
-    this.filterForm.reset({ orderNumber: '', supplierName: '', status: '', brand: '', model: '', deliveryLocation: '' });
+    this.filterForm.reset({
+      orderNumber: '',
+      supplierName: '',
+      status: '',
+      brand: '',
+      model: '',
+      deliveryLocation: '',
+    });
+  }
+
+  get hasActiveFilters(): boolean {
+    const f = this.filterForm.getRawValue();
+    return !!(f.orderNumber || f.supplierName || f.status || f.brand || f.model || f.deliveryLocation);
   }
 
   totalRequested(po: PurchaseOrder): number {
@@ -88,15 +85,22 @@ export class PurchaseOrderListComponent implements OnInit {
     return requested === 0 ? 0 : Math.round((this.totalReceived(po) / requested) * 100);
   }
 
-  statusChipClass(status: string): string {
+  statusBadgeClass(status: string): string {
     switch (status) {
-      case 'created': return 'chip-grey';
-      case 'in_transit': return 'chip-blue';
-      case 'partially_received': return 'chip-orange';
-      case 'received': return 'chip-green';
-      case 'cancelled': return 'chip-red';
-      case 'closed': return 'chip-purple';
-      default: return 'chip-grey';
+      case 'created':
+        return 'cf-badge-muted';
+      case 'in_transit':
+        return 'cf-badge-info';
+      case 'partially_received':
+        return 'cf-badge-warn';
+      case 'received':
+        return 'cf-badge-ok';
+      case 'cancelled':
+        return 'cf-badge-off';
+      case 'closed':
+        return 'cf-badge-info';
+      default:
+        return 'cf-badge-muted';
     }
   }
 }

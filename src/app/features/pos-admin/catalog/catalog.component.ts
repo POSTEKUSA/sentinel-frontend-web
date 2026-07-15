@@ -1,21 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { combineLatest } from 'rxjs';
 
 import {
-  AccessoryCatalogItem, ACCESSORY_CATEGORY_LABELS,
-  CATALOG_STATUS_LABELS, PosCatalogItem, Supplier,
+  AccessoryCatalogItem,
+  ACCESSORY_CATEGORY_LABELS,
+  CATALOG_STATUS_LABELS,
+  PosCatalogItem,
+  Supplier,
 } from '../../../core/models/pos-admin';
 import { PosCatalogService } from '../../../core/services/pos-admin/pos-catalog.service';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
@@ -27,17 +21,15 @@ import { AccessoryDialogComponent } from './dialogs/accessory-dialog.component';
 @Component({
   selector: 'app-pos-catalog',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatTabsModule, MatTableModule, MatButtonModule,
-    MatIconModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule,
-    MatTooltipModule, EmptyStateComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.css',
 })
 export class CatalogComponent implements OnInit {
   statusLabels: Record<string, string> = CATALOG_STATUS_LABELS;
   categoryLabels: Record<string, string> = ACCESSORY_CATEGORY_LABELS;
+  activeTab: 'brands' | 'suppliers' | 'accessories' = 'brands';
+  openMenuId: string | null = null;
 
   brandModelSearch = new FormControl('');
   supplierSearch = new FormControl('');
@@ -51,14 +43,20 @@ export class CatalogComponent implements OnInit {
   filteredSuppliers: Supplier[] = [];
   filteredAccessories: AccessoryCatalogItem[] = [];
 
-  catalogColumns = ['brand', 'model', 'posType', 'status', 'createdAt', 'actions'];
-  supplierColumns = ['name', 'country', 'contact', 'brands', 'status', 'actions'];
-  accessoryColumns = ['type', 'category', 'compatibleBrandModel', 'unitOfMeasure', 'minStock', 'status', 'actions'];
-
   constructor(
     private catalogSvc: PosCatalogService,
     private dialog: MatDialog,
   ) {}
+
+  @HostListener('document:click')
+  closeMenus(): void {
+    this.openMenuId = null;
+  }
+
+  toggleMenu(id: string, event: Event): void {
+    event.stopPropagation();
+    this.openMenuId = this.openMenuId === id ? null : id;
+  }
 
   ngOnInit(): void {
     combineLatest([this.catalogSvc.catalog$]).subscribe(([items]) => {
@@ -82,14 +80,22 @@ export class CatalogComponent implements OnInit {
   private applyBrandModelFilter(): void {
     const q = (this.brandModelSearch.value ?? '').toLowerCase().trim();
     this.filteredCatalog = this.allCatalog.filter(
-      c => !q || c.brand.toLowerCase().includes(q) || c.model.toLowerCase().includes(q) || c.posType.toLowerCase().includes(q),
+      c =>
+        !q ||
+        c.brand.toLowerCase().includes(q) ||
+        c.model.toLowerCase().includes(q) ||
+        c.posType.toLowerCase().includes(q),
     );
   }
 
   private applySupplierFilter(): void {
     const q = (this.supplierSearch.value ?? '').toLowerCase().trim();
     this.filteredSuppliers = this.allSuppliers.filter(
-      s => !q || s.name.toLowerCase().includes(q) || s.suppliedBrands.some(b => b.toLowerCase().includes(q)) || s.suppliedModels.some(m => m.toLowerCase().includes(q)),
+      s =>
+        !q ||
+        s.name.toLowerCase().includes(q) ||
+        s.suppliedBrands.some(b => b.toLowerCase().includes(q)) ||
+        s.suppliedModels.some(m => m.toLowerCase().includes(q)),
     );
   }
 
@@ -100,27 +106,41 @@ export class CatalogComponent implements OnInit {
     );
   }
 
-  // ── Marcas / Modelos ──
   openBrandModelDialog(item?: PosCatalogItem): void {
-    this.dialog.open(BrandModelDialogComponent, { width: '520px', data: { item } });
+    this.dialog.open(BrandModelDialogComponent, {
+      width: '520px',
+      maxWidth: '94vw',
+      panelClass: 'cf-dialog-panel',
+      data: { item },
+    });
   }
 
   deleteBrandModel(item: PosCatalogItem): void {
-    this.confirmDelete(`¿Eliminar "${item.brand} ${item.model}" del catálogo?`, () => this.catalogSvc.deleteCatalogItem(item.id));
+    this.confirmDelete(`¿Eliminar "${item.brand} ${item.model}" del catálogo?`, () =>
+      this.catalogSvc.deleteCatalogItem(item.id),
+    );
   }
 
-  // ── Proveedores ──
   openSupplierDialog(item?: Supplier): void {
-    this.dialog.open(SupplierDialogComponent, { width: '560px', data: { item } });
+    this.dialog.open(SupplierDialogComponent, {
+      width: '560px',
+      maxWidth: '94vw',
+      panelClass: 'cf-dialog-panel',
+      data: { item },
+    });
   }
 
   deleteSupplier(item: Supplier): void {
     this.confirmDelete(`¿Eliminar al proveedor "${item.name}"?`, () => this.catalogSvc.deleteSupplier(item.id));
   }
 
-  // ── Accesorios ──
   openAccessoryDialog(item?: AccessoryCatalogItem): void {
-    this.dialog.open(AccessoryDialogComponent, { width: '520px', data: { item } });
+    this.dialog.open(AccessoryDialogComponent, {
+      width: '520px',
+      maxWidth: '94vw',
+      panelClass: 'cf-dialog-panel',
+      data: { item },
+    });
   }
 
   deleteAccessory(item: AccessoryCatalogItem): void {
@@ -129,20 +149,28 @@ export class CatalogComponent implements OnInit {
 
   private confirmDelete(message: string, onConfirm: () => void): void {
     this.dialog
-      .open(ConfirmDialogComponent, { width: '420px', data: { title: 'Confirmar eliminación', message, danger: true, confirmLabel: 'Eliminar' } })
+      .open(ConfirmDialogComponent, {
+        width: '420px',
+        panelClass: 'cf-dialog-panel',
+        data: { title: 'Confirmar eliminación', message, danger: true, confirmLabel: 'Eliminar' },
+      })
       .afterClosed()
       .subscribe(confirmed => {
         if (confirmed) onConfirm();
       });
   }
 
-  statusChipClass(status: string): string {
+  statusBadgeClass(status: string): string {
     switch (status) {
-      case 'active': return 'chip-green';
-      case 'obsolete': return 'chip-orange';
-      case 'discontinued': return 'chip-red';
-      case 'inactive': return 'chip-red';
-      default: return 'chip-grey';
+      case 'active':
+        return 'cf-badge-ok';
+      case 'obsolete':
+        return 'cf-badge-warn';
+      case 'discontinued':
+      case 'inactive':
+        return 'cf-badge-off';
+      default:
+        return 'cf-badge-muted';
     }
   }
 }

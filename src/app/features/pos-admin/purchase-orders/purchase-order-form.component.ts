@@ -2,17 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatTableModule } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatChipsModule } from '@angular/material/chips';
 
 import {
   AccessoryCatalogItem,
@@ -28,11 +17,7 @@ import { PosCatalogService } from '../../../core/services/pos-admin/pos-catalog.
 @Component({
   selector: 'app-purchase-order-form',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatFormFieldModule,
-    MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatDatepickerModule,
-    MatNativeDateModule, MatTableModule, MatTooltipModule, MatChipsModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './purchase-order-form.component.html',
   styleUrl: './purchase-order-form.component.css',
 })
@@ -52,8 +37,8 @@ export class PurchaseOrderFormComponent implements OnInit {
   form = this.fb.group({
     supplierId: ['', Validators.required],
     supplierName: [''],
-    orderDate: [new Date(), Validators.required],
-    estimatedReceiptDate: [new Date(), Validators.required],
+    orderDate: [this.toDateInput(new Date()), Validators.required],
+    estimatedReceiptDate: [this.toDateInput(new Date()), Validators.required],
     deliveryLocation: ['', Validators.required],
     lines: this.fb.array([this.buildLineGroup()]),
   });
@@ -66,6 +51,11 @@ export class PurchaseOrderFormComponent implements OnInit {
 
   get lines(): FormArray {
     return this.form.get('lines') as FormArray;
+  }
+
+  private toDateInput(d: Date | string): string {
+    const date = typeof d === 'string' ? new Date(d) : d;
+    return date.toISOString().slice(0, 10);
   }
 
   ngOnInit(): void {
@@ -92,8 +82,8 @@ export class PurchaseOrderFormComponent implements OnInit {
         this.form.patchValue({
           supplierId: this.order.supplierId,
           supplierName: this.order.supplierName,
-          orderDate: new Date(this.order.orderDate),
-          estimatedReceiptDate: new Date(this.order.estimatedReceiptDate),
+          orderDate: this.toDateInput(this.order.orderDate),
+          estimatedReceiptDate: this.toDateInput(this.order.estimatedReceiptDate),
           deliveryLocation: this.order.deliveryLocation,
         });
         this.form.get('supplierId')?.disable();
@@ -128,7 +118,6 @@ export class PurchaseOrderFormComponent implements OnInit {
   onSupplierChange(supplierId: string): void {
     this.selectedSupplier = this.suppliers.find(s => s.id === supplierId);
     this.form.patchValue({ supplierName: this.selectedSupplier?.name ?? '' });
-    // Reset POS lines so brand/model stay within supplier catalog
     this.lines.controls.forEach(line => {
       if (line.get('itemType')?.value === 'pos') {
         line.patchValue({ brand: '', model: '' });
@@ -165,9 +154,8 @@ export class PurchaseOrderFormComponent implements OnInit {
   onAccessoryChange(index: number, accessoryId: string): void {
     const acc = this.accessories.find(a => a.id === accessoryId);
     if (!acc) return;
-    const brand = acc.compatibleBrandModel === 'Universal'
-      ? 'Universal'
-      : acc.compatibleBrandModel.split(' ')[0];
+    const brand =
+      acc.compatibleBrandModel === 'Universal' ? 'Universal' : acc.compatibleBrandModel.split(' ')[0];
     this.lines.at(index).patchValue({ brand, model: acc.type });
   }
 

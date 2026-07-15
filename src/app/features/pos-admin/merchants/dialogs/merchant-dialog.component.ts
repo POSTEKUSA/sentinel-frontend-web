@@ -2,10 +2,6 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 
 import { Merchant, MerchantStatus } from '../../../../core/models/pos-admin';
 import { MerchantService } from '../../../../core/services/pos-admin/merchant.service';
@@ -17,59 +13,69 @@ export interface MerchantDialogData {
 @Component({
   selector: 'app-merchant-dialog',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule],
   template: `
-    <h2 mat-dialog-title>{{ data.item ? 'Editar' : 'Nuevo' }} comercio/afiliado</h2>
-    <mat-dialog-content class="admin-form-dialog">
-      <form [formGroup]="form" class="admin-form-grid">
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Código de afiliado</mat-label>
-          <input matInput formControlName="affiliateCode">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Nombre comercial</mat-label>
-          <input matInput formControlName="tradeName">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>MCC</mat-label>
-          <input matInput formControlName="mcc" placeholder="5411">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Categoría (MCC)</mat-label>
-          <input matInput formControlName="mccDescription" placeholder="Supermercados">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Departamento</mat-label>
-          <input matInput formControlName="department">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Municipio</mat-label>
-          <input matInput formControlName="municipality">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Dirección</mat-label>
-          <input matInput formControlName="address">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Estado</mat-label>
-          <mat-select formControlName="status">
-            <mat-option value="active">Activo</mat-option>
-            <mat-option value="inactive">Inactivo</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Técnico/ejecutivo responsable</mat-label>
-          <input matInput formControlName="responsibleName">
-        </mat-form-field>
+    <div class="cf-modal">
+      <div class="modal-head">
+        <span class="modal-title">{{ data.item ? 'Editar comercio' : 'Nuevo registro' }}</span>
+        <button type="button" class="modal-close" aria-label="Cerrar" (click)="dialogRef.close()">&times;</button>
+      </div>
+
+      <form [formGroup]="form" class="modal-body" (ngSubmit)="save()">
+        <div class="grid-2">
+          <div class="field">
+            <label for="affiliateCode">Código de afiliado</label>
+            <input id="affiliateCode" formControlName="affiliateCode" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="field">
+            <label for="tradeName">Nombre comercial</label>
+            <input id="tradeName" formControlName="tradeName" autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label for="mcc">MCC</label>
+            <input id="mcc" formControlName="mcc" placeholder="5411…" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="field">
+            <label for="mccDescription">Categoría (MCC)</label>
+            <input id="mccDescription" formControlName="mccDescription" placeholder="Supermercados…" />
+          </div>
+          <div class="field">
+            <label for="department">Departamento</label>
+            <input id="department" formControlName="department" />
+          </div>
+          <div class="field">
+            <label for="municipality">Municipio</label>
+            <input id="municipality" formControlName="municipality" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="address">Dirección</label>
+          <input id="address" formControlName="address" autocomplete="street-address" />
+        </div>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="status">Estado</label>
+            <select id="status" formControlName="status">
+              <option value="active">Activo</option>
+              <option value="inactive">Inactivo</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="responsibleName">Técnico/ejecutivo responsable</label>
+            <input id="responsibleName" formControlName="responsibleName" autocomplete="name" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="dialogRef.close()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ data.item ? 'Guardar' : 'Crear' }}
+          </button>
+        </div>
       </form>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="dialogRef.close()">Cancelar</button>
-      <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">Guardar</button>
-    </mat-dialog-actions>
+    </div>
   `,
 })
 export class MerchantDialogComponent {

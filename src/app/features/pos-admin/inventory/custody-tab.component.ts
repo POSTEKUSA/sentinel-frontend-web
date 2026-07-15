@@ -1,14 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 
 import { CustodyAssignment, CUSTODY_ROLE_LABELS } from '../../../core/models/pos-admin';
@@ -19,11 +11,7 @@ import { CustodyAssignDialogComponent } from './dialogs/custody-assign-dialog.co
 @Component({
   selector: 'app-custody-tab',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatButtonModule, MatIconModule, MatTableModule, MatTooltipModule,
-    EmptyStateComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent],
   templateUrl: './custody-tab.component.html',
   styleUrl: './custody-tab.component.css',
 })
@@ -32,7 +20,6 @@ export class CustodyTabComponent implements OnInit {
 
   all: CustodyAssignment[] = [];
   filtered: CustodyAssignment[] = [];
-  columns = ['userName', 'role', 'serialNumber', 'assignedAt', 'status', 'actions'];
 
   private fb = inject(FormBuilder);
 
@@ -57,16 +44,31 @@ export class CustodyTabComponent implements OnInit {
 
   applyFilters(): void {
     const f = this.filterForm.getRawValue();
-    this.filtered = this.all.filter(a =>
-      (!f.userName || a.userName.toLowerCase().includes(f.userName.toLowerCase())) &&
-      (!f.role || a.role === f.role) &&
-      (!f.status || a.status === f.status),
+    this.filtered = this.all.filter(
+      a =>
+        (!f.userName || a.userName.toLowerCase().includes(f.userName.toLowerCase())) &&
+        (!f.role || a.role === f.role) &&
+        (!f.status || a.status === f.status),
     );
+  }
+
+  clearFilters(): void {
+    this.filterForm.reset({ userName: '', role: '', status: 'active' });
+  }
+
+  get hasActiveFilters(): boolean {
+    const f = this.filterForm.getRawValue();
+    return !!(f.userName || f.role || (f.status && f.status !== 'active'));
   }
 
   openAssignDialog(): void {
     const availableUnits = this.inventorySvc.units.filter(u => u.status === 'in_stock');
-    this.dialog.open(CustodyAssignDialogComponent, { width: '520px', data: { availableUnits } });
+    this.dialog.open(CustodyAssignDialogComponent, {
+      width: '520px',
+      maxWidth: '94vw',
+      panelClass: 'cf-dialog-panel',
+      data: { availableUnits },
+    });
   }
 
   returnUnit(assignment: CustodyAssignment): void {

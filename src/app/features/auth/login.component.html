@@ -1,0 +1,131 @@
+<app-busy-loader [show]="loaderVisible"></app-busy-loader>
+
+<div class="login-page">
+  <div class="glow one" aria-hidden="true"></div>
+  <div class="glow two" aria-hidden="true"></div>
+
+  <div class="login-card">
+    <div class="brand">
+      <div class="logo-stage">
+        <img
+          #logoImg
+          src="logo-postek.png"
+          width="46"
+          height="46"
+          alt="POSTEK"
+          class="logo"
+          (click)="spinLogo()" />
+      </div>
+      <h1 translate="no">{{ appName }}</h1>
+      <p class="lead">Inicia sesión en tu cuenta</p>
+    </div>
+
+    <form class="form" (ngSubmit)="onSubmit()" autocomplete="on">
+      <div class="field">
+        <label class="cf-label" for="email">Correo electrónico</label>
+        <div class="input-wrap">
+          <span class="mi input-icon" aria-hidden="true">mail</span>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            class="cf-input has-icon"
+            placeholder="correo@ejemplo.com"
+            [(ngModel)]="email"
+            autocomplete="email"
+            spellcheck="false"
+            autofocus
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="cf-label" for="password">Contraseña</label>
+        <div class="input-wrap">
+          <span class="mi input-icon" aria-hidden="true">lock</span>
+          <input
+            id="password"
+            name="password"
+            [type]="showPassword ? 'text' : 'password'"
+            class="cf-input has-icon has-toggle"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePassword()"
+            [attr.aria-label]="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+            <span class="mi">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary submit" [disabled]="submitting()">
+        {{ submitting() ? 'Ingresando…' : 'Ingresar' }}
+      </button>
+
+      <p class="demo-hint">
+        <strong>Modo demo</strong>: puedes iniciar sesión con <strong>cualquier correo</strong> y
+        <strong>cualquier contraseña</strong>.
+      </p>
+    </form>
+  </div>
+
+  <footer class="page-footer">
+    <strong>
+      <a href="#" (click)="openPrivacy($event)">Política de Privacidad</a>
+    </strong>
+    <div class="footer-meta">
+      <div>{{ copyrightText }}</div>
+      <div class="version">{{ appVersion }}</div>
+    </div>
+  </footer>
+</div>
+
+@if (privacyOpen()) {
+  <div class="pp-backdrop open" (click)="closePrivacy()" role="presentation">
+    <div
+      class="pp-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Política de Privacidad"
+      (click)="$event.stopPropagation()">
+      <div class="pp-head">
+        <div class="pp-head-left">
+          <img src="logo-postek.png" width="32" height="32" alt="" aria-hidden="true" />
+          <span class="pp-head-title">Política de Privacidad</span>
+        </div>
+        <button type="button" class="pp-close" aria-label="Cerrar" (click)="closePrivacy()">&times;</button>
+      </div>
+      <div class="pp-body">
+        <p class="pp-date">Última actualización: 01 de marzo de 2022</p>
+        <p>
+          Esta Política de privacidad describe nuestras políticas y procedimientos sobre la
+          recopilación, el uso y la divulgación de su información cuando utiliza el Servicio
+          POSTEK SENTINEL, y le informa sobre sus derechos de privacidad.
+        </p>
+        <p>
+          Usamos sus datos personales para proporcionar y mejorar el Servicio. Al usar el Servicio,
+          acepta la recopilación y el uso de información de acuerdo con esta Política de privacidad.
+        </p>
+        <h2>Datos que recopilamos</h2>
+        <p>
+          Podemos solicitar información de identificación personal como correo electrónico y
+          datos de uso del sistema (dirección IP, tipo de navegador, páginas visitadas).
+        </p>
+        <h2>Uso de la información</h2>
+        <p>
+          La Compañía utiliza los datos para operar el Servicio, administrar su cuenta, cumplir
+          obligaciones legales y mejorar la experiencia de monitoreo POS.
+        </p>
+        <h2>Contacto</h2>
+        <p>
+          Si tiene preguntas sobre esta Política de privacidad, puede contactarnos en
+          <strong>info&#64;postekusa.com</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+}

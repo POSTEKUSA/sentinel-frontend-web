@@ -1,83 +1,75 @@
-<div class="tab-body">
-
-  <div class="tab-toolbar">
-    <form [formGroup]="filterForm" class="admin-filter-row inline-filter">
-      <mat-form-field appearance="outline" class="admin-filter-field">
-        <mat-label>Usuario responsable</mat-label>
-        <input matInput formControlName="userName">
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="admin-filter-field">
-        <mat-label>Rol</mat-label>
-        <mat-select formControlName="role">
-          <mat-option value="">Todos</mat-option>
-          <mat-option value="technician">Técnico</mat-option>
-          <mat-option value="executive">Ejecutivo</mat-option>
-          <mat-option value="operator">Operador</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="admin-filter-field">
-        <mat-label>Estado</mat-label>
-        <mat-select formControlName="status">
-          <mat-option value="">Todos</mat-option>
-          <mat-option value="active">En resguardo</mat-option>
-          <mat-option value="returned">Devuelto</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </form>
-    <button mat-raised-button color="primary" (click)="openAssignDialog()">
-      <mat-icon>person_add</mat-icon> Asignar en resguardo
+<div class="panel toolbar-panel">
+  <form [formGroup]="filterForm" class="toolbar">
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" formControlName="userName" placeholder="Buscar usuario responsable…" autocomplete="off" spellcheck="false" />
+    </label>
+    <select class="cf-input filter-input" formControlName="role">
+      <option value="">Todos los roles</option>
+      <option value="technician">Técnico</option>
+      <option value="executive">Ejecutivo</option>
+      <option value="operator">Operador</option>
+    </select>
+    <select class="cf-input filter-input" formControlName="status">
+      <option value="">Todos</option>
+      <option value="active">En resguardo</option>
+      <option value="returned">Devuelto</option>
+    </select>
+    <button
+      type="button"
+      [class]="hasActiveFilters ? 'btn-primary' : 'btn-secondary'"
+      (click)="clearFilters()">
+      <span class="mi">filter_alt_off</span>
+      Limpiar
     </button>
-  </div>
+  </form>
+</div>
 
-  <mat-card class="admin-card">
-    @if (filtered.length === 0) {
-      <app-empty-state icon="badge" title="Sin asignaciones" subtitle="No hay equipos en resguardo que coincidan con la búsqueda."></app-empty-state>
-    } @else {
-      <div class="admin-table-wrap">
-        <table mat-table [dataSource]="filtered" class="admin-table">
-          <ng-container matColumnDef="userName">
-            <th mat-header-cell *matHeaderCellDef>Usuario responsable</th>
-            <td mat-cell *matCellDef="let a"><strong>{{ a.userName }}</strong></td>
-          </ng-container>
-          <ng-container matColumnDef="role">
-            <th mat-header-cell *matHeaderCellDef>Rol</th>
-            <td mat-cell *matCellDef="let a">{{ roleLabels[a.role] }}</td>
-          </ng-container>
-          <ng-container matColumnDef="serialNumber">
-            <th mat-header-cell *matHeaderCellDef>Equipo</th>
-            <td mat-cell *matCellDef="let a">{{ a.serialNumber }}<br><small>{{ a.brand }} {{ a.model }}</small></td>
-          </ng-container>
-          <ng-container matColumnDef="assignedAt">
-            <th mat-header-cell *matHeaderCellDef>Fecha asignación</th>
-            <td mat-cell *matCellDef="let a">
-              {{ a.assignedAt | date:'mediumDate' }}
-              @if (a.returnedAt) {
-                <br><small>Devuelto: {{ a.returnedAt | date:'mediumDate' }}</small>
-              }
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="status">
-            <th mat-header-cell *matHeaderCellDef>Estado</th>
-            <td mat-cell *matCellDef="let a">
-              <span class="status-chip" [ngClass]="a.status === 'active' ? 'chip-purple' : 'chip-grey'">
-                {{ a.status === 'active' ? 'En resguardo' : 'Devuelto' }}
-              </span>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef></th>
-            <td mat-cell *matCellDef="let a">
-              @if (a.status === 'active') {
-                <button mat-stroked-button matTooltip="Registrar devolución" (click)="returnUnit(a)">
-                  <mat-icon>assignment_return</mat-icon> Devolver
-                </button>
-              }
-            </td>
-          </ng-container>
-          <tr mat-header-row *matHeaderRowDef="columns"></tr>
-          <tr mat-row *matRowDef="let row; columns: columns;"></tr>
-        </table>
-      </div>
-    }
-  </mat-card>
+<div class="panel">
+  @if (filtered.length === 0) {
+    <app-empty-state navIcon="inventory" title="Sin asignaciones" subtitle="No hay equipos en resguardo que coincidan con la búsqueda."></app-empty-state>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>Usuario responsable</th>
+            <th>Rol</th>
+            <th>Equipo</th>
+            <th>Fecha asignación</th>
+            <th>Estado</th>
+            <th class="th-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of filtered; track a.id) {
+            <tr>
+              <td class="td-name">{{ a.userName }}</td>
+              <td>{{ roleLabels[a.role] }}</td>
+              <td>
+                <div class="code">{{ a.serialNumber }}</div>
+                <div class="td-sub">{{ a.brand }} {{ a.model }}</div>
+              </td>
+              <td>
+                <div>{{ a.assignedAt | date:'mediumDate' }}</div>
+                @if (a.returnedAt) {
+                  <div class="td-sub">Devuelto: {{ a.returnedAt | date:'mediumDate' }}</div>
+                }
+              </td>
+              <td>
+                <span class="cf-badge" [ngClass]="a.status === 'active' ? 'cf-badge-info' : 'cf-badge-muted'">
+                  <span class="dot"></span>{{ a.status === 'active' ? 'En resguardo' : 'Devuelto' }}
+                </span>
+              </td>
+              <td>
+                @if (a.status === 'active') {
+                  <button type="button" class="btn-ghost" (click)="returnUnit(a)">Devolver</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </div>

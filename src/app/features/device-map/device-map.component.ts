@@ -13,7 +13,7 @@ import { takeUntil } from 'rxjs/operators';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-
+import { BusyLoaderComponent } from '../../shared/busy-loader/busy-loader.component';
 import * as L from 'leaflet';
 
 import { TelemetryService } from '../../core/services/telemetry.service';
@@ -95,6 +95,7 @@ function createUserMarkerIcon(): L.DivIcon {
     MatCardModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    BusyLoaderComponent,
   ],
   templateUrl: './device-map.component.html',
   styleUrl: './device-map.component.css',

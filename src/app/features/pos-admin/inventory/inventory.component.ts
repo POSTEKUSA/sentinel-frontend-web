@@ -1,7 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatIconModule } from '@angular/material/icon';
 
 import { CentralInventoryTabComponent } from './central-inventory-tab.component';
 import { ByLocationTabComponent } from './by-location-tab.component';
@@ -12,10 +10,26 @@ import { AccessoryStockTabComponent } from './accessory-stock-tab.component';
   selector: 'app-inventory',
   standalone: true,
   imports: [
-    CommonModule, MatTabsModule, MatIconModule,
-    CentralInventoryTabComponent, ByLocationTabComponent, CustodyTabComponent, AccessoryStockTabComponent,
+    CommonModule,
+    CentralInventoryTabComponent,
+    ByLocationTabComponent,
+    CustodyTabComponent,
+    AccessoryStockTabComponent,
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css',
 })
-export class InventoryComponent {}
+export class InventoryComponent {
+  activeTab: 'central' | 'location' | 'custody' | 'accessories' = 'central';
+
+  @ViewChild(CustodyTabComponent) custodyTab?: CustodyTabComponent;
+  @ViewChild(AccessoryStockTabComponent) accessoryTab?: AccessoryStockTabComponent;
+
+  openCustodyAssign(): void {
+    this.custodyTab?.openAssignDialog();
+  }
+
+  openAccessoryMovement(): void {
+    this.accessoryTab?.openRegisterDialog();
+  }
+}

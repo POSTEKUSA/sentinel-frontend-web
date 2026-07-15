@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 
 import { PosLocationType, PosUnit, POS_LOCATION_LABELS } from '../../../core/models/pos-admin';
 import { PosInventoryService } from '../../../core/services/pos-admin/pos-inventory.service';
@@ -22,7 +19,7 @@ const LOCATION_ICONS: Record<PosLocationType, string> = {
 @Component({
   selector: 'app-by-location-tab',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatTableModule],
+  imports: [CommonModule],
   templateUrl: './by-location-tab.component.html',
   styleUrl: './by-location-tab.component.css',
 })
@@ -33,7 +30,6 @@ export class ByLocationTabComponent implements OnInit {
   units: PosUnit[] = [];
   counts: { locationType: PosLocationType; label: string; count: number }[] = [];
   expanded: PosLocationType | null = null;
-  detailColumns = ['serialNumber', 'brand', 'model', 'locationLabel', 'receivedAt'];
 
   constructor(private inventorySvc: PosInventoryService) {}
 
@@ -42,10 +38,6 @@ export class ByLocationTabComponent implements OnInit {
       this.units = units;
       this.counts = this.inventorySvc.countByLocation();
     });
-  }
-
-  totalUnits(): number {
-    return this.units.length;
   }
 
   toggle(locationType: PosLocationType): void {

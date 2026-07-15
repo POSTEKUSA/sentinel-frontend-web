@@ -2,274 +2,226 @@
 
   <div class="page-header">
     <div class="header-left">
-      <h1 class="page-title">
-        <mat-icon>dashboard</mat-icon>
-        Dashboard
-      </h1>
       @if (isMockMode) {
         <span class="mock-badge">
-          <mat-icon>science</mat-icon> Mock Data
+          <span class="mi">science</span> Mock Data
         </span>
       } @else {
         <span class="real-badge">
-          <mat-icon>cloud</mat-icon> Real Data
+          <span class="mi">cloud</span> Real Data
         </span>
       }
     </div>
     <p class="page-subtitle">Fleet overview and devices that need attention</p>
     @if (lastUpdatedAt) {
       <p class="data-freshness">
-        <mat-icon>update</mat-icon>
+        <span class="mi">update</span>
         Data updated {{ lastUpdatedLabel }} · refreshes every 30s
       </p>
     }
   </div>
 
   @if (loading) {
-    <div class="loading-center">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading fleet data…</p>
+    <div class="loading-center relative">
+      <app-busy-loader [show]="true" [inline]="true"></app-busy-loader>
     </div>
   } @else {
 
     <section class="kpi-grid" aria-label="Fleet status summary">
       <a class="kpi-card-link" [routerLink]="['/device-list']" [queryParams]="{}">
-        <mat-card class="kpi-card kpi-total kpi-clickable">
-          <mat-card-content>
-            <mat-icon class="kpi-icon">devices</mat-icon>
-            <div class="kpi-body">
-              <span class="kpi-value">{{ devices.length }}</span>
-              <span class="kpi-label">Total devices</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
+        <div class="kpi-card kpi-total kpi-clickable">
+          <span class="mi kpi-icon">apps</span>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ devices.length }}</span>
+            <span class="kpi-label">Total devices</span>
+          </div>
+        </div>
       </a>
 
       <a class="kpi-card-link" [routerLink]="['/device-list']" [queryParams]="{ status: 'online' }">
-        <mat-card class="kpi-card kpi-online kpi-clickable">
-          <mat-card-content>
-            <mat-icon class="kpi-icon">check_circle</mat-icon>
-            <div class="kpi-body">
-              <span class="kpi-value">{{ countByStatus('online') }}</span>
-              <span class="kpi-label">Online ({{ statusPercent('online') }}%)</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
+        <div class="kpi-card kpi-online kpi-clickable">
+          <span class="mi kpi-icon">check_circle</span>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ countByStatus('online') }}</span>
+            <span class="kpi-label">Online ({{ statusPercent('online') }}%)</span>
+          </div>
+        </div>
       </a>
 
       <a class="kpi-card-link" [routerLink]="['/device-list']" [queryParams]="{ status: 'delayed' }">
-        <mat-card class="kpi-card kpi-delayed kpi-clickable">
-          <mat-card-content>
-            <mat-icon class="kpi-icon">schedule</mat-icon>
-            <div class="kpi-body">
-              <span class="kpi-value">{{ countByStatus('delayed') }}</span>
-              <span class="kpi-label">Delayed ({{ statusPercent('delayed') }}%)</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
+        <div class="kpi-card kpi-delayed kpi-clickable">
+          <span class="mi kpi-icon">schedule</span>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ countByStatus('delayed') }}</span>
+            <span class="kpi-label">Delayed ({{ statusPercent('delayed') }}%)</span>
+          </div>
+        </div>
       </a>
 
       <a class="kpi-card-link" [routerLink]="['/device-list']" [queryParams]="{ status: 'offline' }">
-        <mat-card class="kpi-card kpi-offline kpi-clickable">
-          <mat-card-content>
-            <mat-icon class="kpi-icon">error_outline</mat-icon>
-            <div class="kpi-body">
-              <span class="kpi-value">{{ countByStatus('offline') }}</span>
-              <span class="kpi-label">Offline ({{ statusPercent('offline') }}%)</span>
-            </div>
-          </mat-card-content>
-        </mat-card>
+        <div class="kpi-card kpi-offline kpi-clickable">
+          <span class="mi kpi-icon">error_outline</span>
+          <div class="kpi-body">
+            <span class="kpi-value">{{ countByStatus('offline') }}</span>
+            <span class="kpi-label">Offline ({{ statusPercent('offline') }}%)</span>
+          </div>
+        </div>
       </a>
     </section>
 
     <section class="dashboard-panels-grid">
-      <mat-card class="dashboard-panel-card breakdown-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>corporate_fare</mat-icon>
-            By Tenant
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="breakdown-table-wrap">
-          <table mat-table [dataSource]="tenantBreakdown" class="breakdown-table dashboard-data-table">
-            <ng-container matColumnDef="groupId">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let row">
-                <a
-                  class="breakdown-link"
-                  [routerLink]="['/device-list']"
-                  [queryParams]="{ tenant: row.groupId }">
-                  {{ row.groupId }}
-                </a>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="online">
-              <th mat-header-cell *matHeaderCellDef>Online</th>
-              <td mat-cell *matCellDef="let row" class="cell-online">
-                {{ row.online }} ({{ groupStatusPercent(row, 'online') }}%)
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="delayed">
-              <th mat-header-cell *matHeaderCellDef>Delayed</th>
-              <td mat-cell *matCellDef="let row" class="cell-delayed">
-                {{ row.delayed }} ({{ groupStatusPercent(row, 'delayed') }}%)
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="offline">
-              <th mat-header-cell *matHeaderCellDef>Offline</th>
-              <td mat-cell *matCellDef="let row" class="cell-offline">
-                {{ row.offline }} ({{ groupStatusPercent(row, 'offline') }}%)
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="total">
-              <th mat-header-cell *matHeaderCellDef>Total</th>
-              <td mat-cell *matCellDef="let row" class="cell-total">{{ row.total }}</td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="breakdownColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: breakdownColumns;" class="breakdown-row"></tr>
+      <div class="dashboard-panel-card breakdown-card panel">
+        <div class="panel-head">
+          <span class="mi">corporate_fare</span>
+          By Tenant
+        </div>
+        <div class="breakdown-table-wrap">
+          <table class="breakdown-table dash-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Online</th>
+                <th>Delayed</th>
+                <th>Offline</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of tenantBreakdown; track row.groupId) {
+                <tr class="breakdown-row">
+                  <td>
+                    <a class="breakdown-link" [routerLink]="['/device-list']" [queryParams]="{ tenant: row.groupId }">
+                      {{ row.groupId }}
+                    </a>
+                  </td>
+                  <td class="cell-online">{{ row.online }} ({{ groupStatusPercent(row, 'online') }}%)</td>
+                  <td class="cell-delayed">{{ row.delayed }} ({{ groupStatusPercent(row, 'delayed') }}%)</td>
+                  <td class="cell-offline">{{ row.offline }} ({{ groupStatusPercent(row, 'offline') }}%)</td>
+                  <td class="cell-total">{{ row.total }}</td>
+                </tr>
+              }
+            </tbody>
           </table>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
 
-      <mat-card class="dashboard-panel-card breakdown-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>storefront</mat-icon>
-            By Merchant
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="breakdown-table-wrap">
-          <table mat-table [dataSource]="merchantBreakdown" class="breakdown-table dashboard-data-table">
-            <ng-container matColumnDef="groupId">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td mat-cell *matCellDef="let row">
-                <a
-                  class="breakdown-link"
-                  [routerLink]="['/device-list']"
-                  [queryParams]="{ merchant: row.groupId }">
-                  {{ row.groupId }}
-                </a>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="online">
-              <th mat-header-cell *matHeaderCellDef>Online</th>
-              <td mat-cell *matCellDef="let row" class="cell-online">
-                {{ row.online }} ({{ groupStatusPercent(row, 'online') }}%)
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="delayed">
-              <th mat-header-cell *matHeaderCellDef>Delayed</th>
-              <td mat-cell *matCellDef="let row" class="cell-delayed">
-                {{ row.delayed }} ({{ groupStatusPercent(row, 'delayed') }}%)
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="offline">
-              <th mat-header-cell *matHeaderCellDef>Offline</th>
-              <td mat-cell *matCellDef="let row" class="cell-offline">
-                {{ row.offline }} ({{ groupStatusPercent(row, 'offline') }}%)
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="total">
-              <th mat-header-cell *matHeaderCellDef>Total</th>
-              <td mat-cell *matCellDef="let row" class="cell-total">{{ row.total }}</td>
-            </ng-container>
-            <tr mat-header-row *matHeaderRowDef="breakdownColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: breakdownColumns;" class="breakdown-row"></tr>
+      <div class="dashboard-panel-card breakdown-card panel">
+        <div class="panel-head">
+          <span class="mi">storefront</span>
+          By Merchant
+        </div>
+        <div class="breakdown-table-wrap">
+          <table class="breakdown-table dash-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Online</th>
+                <th>Delayed</th>
+                <th>Offline</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of merchantBreakdown; track row.groupId) {
+                <tr class="breakdown-row">
+                  <td>
+                    <a class="breakdown-link" [routerLink]="['/device-list']" [queryParams]="{ merchant: row.groupId }">
+                      {{ row.groupId }}
+                    </a>
+                  </td>
+                  <td class="cell-online">{{ row.online }} ({{ groupStatusPercent(row, 'online') }}%)</td>
+                  <td class="cell-delayed">{{ row.delayed }} ({{ groupStatusPercent(row, 'delayed') }}%)</td>
+                  <td class="cell-offline">{{ row.offline }} ({{ groupStatusPercent(row, 'offline') }}%)</td>
+                  <td class="cell-total">{{ row.total }}</td>
+                </tr>
+              }
+            </tbody>
           </table>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
 
-      <mat-card class="dashboard-panel-card attention-card">
-        <mat-card-header>
-          <mat-card-title>
-            <mat-icon>warning_amber</mat-icon>
-            <span>
-              Needs Attention
-              <span class="panel-title-hint">{{ attentionPanelHint }}</span>
-            </span>
-          </mat-card-title>
-        </mat-card-header>
-
-        <mat-card-content class="attention-card-content">
+      <div class="dashboard-panel-card attention-card panel">
+        <div class="panel-head warn">
+          <span class="mi">warning_amber</span>
+          <span>
+            Needs Attention
+            <span class="panel-title-hint">{{ attentionPanelHint }}</span>
+          </span>
+        </div>
+        <div class="attention-card-content">
           @if (attentionDevices.length === 0) {
             <div class="all-clear">
-              <mat-icon>verified</mat-icon>
+              <span class="mi">verified</span>
               <p>All devices are online. No action required.</p>
             </div>
           } @else {
             <div class="attention-table-wrap">
-              <table mat-table [dataSource]="attentionDevices" class="attention-table dashboard-data-table">
-                <ng-container matColumnDef="alias">
-                  <th mat-header-cell *matHeaderCellDef>Device</th>
-                  <td mat-cell *matCellDef="let d">
-                    <div class="alias-cell">
-                      <mat-icon class="device-icon">smartphone</mat-icon>
-                      <div>
-                        <div class="alias-name">{{ d.metadata.alias }}</div>
-                        <div class="alias-id">{{ d.metadata.deviceId }}</div>
-                      </div>
-                    </div>
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="battery">
-                  <th mat-header-cell *matHeaderCellDef>Battery</th>
-                  <td mat-cell *matCellDef="let d">
-                    <app-battery-indicator
-                      [level]="d.health.batteryLevel"
-                      [charging]="d.health.batteryCharging">
-                    </app-battery-indicator>
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="lastSeen">
-                  <th mat-header-cell *matHeaderCellDef>Last Seen</th>
-                  <td mat-cell *matCellDef="let d" [matTooltip]="d.lastHeartbeat">
-                    {{ statusSvc.formatRelative(d.lastHeartbeat) }}
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Status</th>
-                  <td mat-cell *matCellDef="let d">
-                    <app-status-badge [status]="d.status"></app-status-badge>
-                  </td>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef></th>
-                  <td mat-cell *matCellDef="let d">
-                    <a
-                      mat-icon-button
-                      [routerLink]="['/device-info', d.metadata.deviceId]"
-                      matTooltip="View details">
-                      <mat-icon>chevron_right</mat-icon>
-                    </a>
-                  </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="attentionColumns; sticky: true"></tr>
-                <tr mat-row *matRowDef="let row; columns: attentionColumns;" class="attention-table-row"></tr>
+              <table class="attention-table dash-table">
+                <thead>
+                  <tr>
+                    <th>Device</th>
+                    <th>Battery</th>
+                    <th>Last Seen</th>
+                    <th>Status</th>
+                    <th class="th-actions">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (d of attentionDevices; track d.metadata.deviceId) {
+                    <tr class="attention-table-row">
+                      <td>
+                        <div class="alias-cell">
+                          <span class="mi device-icon">smartphone</span>
+                          <div>
+                            <div class="alias-name">{{ d.metadata.alias }}</div>
+                            <div class="alias-id">{{ d.metadata.deviceId }}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <app-battery-indicator
+                          [level]="d.health.batteryLevel"
+                          [charging]="d.health.batteryCharging">
+                        </app-battery-indicator>
+                      </td>
+                      <td [title]="d.lastHeartbeat">{{ statusSvc.formatRelative(d.lastHeartbeat) }}</td>
+                      <td><app-status-badge [status]="d.status"></app-status-badge></td>
+                      <td>
+                        <a
+                          class="row-action"
+                          [routerLink]="['/device-info', d.metadata.deviceId]"
+                          title="View details"
+                          aria-label="View details">
+                          <span class="mi">chevron_right</span>
+                        </a>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
               </table>
             </div>
           }
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
 
-      <mat-card class="dashboard-panel-card map-card">
-        <mat-card-header class="map-card-header">
-          <mat-card-title>
-            <mat-icon>map</mat-icon>
+      <div class="dashboard-panel-card map-card panel">
+        <div class="panel-head map-card-header">
+          <div class="panel-head-title">
+            <span class="mi">map</span>
             <span>
               Needs Attention Map
               <span class="panel-title-hint">{{ attentionPanelHint }}</span>
             </span>
-          </mat-card-title>
+          </div>
           <button
-            mat-icon-button
             type="button"
-            matTooltip="Maximize map"
+            class="icon-btn"
             aria-label="Maximize map"
             (click)="openMapMaximized()">
-            <mat-icon>fullscreen</mat-icon>
+            <span class="mi">fullscreen</span>
           </button>
-        </mat-card-header>
-        <mat-card-content class="map-card-content">
+        </div>
+        <div class="map-card-content">
           <app-dashboard-mini-map
             mapElementId="dashboard-attention-map"
             [devices]="attentionDevices"
@@ -277,12 +229,11 @@
             [showExpandControl]="true"
             (expandRequested)="openMapMaximized()">
           </app-dashboard-mini-map>
-        </mat-card-content>
-      </mat-card>
+        </div>
+      </div>
     </section>
 
   }
-
 </div>
 
 @if (mapMaximized) {
@@ -295,19 +246,18 @@
     <div class="map-maximized-panel" (click)="$event.stopPropagation()">
       <div class="map-maximized-toolbar">
         <span class="map-maximized-title">
-          <mat-icon>map</mat-icon>
+          <span class="mi">map</span>
           <span>
             Needs Attention Map
             <span class="panel-title-hint">{{ attentionPanelHint }}</span>
           </span>
         </span>
         <button
-          mat-icon-button
           type="button"
+          class="icon-btn"
           aria-label="Close maximized map"
-          matTooltip="Close"
           (click)="closeMapMaximized()">
-          <mat-icon>close</mat-icon>
+          <span class="mi">close</span>
         </button>
       </div>
       <div class="map-maximized-body">

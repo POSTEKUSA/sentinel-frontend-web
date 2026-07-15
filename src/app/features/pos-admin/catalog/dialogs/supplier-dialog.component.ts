@@ -2,11 +2,6 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
 import { Supplier, SupplierStatus } from '../../../../core/models/pos-admin';
 import { PosCatalogService } from '../../../../core/services/pos-admin/pos-catalog.service';
 
@@ -17,55 +12,59 @@ export interface SupplierDialogData {
 @Component({
   selector: 'app-supplier-dialog',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, MatDialogModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule],
   template: `
-    <h2 mat-dialog-title>{{ data.item ? 'Editar' : 'Nuevo' }} proveedor</h2>
-    <mat-dialog-content class="admin-form-dialog">
-      <form [formGroup]="form" class="admin-form-grid">
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Nombre del proveedor</mat-label>
-          <input matInput formControlName="name">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>País</mat-label>
-          <input matInput formControlName="country">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Estado</mat-label>
-          <mat-select formControlName="status">
-            <mat-option value="active">Activo</mat-option>
-            <mat-option value="inactive">Inactivo</mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Contacto</mat-label>
-          <input matInput formControlName="contactName">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field" appearance="outline">
-          <mat-label>Teléfono</mat-label>
-          <input matInput formControlName="phone">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Correo</mat-label>
-          <input matInput formControlName="email" type="email">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Marcas suministradas (separadas por coma)</mat-label>
-          <input matInput formControlName="suppliedBrandsText" placeholder="PAX, Sunmi">
-        </mat-form-field>
-        <mat-form-field class="admin-form-field full-width" appearance="outline">
-          <mat-label>Modelos suministrados (separados por coma)</mat-label>
-          <input matInput formControlName="suppliedModelsText" placeholder="PAX A920, Sunmi V2 Pro">
-        </mat-form-field>
+    <div class="cf-modal">
+      <div class="modal-head">
+        <span class="modal-title">{{ data.item ? 'Editar proveedor' : 'Nuevo registro' }}</span>
+        <button type="button" class="modal-close" aria-label="Cerrar" (click)="dialogRef.close()">&times;</button>
+      </div>
+      <form [formGroup]="form" class="modal-body" (ngSubmit)="save()">
+        <div class="field">
+          <label for="name">Nombre del proveedor</label>
+          <input id="name" formControlName="name" autocomplete="organization" />
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="country">País</label>
+            <input id="country" formControlName="country" autocomplete="country-name" />
+          </div>
+          <div class="field">
+            <label for="status">Estado</label>
+            <select id="status" formControlName="status">
+              <option value="active">Activo</option>
+              <option value="inactive">Inactivo</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="contactName">Contacto</label>
+            <input id="contactName" formControlName="contactName" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="phone">Teléfono</label>
+            <input id="phone" formControlName="phone" type="tel" autocomplete="tel" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="email">Correo</label>
+          <input id="email" formControlName="email" type="email" autocomplete="email" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="suppliedBrandsText">Marcas suministradas (separadas por coma)</label>
+          <input id="suppliedBrandsText" formControlName="suppliedBrandsText" placeholder="PAX, Sunmi…" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="suppliedModelsText">Modelos suministrados (separados por coma)</label>
+          <input id="suppliedModelsText" formControlName="suppliedModelsText" placeholder="PAX A920…" autocomplete="off" />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="dialogRef.close()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="form.invalid">
+            {{ data.item ? 'Guardar' : 'Crear' }}
+          </button>
+        </div>
       </form>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-      <button mat-button (click)="dialogRef.close()">Cancelar</button>
-      <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">Guardar</button>
-    </mat-dialog-actions>
+    </div>
   `,
 })
 export class SupplierDialogComponent {
@@ -86,7 +85,10 @@ export class SupplierDialogComponent {
   });
 
   private toList(text: string | null | undefined): string[] {
-    return (text ?? '').split(',').map(s => s.trim()).filter(Boolean);
+    return (text ?? '')
+      .split(',')
+      .map(s => s.trim())
+      .filter(Boolean);
   }
 
   save(): void {

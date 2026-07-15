@@ -7,6 +7,7 @@ import { Injectable } from '@angular/core';
  */
 @Injectable({ providedIn: 'root' })
 export class CurrentUserService {
-  readonly username = 'admin.sentinel';
-  readonly displayName = 'Administrador Sentinel';
+  readonly username = 'superadmin';
+  readonly displayName = 'Super Administrador';
+  readonly initials = 'SA';
 }

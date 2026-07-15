@@ -1,218 +1,211 @@
 <div class="admin-page">
-
-  <div class="admin-page-header">
+  <header class="cf-head">
     <div>
-      <h1 class="admin-page-title">
-        <mat-icon>move_to_inbox</mat-icon>
-        Recepción de Equipos
-      </h1>
-      <p class="admin-page-subtitle">Ingreso de terminales POS al inventario desde su llegada física</p>
+      <h1>Recepción de Equipos</h1>
+      <p class="count">Ingreso de terminales POS al inventario desde su llegada física</p>
     </div>
+    <div class="head-actions">
+      @if (activeTab === 'single') {
+        <button type="button" class="btn-primary" [disabled]="form.invalid" (click)="submitSingle()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>
+          Registrar recepción
+        </button>
+      }
+      @if (activeTab === 'bulk') {
+        <button type="button" class="btn-secondary" (click)="downloadTemplate()">
+          <span class="mi">download</span>
+          Descargar plantilla CSV
+        </button>
+        <button type="button" class="btn-primary" (click)="fileInput.click()">
+          <span class="mi">upload_file</span>
+          Seleccionar archivo CSV
+        </button>
+        <input #fileInput type="file" accept=".csv" hidden (change)="onFileSelected($event)" />
+      }
+    </div>
+  </header>
+
+  <div class="cf-tabs" role="tablist">
+    <button type="button" class="cf-tab" role="tab" [class.active]="activeTab === 'single'" (click)="activeTab = 'single'">Recepción individual</button>
+    <button type="button" class="cf-tab" role="tab" [class.active]="activeTab === 'bulk'" (click)="activeTab = 'bulk'">Carga masiva</button>
   </div>
 
-  <mat-tab-group animationDuration="150ms">
-
-    <!-- ── HU-006 — Recepción individual ── -->
-    <mat-tab label="Recepción individual">
-      <div class="tab-body">
-        <mat-card class="admin-card">
-          <mat-card-content>
-            <form [formGroup]="form" class="receive-grid">
-              <mat-form-field appearance="outline">
-                <mat-label>Orden de compra asociada (opcional)</mat-label>
-                <mat-select formControlName="purchaseOrderId" (selectionChange)="onOrderChange($event.value, form)">
-                  <mat-option value="">Sin orden asociada</mat-option>
-                  @for (o of orders; track o.id) {
-                    <mat-option [value]="o.id">{{ o.orderNumber }} · {{ o.supplierName }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-
-              @if (form.value.purchaseOrderId) {
-                <mat-form-field appearance="outline">
-                  <mat-label>Línea de la orden</mat-label>
-                  <mat-select formControlName="purchaseOrderLineId" (selectionChange)="onLineChange($event.value)">
-                    @for (l of pendingLines; track l.id) {
-                      <mat-option [value]="l.id">{{ l.brand }} {{ l.model }} ({{ l.receivedQty }}/{{ l.requestedQty }})</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
+  @if (activeTab === 'single') {
+    <div class="panel">
+      <div class="panel-head">Datos del equipo</div>
+      <div class="panel-body">
+        <form [formGroup]="form" class="cf-form-grid">
+          <div class="field">
+            <label for="poId">Orden de compra asociada (opcional)</label>
+            <select id="poId" formControlName="purchaseOrderId" (change)="onOrderChange($any($event.target).value, form)">
+              <option value="">Sin orden asociada</option>
+              @for (o of orders; track o.id) {
+                <option [value]="o.id">{{ o.orderNumber }} · {{ o.supplierName }}</option>
               }
+            </select>
+          </div>
 
-              <mat-form-field appearance="outline">
-                <mat-label>Marca</mat-label>
-                <input matInput formControlName="brand">
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Modelo</mat-label>
-                <input matInput formControlName="model">
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Tipo de POS</mat-label>
-                <input matInput formControlName="posType" placeholder="Android POS, mPOS...">
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Número de serie</mat-label>
-                <input matInput formControlName="serialNumber" placeholder="Único por equipo">
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Ubicación de recepción</mat-label>
-                <mat-select formControlName="locationType">
-                  @for (loc of locationOptions; track loc.value) {
-                    <mat-option [value]="loc.value">{{ loc.label }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Detalle de ubicación (opcional)</mat-label>
-                <input matInput formControlName="locationLabel" placeholder="Ej. Almacén Central Managua">
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Estado físico inicial</mat-label>
-                <input matInput formControlName="initialCondition">
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Observaciones</mat-label>
-                <textarea matInput formControlName="observations" rows="2"></textarea>
-              </mat-form-field>
-            </form>
-
-            <p class="receiver-note">
-              <mat-icon>person</mat-icon>
-              Usuario receptor: <strong>{{ currentUser.displayName }}</strong>
-            </p>
-
-            @if (duplicateError) {
-              <p class="form-error">
-                <mat-icon>error_outline</mat-icon>
-                Ya existe un equipo registrado con ese número de serie en el inventario.
-              </p>
-            }
-            @if (lastReceived) {
-              <p class="form-success">
-                <mat-icon>check_circle</mat-icon>
-                Equipo {{ lastReceived }} recibido correctamente e ingresado al inventario.
-              </p>
-            }
-
-            <div class="form-actions">
-              <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="submitSingle()">
-                <mat-icon>save</mat-icon> Registrar recepción
-              </button>
+          @if (form.value.purchaseOrderId) {
+            <div class="field">
+              <label for="poLineId">Línea de la orden</label>
+              <select id="poLineId" formControlName="purchaseOrderLineId" (change)="onLineChange($any($event.target).value)">
+                <option value="">Seleccionar línea…</option>
+                @for (l of pendingLines; track l.id) {
+                  <option [value]="l.id">{{ l.brand }} {{ l.model }} ({{ l.receivedQty }}/{{ l.requestedQty }})</option>
+                }
+              </select>
             </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </mat-tab>
+          }
 
-    <!-- ── HU-007 — Carga masiva ── -->
-    <mat-tab label="Carga masiva">
-      <div class="tab-body">
-        <mat-card class="admin-card">
-          <mat-card-content>
-            <div class="bulk-toolbar">
-              <button mat-stroked-button (click)="downloadTemplate()">
-                <mat-icon>download</mat-icon> Descargar plantilla CSV
-              </button>
-              <button mat-raised-button color="primary" (click)="fileInput.click()">
-                <mat-icon>upload_file</mat-icon> Seleccionar archivo CSV
-              </button>
-              <input #fileInput type="file" accept=".csv" hidden (change)="onFileSelected($event)">
-              @if (bulkFileName) {
-                <span class="file-name-chip"><mat-icon>description</mat-icon> {{ bulkFileName }}</span>
+          <div class="field">
+            <label for="brand">Marca</label>
+            <input id="brand" formControlName="brand" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="model">Modelo</label>
+            <input id="model" formControlName="model" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="posType">Tipo de POS</label>
+            <input id="posType" formControlName="posType" placeholder="POS Android, MPOS Android…" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="serialNumber">Número de serie</label>
+            <input id="serialNumber" formControlName="serialNumber" placeholder="Único por equipo" autocomplete="off" spellcheck="false" />
+          </div>
+          <div class="field">
+            <label for="locationType">Ubicación de recepción</label>
+            <select id="locationType" formControlName="locationType">
+              @for (loc of locationOptions; track loc.value) {
+                <option [value]="loc.value">{{ loc.label }}</option>
               }
+            </select>
+          </div>
+          <div class="field">
+            <label for="locationLabel">Detalle de ubicación (opcional)</label>
+            <input id="locationLabel" formControlName="locationLabel" placeholder="Ej. Almacén Central Managua" />
+          </div>
+          <div class="field">
+            <label for="initialCondition">Estado físico inicial</label>
+            <input id="initialCondition" formControlName="initialCondition" />
+          </div>
+          <div class="field full-width">
+            <label for="observations">Observaciones</label>
+            <textarea id="observations" formControlName="observations" rows="3"></textarea>
+          </div>
+        </form>
+
+        <p class="receiver-note">Usuario receptor: <strong>{{ currentUser.displayName }}</strong></p>
+
+        @if (duplicateError) {
+          <p class="form-error">Ya existe un equipo registrado con ese número de serie en el inventario.</p>
+        }
+        @if (lastReceived) {
+          <p class="form-success">Equipo {{ lastReceived }} recibido correctamente e ingresado al inventario.</p>
+        }
+      </div>
+    </div>
+  }
+
+  @if (activeTab === 'bulk') {
+    <div class="panel">
+      <div class="panel-head">Parámetros de la carga</div>
+      <div class="panel-body">
+        @if (bulkFileName) {
+          <p class="file-name-chip">Archivo: <span class="code">{{ bulkFileName }}</span></p>
+        }
+
+        <form [formGroup]="bulkForm" class="cf-form-grid">
+          <div class="field">
+            <label for="bulkPoId">Orden de compra asociada (opcional)</label>
+            <select id="bulkPoId" formControlName="purchaseOrderId" (change)="onOrderChange($any($event.target).value, bulkForm)">
+              <option value="">Sin orden asociada</option>
+              @for (o of orders; track o.id) {
+                <option [value]="o.id">{{ o.orderNumber }} · {{ o.supplierName }}</option>
+              }
+            </select>
+          </div>
+
+          @if (bulkForm.value.purchaseOrderId) {
+            <div class="field">
+              <label for="bulkPoLineId">Línea de la orden</label>
+              <select id="bulkPoLineId" formControlName="purchaseOrderLineId" (change)="onBulkLineChange($any($event.target).value)">
+                <option value="">Seleccionar línea…</option>
+                @for (l of pendingLines; track l.id) {
+                  <option [value]="l.id">{{ l.brand }} {{ l.model }} ({{ l.receivedQty }}/{{ l.requestedQty }})</option>
+                }
+              </select>
             </div>
+          }
 
-            <form [formGroup]="bulkForm" class="receive-grid">
-              <mat-form-field appearance="outline">
-                <mat-label>Orden de compra asociada (opcional)</mat-label>
-                <mat-select formControlName="purchaseOrderId" (selectionChange)="onOrderChange($event.value, bulkForm)">
-                  <mat-option value="">Sin orden asociada</mat-option>
-                  @for (o of orders; track o.id) {
-                    <mat-option [value]="o.id">{{ o.orderNumber }} · {{ o.supplierName }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              @if (bulkForm.value.purchaseOrderId) {
-                <mat-form-field appearance="outline">
-                  <mat-label>Línea de la orden</mat-label>
-                  <mat-select formControlName="purchaseOrderLineId" (selectionChange)="onBulkLineChange($event.value)">
-                    @for (l of pendingLines; track l.id) {
-                      <mat-option [value]="l.id">{{ l.brand }} {{ l.model }} ({{ l.receivedQty }}/{{ l.requestedQty }})</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
+          <div class="field">
+            <label for="bulkLocationType">Ubicación de recepción</label>
+            <select id="bulkLocationType" formControlName="locationType">
+              @for (loc of locationOptions; track loc.value) {
+                <option [value]="loc.value">{{ loc.label }}</option>
               }
-              <mat-form-field appearance="outline">
-                <mat-label>Ubicación de recepción</mat-label>
-                <mat-select formControlName="locationType">
-                  @for (loc of locationOptions; track loc.value) {
-                    <mat-option [value]="loc.value">{{ loc.label }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Estado físico inicial</mat-label>
-                <input matInput formControlName="initialCondition">
-              </mat-form-field>
-            </form>
-
-            @if (bulkValidation.length > 0) {
-              <div class="bulk-summary">
-                <span class="status-chip chip-green">{{ validCount }} válidos</span>
-                <span class="status-chip chip-red">{{ errorCount }} con error</span>
-              </div>
-
-              <div class="admin-table-wrap">
-                <table mat-table [dataSource]="bulkValidation" class="admin-table">
-                  <ng-container matColumnDef="row">
-                    <th mat-header-cell *matHeaderCellDef>Fila</th>
-                    <td mat-cell *matCellDef="let r">{{ r.row }}</td>
-                  </ng-container>
-                  <ng-container matColumnDef="serialNumber">
-                    <th mat-header-cell *matHeaderCellDef>Número de serie</th>
-                    <td mat-cell *matCellDef="let r">{{ r.serialNumber }}</td>
-                  </ng-container>
-                  <ng-container matColumnDef="brand">
-                    <th mat-header-cell *matHeaderCellDef>Marca</th>
-                    <td mat-cell *matCellDef="let r">{{ r.brand }}</td>
-                  </ng-container>
-                  <ng-container matColumnDef="model">
-                    <th mat-header-cell *matHeaderCellDef>Modelo</th>
-                    <td mat-cell *matCellDef="let r">{{ r.model }}</td>
-                  </ng-container>
-                  <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef>Estado</th>
-                    <td mat-cell *matCellDef="let r">
-                      @if (r.status === 'valid') {
-                        <span class="status-chip chip-green">Válido</span>
-                      } @else {
-                        <span class="status-chip chip-red" [matTooltip]="r.error">{{ r.error }}</span>
-                      }
-                    </td>
-                  </ng-container>
-                  <tr mat-header-row *matHeaderRowDef="bulkResultColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: bulkResultColumns;"></tr>
-                </table>
-              </div>
-
-              <div class="form-actions">
-                <button mat-raised-button color="primary" [disabled]="validCount === 0" (click)="confirmBulkImport()">
-                  <mat-icon>done_all</mat-icon> Confirmar carga de {{ validCount }} equipo(s)
-                </button>
-              </div>
-            }
-
-            @if (bulkImported) {
-              <p class="form-success">
-                <mat-icon>check_circle</mat-icon>
-                Bitácora de carga: {{ bulkImported.created }} equipos ingresados al inventario, {{ bulkImported.skipped }} registros omitidos por error.
-              </p>
-            }
-          </mat-card-content>
-        </mat-card>
+            </select>
+          </div>
+          <div class="field">
+            <label for="bulkInitialCondition">Estado físico inicial</label>
+            <input id="bulkInitialCondition" formControlName="initialCondition" />
+          </div>
+        </form>
       </div>
-    </mat-tab>
+    </div>
 
-  </mat-tab-group>
+    @if (bulkValidation.length > 0) {
+      <div class="panel">
+        <div class="panel-head">
+          Validación del archivo
+          <span class="cf-badge cf-badge-ok"><span class="dot"></span>{{ validCount }} válidos</span>
+          <span class="cf-badge cf-badge-off"><span class="dot"></span>{{ errorCount }} con error</span>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="cf-table">
+            <thead>
+              <tr>
+                <th>Fila</th>
+                <th>Número de serie</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (r of bulkValidation; track r.row) {
+                <tr>
+                  <td>{{ r.row }}</td>
+                  <td><span class="code">{{ r.serialNumber }}</span></td>
+                  <td>{{ r.brand }}</td>
+                  <td>{{ r.model }}</td>
+                  <td>
+                    @if (r.status === 'valid') {
+                      <span class="cf-badge cf-badge-ok"><span class="dot"></span>Válido</span>
+                    } @else {
+                      <span class="cf-badge cf-badge-off" [title]="r.error"><span class="dot"></span>{{ r.error }}</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="panel-body">
+          <div class="form-actions" style="border-top:0;padding-top:0;margin-top:0">
+            <button type="button" class="btn-primary" [disabled]="validCount === 0" (click)="confirmBulkImport()">
+              Confirmar carga de {{ validCount }} equipo(s)
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (bulkImported) {
+      <p class="form-success">
+        Bitácora de carga: {{ bulkImported.created }} equipos ingresados al inventario,
+        {{ bulkImported.skipped }} registros omitidos por error.
+      </p>
+    }
+  }
 </div>

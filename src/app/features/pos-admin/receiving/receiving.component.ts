@@ -2,17 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { PosLocationType, POS_LOCATION_LABELS, PurchaseOrder, PurchaseOrderLine } from '../../../core/models/pos-admin';
 import { BulkReceiveResultRow, PosInventoryService } from '../../../core/services/pos-admin/pos-inventory.service';
@@ -29,16 +19,17 @@ interface BulkRow {
 @Component({
   selector: 'app-receiving',
   standalone: true,
-  imports: [
-    CommonModule, ReactiveFormsModule, RouterModule, MatTabsModule, MatCardModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule,
-    MatTableModule, MatChipsModule, MatSnackBarModule, MatTooltipModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatSnackBarModule],
   templateUrl: './receiving.component.html',
   styleUrl: './receiving.component.css',
 })
 export class ReceivingComponent implements OnInit {
-  locationOptions = Object.entries(POS_LOCATION_LABELS).map(([value, label]) => ({ value: value as PosLocationType, label }));
+  activeTab: 'single' | 'bulk' = 'single';
+
+  locationOptions = Object.entries(POS_LOCATION_LABELS).map(([value, label]) => ({
+    value: value as PosLocationType,
+    label,
+  }));
   orders: PurchaseOrder[] = [];
   pendingLines: PurchaseOrderLine[] = [];
   duplicateError = false;
@@ -46,7 +37,6 @@ export class ReceivingComponent implements OnInit {
 
   bulkRows: BulkRow[] = [];
   bulkValidation: BulkReceiveResultRow[] = [];
-  bulkResultColumns = ['row', 'serialNumber', 'brand', 'model', 'status'];
   bulkImported: { created: number; skipped: number } | null = null;
   bulkFileName = '';
 
@@ -95,7 +85,7 @@ export class ReceivingComponent implements OnInit {
 
   onOrderChange(orderId: string, targetForm: typeof this.form | typeof this.bulkForm): void {
     this.pendingLines = orderId ? this.poSvc.pendingLines(orderId).filter(l => l.itemType === 'pos') : [];
-    targetForm.patchValue({ purchaseOrderLineId: '' } as any);
+    targetForm.patchValue({ purchaseOrderLineId: '' } as never);
     if (targetForm === this.form) {
       this.form.patchValue({ brand: '', model: '' });
     }
@@ -104,7 +94,7 @@ export class ReceivingComponent implements OnInit {
   onLineChange(lineId: string): void {
     const line = this.pendingLines.find(l => l.id === lineId);
     if (line) {
-      this.form.patchValue({ brand: line.brand, model: line.model, posType: this.form.value.posType || 'Android POS' });
+      this.form.patchValue({ brand: line.brand, model: line.model, posType: this.form.value.posType || 'POS Android' });
     }
   }
 
@@ -144,12 +134,10 @@ export class ReceivingComponent implements OnInit {
         initialCondition: value.initialCondition,
         observations: '',
       });
-    } catch (err) {
+    } catch {
       this.duplicateError = true;
     }
   }
-
-  // ── Carga masiva (HU-007) ──────────────────────────────────
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -185,7 +173,7 @@ export class ReceivingComponent implements OnInit {
         serialNumber: idx.serialNumber >= 0 ? cols[idx.serialNumber] ?? '' : '',
         brand: idx.brand >= 0 ? cols[idx.brand] ?? '' : '',
         model: idx.model >= 0 ? cols[idx.model] ?? '' : '',
-        posType: idx.posType >= 0 ? cols[idx.posType] ?? 'Android POS' : 'Android POS',
+        posType: idx.posType >= 0 ? cols[idx.posType] ?? 'POS Android' : 'POS Android',
       };
     });
   }
@@ -209,14 +197,18 @@ export class ReceivingComponent implements OnInit {
       purchaseOrderLineId: value.purchaseOrderLineId || undefined,
     });
     this.bulkImported = { created: result.created.length, skipped: result.skipped };
-    this.snackBar.open(`Carga masiva completada: ${result.created.length} equipos ingresados, ${result.skipped} omitidos.`, 'Cerrar', { duration: 5000 });
+    this.snackBar.open(
+      `Carga masiva completada: ${result.created.length} equipos ingresados, ${result.skipped} omitidos.`,
+      'Cerrar',
+      { duration: 5000 },
+    );
     this.bulkRows = [];
     this.bulkValidation = [];
     this.bulkFileName = '';
   }
 
   downloadTemplate(): void {
-    const csv = 'numeroSerie,marca,modelo,tipoPos\nPAX-A920-000999,PAX,A920,Android POS\n';
+    const csv = 'numeroSerie,marca,modelo,tipoPos\nPAX-A920-000999,PAX,A920,POS Android\n';
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

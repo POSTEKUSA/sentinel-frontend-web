@@ -21,6 +21,7 @@ import { DeviceSummary } from '../../core/models/device-summary.model';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 import { BatteryIndicatorComponent } from '../../shared/battery-indicator/battery-indicator.component';
 import { EmptyStateComponent } from '../../shared/empty-state/empty-state.component';
+import { BusyLoaderComponent } from '../../shared/busy-loader/busy-loader.component';
 
 @Component({
   selector: 'app-device-info',
@@ -41,6 +42,7 @@ import { EmptyStateComponent } from '../../shared/empty-state/empty-state.compon
     StatusBadgeComponent,
     BatteryIndicatorComponent,
     EmptyStateComponent,
+    BusyLoaderComponent,
   ],
   templateUrl: './device-info.component.html',
   styleUrl: './device-info.component.css',

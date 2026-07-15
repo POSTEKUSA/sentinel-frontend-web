@@ -1,8 +1,3 @@
-.device-list-wrapper {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
 .url-filter-banner {
   display: flex;
   align-items: center;
@@ -10,245 +5,157 @@
   gap: 8px 12px;
   margin-bottom: 16px;
   padding: 10px 14px;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
+  background: var(--brand-soft);
+  border: 1px solid rgba(10, 95, 165, 0.22);
+  border-radius: var(--r);
   font-size: 13px;
-  color: #1e40af;
+  color: var(--brand-dark);
 }
 
-.url-filter-banner mat-icon {
+.url-filter-banner .mi {
   font-size: 18px;
-  width: 18px;
-  height: 18px;
 }
 
 .url-filter-tag {
   background: #fff;
-  border: 1px solid #93c5fd;
+  border: 1px solid rgba(10, 95, 165, 0.28);
   border-radius: 4px;
   padding: 2px 8px;
   font-size: 12px;
   font-weight: 500;
 }
 
-.url-filter-banner button {
+.url-filter-banner .btn-ghost {
   margin-left: auto;
+  height: 34px;
 }
 
-/* ── Header ── */
-.page-header {
-  display: flex;
+.device-toolbar {
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.page-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 22px;
-  font-weight: 600;
-  margin: 0;
-  color: #1a1a2e;
-}
-
-.mock-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #fff3e0;
-  color: #e65100;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 4px;
-  border: 1px solid #ffcc80;
-}
-
-.mock-badge mat-icon {
-  font-size: 14px;
-  width: 14px;
-  height: 14px;
-}
-
-/* ── Filter Panel ── */
-.filter-panel {
-  margin-bottom: 20px;
-  border-radius: 10px !important;
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
-  overflow: hidden;
-}
-
-.filter-panel ::ng-deep .mat-expansion-panel-body {
-  padding: 16px 24px 24px 24px !important;
-}
-
-.filter-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-  flex-wrap: wrap;
-}
-
-.filter-label-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #475569;
-  white-space: nowrap;
-}
-
-.filter-label-group mat-icon {
-  color: #64748b;
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-}
-
-.kpi-chips-container {
+.kpi-chips {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-}
-
-.filter-row .search-field {
-  flex: 1;
-  min-width: 280px;
-  width: auto;
 }
 
 .kpi-chip {
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
-  align-items: center;
-  padding: 12px 24px;
-  border-radius: 10px;
-  cursor: pointer;
-  border: 2px solid transparent;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 72px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-left-width: 4px;
+  border-radius: var(--r-sm);
   background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s, border-color 0.2s;
-  min-width: 90px;
+  cursor: pointer;
+  font: inherit;
+  color: var(--ink);
+  transition: border-color 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+}
+
+.kpi-chip.total {
+  color: var(--brand);
+  border-left-color: var(--brand);
+}
+
+.kpi-chip.online {
+  color: #2e7d32;
+  border-left-color: #43a047;
+}
+
+.kpi-chip.delayed {
+  color: #e65100;
+  border-left-color: #fb8c00;
+}
+
+.kpi-chip.offline {
+  color: #c62828;
+  border-left-color: #e53935;
 }
 
 .kpi-chip:hover {
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.14);
+  filter: brightness(0.98);
 }
 
 .kpi-chip.active {
-  border-color: currentColor;
+  box-shadow: 0 0 0 3px rgba(10, 95, 165, 0.12);
+}
+
+.kpi-chip.total.active {
+  background: var(--brand-soft);
+  box-shadow: 0 0 0 3px rgba(10, 95, 165, 0.15);
+}
+
+.kpi-chip.online.active {
+  background: #edf7ee;
+  box-shadow: 0 0 0 3px rgba(67, 160, 71, 0.18);
+}
+
+.kpi-chip.delayed.active {
+  background: #fff3e0;
+  box-shadow: 0 0 0 3px rgba(251, 140, 0, 0.2);
+}
+
+.kpi-chip.offline.active {
+  background: #fbeaea;
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.18);
 }
 
 .kpi-count {
-  font-size: 26px;
+  font-size: 1.05rem;
   font-weight: 700;
-  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: inherit;
 }
 
 .kpi-label {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 0.72rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 4px;
-  opacity: 0.75;
+  letter-spacing: 0.04em;
+  color: inherit;
+  opacity: 0.8;
 }
 
-.kpi-total {
-  color: #455a64;
+.device-toolbar .search {
+  flex: 1;
+  min-width: 240px;
 }
 
-.kpi-online {
-  color: #2e7d32;
-}
-
-.kpi-delayed {
-  color: #e65100;
-}
-
-.kpi-offline {
-  color: #c62828;
-}
-
-/* ── Loading ── */
-.loading-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 60px;
-  gap: 16px;
-  color: rgba(0, 0, 0, 0.5);
-}
-
-/* ── Table card ── */
-.table-card {
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.device-table {
-  width: 100%;
-}
-
-.table-row {
-  cursor: default;
-  transition: background 0.15s;
-}
-
-.table-row:hover {
-  background: #f5f9ff;
-}
-
-/* ── Cells ── */
 .alias-cell {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 0;
 }
 
 .device-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: rgba(0, 0, 0, 0.4);
+  font-size: 22px;
+  color: var(--brand);
 }
 
-.alias-name {
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.alias-id {
-  font-size: 11px;
-  color: rgba(0, 0, 0, 0.45);
+.code-plain {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.78rem;
 }
 
 .network-cell {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 0.86rem;
 }
 
-.net-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  color: rgba(0, 0, 0, 0.5);
+.network-cell .mi {
+  font-size: 18px;
+  color: var(--ink-3);
+}
+
+.td-actions {
+  width: 48px;
+  text-align: right;
 }

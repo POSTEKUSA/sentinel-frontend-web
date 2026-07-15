@@ -1,138 +1,149 @@
 <div class="admin-page">
-
-  <div class="admin-page-header">
+  <header class="cf-head">
     <div>
-      <h1 class="admin-page-title">
-        <mat-icon>storefront</mat-icon>
-        Comercios Afiliados
-      </h1>
-      <p class="admin-page-subtitle">Comercios afiliados, sus terminales POS y su distribución por categoría (MCC)</p>
+      <h1>Comercios Afiliados</h1>
+      <p class="count">
+        <b>{{ filtered.length }}</b> comercios
+        @if (all.length !== filtered.length) {
+          <span> · {{ all.length }} en total</span>
+        }
+      </p>
     </div>
-    <div class="admin-header-actions">
-      <button mat-raised-button color="primary" (click)="openCreateDialog()">
-        <mat-icon>add</mat-icon> Nuevo comercio
+    <div class="head-actions">
+      <button type="button" class="btn-primary" (click)="openCreateDialog()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        Nuevo comercio
       </button>
     </div>
+  </header>
+
+  <div class="cf-tabs" role="tablist">
+    <button
+      type="button"
+      class="cf-tab"
+      role="tab"
+      [class.active]="activeTab === 'comercios'"
+      [attr.aria-selected]="activeTab === 'comercios'"
+      (click)="activeTab = 'comercios'">
+      Comercios
+    </button>
+    <button
+      type="button"
+      class="cf-tab"
+      role="tab"
+      [class.active]="activeTab === 'mcc'"
+      [attr.aria-selected]="activeTab === 'mcc'"
+      (click)="activeTab = 'mcc'">
+      Reporte por MCC
+    </button>
   </div>
 
-  <mat-tab-group animationDuration="150ms">
+  @if (activeTab === 'comercios') {
+    <div class="panel toolbar-panel">
+      <form [formGroup]="filterForm" class="toolbar">
+        <label class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+          <input
+            type="search"
+            formControlName="tradeName"
+            placeholder="Buscar por nombre comercial…"
+            autocomplete="off"
+            spellcheck="false" />
+        </label>
+        <input class="cf-input filter-input" formControlName="affiliateCode" placeholder="Código…" autocomplete="off" spellcheck="false" />
+        <input class="cf-input filter-input" formControlName="mcc" placeholder="MCC…" autocomplete="off" spellcheck="false" />
+        <input class="cf-input filter-input" formControlName="department" placeholder="Departamento…" autocomplete="off" />
+        <input class="cf-input filter-input" formControlName="municipality" placeholder="Municipio…" autocomplete="off" />
+        <select class="cf-input filter-input" formControlName="status">
+          <option value="">Todos</option>
+          <option value="active">Activo</option>
+          <option value="inactive">Inactivo</option>
+        </select>
+        <button
+          type="button"
+          [class]="hasActiveFilters ? 'btn-primary' : 'btn-secondary'"
+          (click)="clearFilters()">
+          <span class="mi">filter_alt_off</span>
+          Limpiar
+        </button>
+      </form>
+    </div>
 
-    <!-- ── HU-012 — Consultar POS por afiliado/comercio ── -->
-    <mat-tab label="Comercios">
-      <div class="tab-body">
-        <mat-card class="admin-filter-card">
-          <form [formGroup]="filterForm" class="admin-filter-row">
-            <mat-form-field appearance="outline" class="admin-filter-field">
-              <mat-label>Código de afiliado</mat-label>
-              <input matInput formControlName="affiliateCode">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="admin-filter-field">
-              <mat-label>Nombre comercial</mat-label>
-              <input matInput formControlName="tradeName">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="admin-filter-field">
-              <mat-label>MCC</mat-label>
-              <input matInput formControlName="mcc">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="admin-filter-field">
-              <mat-label>Departamento</mat-label>
-              <input matInput formControlName="department">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="admin-filter-field">
-              <mat-label>Municipio</mat-label>
-              <input matInput formControlName="municipality">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="admin-filter-field">
-              <mat-label>Estado</mat-label>
-              <mat-select formControlName="status">
-                <mat-option value="">Todos</mat-option>
-                <mat-option value="active">Activo</mat-option>
-                <mat-option value="inactive">Inactivo</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <button mat-button type="button" (click)="clearFilters()">
-              <mat-icon>filter_alt_off</mat-icon> Limpiar
-            </button>
-          </form>
-        </mat-card>
-
-        <mat-card class="admin-card">
-          @if (filtered.length === 0) {
-            <app-empty-state icon="storefront" title="Sin comercios" subtitle="No hay comercios que coincidan con los filtros aplicados."></app-empty-state>
-          } @else {
-            <div class="admin-table-wrap">
-              <table mat-table [dataSource]="filtered" class="admin-table">
-                <ng-container matColumnDef="affiliateCode">
-                  <th mat-header-cell *matHeaderCellDef>Código</th>
-                  <td mat-cell *matCellDef="let m">
-                    <a [routerLink]="['/pos-admin/merchants', m.id]" class="merchant-link">{{ m.affiliateCode }}</a>
+    <div class="panel">
+      @if (filtered.length === 0) {
+        <app-empty-state
+          icon="storefront"
+          title="Sin comercios"
+          subtitle="No hay comercios que coincidan con los filtros aplicados."></app-empty-state>
+      } @else {
+        <div class="admin-table-wrap">
+          <table class="cf-table">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Comercio</th>
+                <th class="num">POS activos</th>
+                <th>Ubicación</th>
+                <th>Estado</th>
+                <th>Fecha de alta</th>
+                <th class="th-actions">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of filtered; track m.id) {
+                <tr>
+                  <td><span class="code">{{ m.affiliateCode }}</span></td>
+                  <td>
+                    <div class="td-name">{{ m.tradeName }}</div>
+                    <div class="td-sub">MCC {{ m.mcc }} · {{ m.mccDescription }}</div>
                   </td>
-                </ng-container>
-                <ng-container matColumnDef="tradeName">
-                  <th mat-header-cell *matHeaderCellDef>Nombre comercial</th>
-                  <td mat-cell *matCellDef="let m">{{ m.tradeName }}<br><small>MCC {{ m.mcc }} · {{ m.mccDescription }}</small></td>
-                </ng-container>
-                <ng-container matColumnDef="mcc">
-                  <th mat-header-cell *matHeaderCellDef>POS activos</th>
-                  <td mat-cell *matCellDef="let m">{{ activePosCount(m.id) }}</td>
-                </ng-container>
-                <ng-container matColumnDef="location">
-                  <th mat-header-cell *matHeaderCellDef>Ubicación</th>
-                  <td mat-cell *matCellDef="let m">{{ m.municipality }}, {{ m.department }}</td>
-                </ng-container>
-                <ng-container matColumnDef="status">
-                  <th mat-header-cell *matHeaderCellDef>Estado</th>
-                  <td mat-cell *matCellDef="let m">
-                    <span class="status-chip" [ngClass]="statusChipClass(m.status)">{{ statusLabels[m.status] }}</span>
+                  <td class="num">{{ activePosCount(m.id) }}</td>
+                  <td>{{ m.municipality }}, {{ m.department }}</td>
+                  <td>
+                    <span class="cf-badge" [ngClass]="m.status === 'active' ? 'cf-badge-ok' : 'cf-badge-off'">
+                      <span class="dot"></span>{{ statusLabels[m.status] }}
+                    </span>
                   </td>
-                </ng-container>
-                <ng-container matColumnDef="createdAt">
-                  <th mat-header-cell *matHeaderCellDef>Fecha de alta</th>
-                  <td mat-cell *matCellDef="let m">{{ m.createdAt | date:'mediumDate' }}</td>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef></th>
-                  <td mat-cell *matCellDef="let m">
-                    <a mat-icon-button matTooltip="Ver detalle" [routerLink]="['/pos-admin/merchants', m.id]">
-                      <mat-icon>chevron_right</mat-icon>
+                  <td>{{ m.createdAt | date: 'mediumDate' }}</td>
+                  <td>
+                    <a class="btn-secondary btn-sm" [routerLink]="['/pos-admin/merchants', m.id]">
+                      <span class="mi">visibility</span>
+                      Ver
                     </a>
                   </td>
-                </ng-container>
-                <tr mat-header-row *matHeaderRowDef="columns"></tr>
-                <tr mat-row *matRowDef="let row; columns: columns;"></tr>
-              </table>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  @if (activeTab === 'mcc') {
+    <div class="panel">
+      @if (mccReport.length === 0) {
+        <app-empty-state icon="pie_chart" title="Sin datos"></app-empty-state>
+      } @else {
+        <div class="mcc-bars">
+          @for (r of mccReport; track r.mcc) {
+            <div class="mcc-bar-row">
+              <div class="mcc-label">
+                <strong>{{ r.mcc }}</strong> — {{ r.description }}
+              </div>
+              <div class="mcc-bar-track">
+                <div class="mcc-bar-fill" [style.width.%]="barWidth(r.count)"></div>
+              </div>
+              <div class="mcc-count">{{ r.count }}</div>
             </div>
           }
-        </mat-card>
-      </div>
-    </mat-tab>
-
-    <!-- ── HU-014 — Comercios por MCC ── -->
-    <mat-tab label="Reporte por MCC">
-      <div class="tab-body">
-        <mat-card class="admin-card">
-          <mat-card-content>
-            @if (mccReport.length === 0) {
-              <app-empty-state icon="pie_chart" title="Sin datos"></app-empty-state>
-            } @else {
-              <div class="mcc-bars">
-                @for (r of mccReport; track r.mcc) {
-                  <div class="mcc-bar-row">
-                    <div class="mcc-label">
-                      <strong>{{ r.mcc }}</strong> — {{ r.description }}
-                    </div>
-                    <div class="mcc-bar-track">
-                      <div class="mcc-bar-fill" [style.width.%]="barWidth(r.count)"></div>
-                    </div>
-                    <div class="mcc-count">{{ r.count }}</div>
-                  </div>
-                }
-              </div>
-            }
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </mat-tab>
-
-  </mat-tab-group>
+        </div>
+      }
+    </div>
+  }
 </div>

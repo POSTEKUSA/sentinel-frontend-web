@@ -1,27 +1,42 @@
 <div class="admin-page">
-
-  <div class="admin-page-header">
+  <header class="cf-head">
     <div>
-      <h1 class="admin-page-title">
-        <mat-icon>inventory_2</mat-icon>
-        Inventario de POS y Accesorios
-      </h1>
-      <p class="admin-page-subtitle">Disponibilidad, ubicación, resguardo y consumo de equipos y consumibles</p>
+      <h1>Inventario de POS y Accesorios</h1>
+      <p class="count">Disponibilidad, ubicación, resguardo y consumo de equipos y consumibles</p>
     </div>
+    <div class="head-actions">
+      @if (activeTab === 'custody') {
+        <button type="button" class="btn-primary" (click)="openCustodyAssign()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Asignar en resguardo
+        </button>
+      }
+      @if (activeTab === 'accessories') {
+        <button type="button" class="btn-primary" (click)="openAccessoryMovement()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Registrar movimiento
+        </button>
+      }
+    </div>
+  </header>
+
+  <div class="cf-tabs" role="tablist">
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'central'" (click)="activeTab = 'central'">Inventario Central</button>
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'location'" (click)="activeTab = 'location'">Por Ubicación</button>
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'custody'" (click)="activeTab = 'custody'">Resguardo</button>
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'accessories'" (click)="activeTab = 'accessories'">Accesorios y Rollos</button>
   </div>
 
-  <mat-tab-group animationDuration="150ms">
-    <mat-tab label="Inventario Central">
-      <app-central-inventory-tab></app-central-inventory-tab>
-    </mat-tab>
-    <mat-tab label="Por Ubicación">
-      <app-by-location-tab></app-by-location-tab>
-    </mat-tab>
-    <mat-tab label="Resguardo">
-      <app-custody-tab></app-custody-tab>
-    </mat-tab>
-    <mat-tab label="Accesorios y Rollos">
-      <app-accessory-stock-tab></app-accessory-stock-tab>
-    </mat-tab>
-  </mat-tab-group>
+  @if (activeTab === 'central') {
+    <app-central-inventory-tab></app-central-inventory-tab>
+  }
+  @if (activeTab === 'location') {
+    <app-by-location-tab></app-by-location-tab>
+  }
+  @if (activeTab === 'custody') {
+    <app-custody-tab></app-custody-tab>
+  }
+  @if (activeTab === 'accessories') {
+    <app-accessory-stock-tab></app-accessory-stock-tab>
+  }
 </div>

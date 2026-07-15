@@ -1,7 +1,6 @@
 <div class="map-wrapper">
 
   <div class="map-header">
-    <h1 class="page-title"><mat-icon>map</mat-icon> Device Map</h1>
     <span class="map-subtitle" *ngIf="!filteredDevice">OpenStreetMap · Leaflet</span>
     <span class="filter-badge" *ngIf="filteredDevice">
       <mat-icon class="filter-icon">filter_alt</mat-icon>
@@ -15,8 +14,7 @@
   <div class="map-container">
     <!-- Loading overlay -->
     <div *ngIf="loading" class="map-loading">
-      <mat-spinner diameter="36"></mat-spinner>
-      <p>Loading devices…</p>
+      <app-busy-loader [show]="true" [inline]="true"></app-busy-loader>
     </div>
 
     <!-- Leaflet map -->

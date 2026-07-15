@@ -1,20 +1,11 @@
 .po-header-grid {
-  display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px 16px;
-  margin-bottom: 8px;
-}
-
-.lines-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin: 20px 0 8px;
-  color: #334155;
+  margin-bottom: 0;
 }
 
 .lines-table {
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
   overflow: hidden;
 }
 
@@ -24,35 +15,29 @@
   grid-template-columns: 110px 1fr 1fr 130px 130px 130px 44px;
   gap: 8px;
   align-items: center;
-  padding: 6px 10px;
+  padding: 8px 10px;
 }
 
 .lines-header {
-  background: #f8fafc;
+  background: #fbfcfd;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  color: #64748b;
+  color: var(--ink-3);
 }
 
 .line-row {
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--line-2);
 }
 
-.dense-field {
-  width: 100%;
+.line-row .cf-input {
+  height: 38px;
+  min-width: 0;
 }
 
-.dense-field .mat-mdc-form-field-subscript-wrapper {
-  display: none;
-}
-
-.form-actions {
-  margin-top: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.add-line-btn {
+  margin-top: 12px;
 }
 
 .status-actions {
@@ -60,11 +45,14 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-2);
 }
 
 .status-actions-label {
   font-size: 13px;
-  color: #64748b;
+  color: var(--ink-3);
   font-weight: 500;
 }
 
@@ -72,7 +60,9 @@
   .po-header-grid {
     grid-template-columns: 1fr 1fr;
   }
-  .lines-header, .line-row {
+  .lines-header,
+  .line-row {
     grid-template-columns: 90px 1fr 1fr 100px 100px 100px 36px;
   }
 }
+

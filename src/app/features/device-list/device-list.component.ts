@@ -6,25 +6,13 @@ import { Subject, combineLatest } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';
 import { isStaleSync } from '../../core/utils/fleet-analytics.util';
 
-import { MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatCardModule } from '@angular/material/card';
-import { MatBadgeModule } from '@angular/material/badge';
-import { MatSortModule } from '@angular/material/sort';
-import { MatExpansionModule } from '@angular/material/expansion';
-
 import { TelemetryService } from '../../core/services/telemetry.service';
 import { DeviceStatusService } from '../../core/services/device-status.service';
 import { DeviceSummary, DeviceStatus } from '../../core/models/device-summary.model';
 import { StatusBadgeComponent } from '../../shared/status-badge/status-badge.component';
 import { BatteryIndicatorComponent } from '../../shared/battery-indicator/battery-indicator.component';
 import { EmptyStateComponent } from '../../shared/empty-state/empty-state.component';
+import { BusyLoaderComponent } from '../../shared/busy-loader/busy-loader.component';
 import { environment } from '../../../environments/environment';
 
 type StatusFilter = DeviceStatus | 'all';
@@ -36,44 +24,19 @@ type StatusFilter = DeviceStatus | 'all';
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
-    MatTableModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatIconModule,
-    MatButtonModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatTooltipModule,
-    MatCardModule,
-    MatBadgeModule,
-    MatSortModule,
-    MatExpansionModule,
     StatusBadgeComponent,
     BatteryIndicatorComponent,
     EmptyStateComponent,
+    BusyLoaderComponent,
   ],
   templateUrl: './device-list.component.html',
   styleUrl: './device-list.component.css',
 })
-// Main component for rendering and filtering the list of active devices
 export class DeviceListComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   searchCtrl = new FormControl('');
   activeStatusFilter: StatusFilter = 'all';
-
-  displayedColumns = [
-    'alias', 'tenantId', 'merchantId',
-    'battery', 'network', 'lastSeen',
-    'latitude', 'longitude', 'status', 'actions',
-  ];
-
-  statusFilters: { value: StatusFilter; label: string }[] = [
-    { value: 'all',     label: 'All' },
-    { value: 'online',  label: 'Online' },
-    { value: 'delayed', label: 'Delayed' },
-    { value: 'offline', label: 'Offline' },
-  ];
 
   loading = true;
   allDevices: DeviceSummary[] = [];
@@ -98,6 +61,15 @@ export class DeviceListComponent implements OnInit, OnDestroy {
       this.filterStaleSyncOnly ||
       this.activeStatusFilter !== 'all'
     );
+  }
+
+  get hasToolbarFilters(): boolean {
+    return !!(this.searchCtrl.value?.trim() || this.activeStatusFilter !== 'all');
+  }
+
+  clearToolbarFilters(): void {
+    this.searchCtrl.reset('');
+    this.setStatusFilter('all');
   }
 
   ngOnInit(): void {
@@ -163,8 +135,7 @@ export class DeviceListComponent implements OnInit, OnDestroy {
         d.metadata.deviceId.toLowerCase().includes(q) ||
         d.metadata.merchantId.toLowerCase().includes(q) ||
         d.metadata.tenantId.toLowerCase().includes(q);
-      const matchesTenant =
-        !this.filterTenantId || d.metadata.tenantId === this.filterTenantId;
+      const matchesTenant = !this.filterTenantId || d.metadata.tenantId === this.filterTenantId;
       const matchesMerchant =
         !this.filterMerchantId || d.metadata.merchantId === this.filterMerchantId;
       const matchesStaleSync = !this.filterStaleSyncOnly || isStaleSync(d);

@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 
 import { Installation, Merchant, MERCHANT_STATUS_LABELS, PosUnit, POS_UNIT_STATUS_LABELS } from '../../../core/models/pos-admin';
@@ -16,7 +12,7 @@ import { InstallPosDialogComponent } from './dialogs/install-pos-dialog.componen
 @Component({
   selector: 'app-merchant-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatIconModule, MatTableModule, EmptyStateComponent],
+  imports: [CommonModule, RouterModule, EmptyStateComponent],
   templateUrl: './merchant-detail.component.html',
   styleUrl: './merchant-detail.component.css',
 })
@@ -28,9 +24,6 @@ export class MerchantDetailComponent implements OnInit {
   activeUnits: PosUnit[] = [];
   historicalUnits: PosUnit[] = [];
   installations: Installation[] = [];
-
-  unitColumns = ['serialNumber', 'brand', 'model', 'status', 'installedAt'];
-  installationColumns = ['installedAt', 'serialNumber', 'responsibleName', 'initialStatus'];
 
   constructor(
     private route: ActivatedRoute,
@@ -58,9 +51,16 @@ export class MerchantDetailComponent implements OnInit {
 
   openInstallDialog(): void {
     if (!this.merchant) return;
-    const availableUnits = this.inventorySvc.units.filter(u => u.status === 'in_stock' || u.status === 'with_technician' || u.status === 'with_executive');
+    const availableUnits = this.inventorySvc.units.filter(
+      u => u.status === 'in_stock' || u.status === 'with_technician' || u.status === 'with_executive',
+    );
     this.dialog
-      .open(InstallPosDialogComponent, { width: '560px', data: { merchant: this.merchant, availableUnits } })
+      .open(InstallPosDialogComponent, {
+        width: '560px',
+        maxWidth: '94vw',
+        panelClass: 'cf-dialog-panel',
+        data: { merchant: this.merchant, availableUnits },
+      })
       .afterClosed()
       .subscribe(() => this.load(this.merchant!.id));
   }
