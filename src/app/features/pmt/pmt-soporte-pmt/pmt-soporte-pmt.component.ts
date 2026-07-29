@@ -56,6 +56,9 @@ export class PmtSoportePmtComponent implements OnInit {
   estadoBadge(e: string): string {
     return e === 'resuelto' ? 'cf-badge-ok' : e === 'en_proceso' ? 'cf-badge-info' : 'cf-badge-warn';
   }
+  estadoColor(e: string): string {
+    return e === 'resuelto' ? 'var(--ok)' : e === 'en_proceso' ? 'var(--brand)' : 'var(--warn)';
+  }
   estadoLabel(e: string): string {
     return e === 'resuelto' ? 'Resuelto' : e === 'en_proceso' ? 'En Proceso' : 'Pendiente';
   }

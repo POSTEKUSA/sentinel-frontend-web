@@ -152,7 +152,7 @@ const routes: Routes = [
         loadComponent: () => import('./features/pmt/pmt-users/pmt-users.component').then(m => m.PmtUsersComponent),
       },
       {
-        path: 'pmt/soporte-pmt',
+        path: 'pmt/soporte',
         loadComponent: () => import('./features/pmt/pmt-soporte-pmt/pmt-soporte-pmt.component').then(m => m.PmtSoportePmtComponent),
       }
     ],

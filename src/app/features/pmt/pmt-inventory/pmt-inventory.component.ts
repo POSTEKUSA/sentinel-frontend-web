@@ -131,6 +131,10 @@ export class PmtInventoryComponent implements OnInit {
 
   // ── History ───────────────────────────────────────────────────────────────
 
+  hasHistory(t: Terminal): boolean {
+    return this.svc.tracking.some(e => e.terminalId === t.id);
+  }
+
   openHistory(t: Terminal): void {
     this.historyTerminal = t;
     this.terminalTracking = this.svc.tracking.filter(e => e.terminalId === t.id);

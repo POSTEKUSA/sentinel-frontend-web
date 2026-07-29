@@ -100,14 +100,19 @@
     </nav>
 
     <div class="sidebar-foot">
-      <div class="user">
+      <div class="user" (click)="userMenuOpen.set(!userMenuOpen())" style="cursor: pointer;">
         <div class="avatar">SA</div>
-        <div class="min-w-0">
+        <div class="min-w-0" style="flex: 1;">
           <div class="user-name truncate">Super Administrador</div>
           <div class="user-role truncate">Acceso total</div>
         </div>
+        <span class="mi" style="color: var(--ink-3); font-size: 18px; margin-left: auto;">
+          {{ userMenuOpen() ? 'expand_less' : 'expand_more' }}
+        </span>
       </div>
-      <button type="button" class="logout" (click)="logout()">Cerrar sesión</button>
+      @if (userMenuOpen()) {
+        <button type="button" class="logout" (click)="logout()">Cerrar sesión</button>
+      }
       <div class="meta">
         <div>{{ copyrightText }}</div>
         <div class="version">{{ appVersion }}</div>
@@ -169,6 +174,9 @@
             @case ('merchants') {
               <span class="mi">storefront</span>
             }
+            @default {
+              <span class="mi">{{ pageIcon() }}</span>
+            }
           }
         </span>
         <div class="topbar-title-text">
@@ -178,7 +186,7 @@
           }
         </div>
       </div>
-      <span class="env-badge">MVP</span>
+      <span class="env-badge">DEMO</span>
     </header>
 
     <main class="page">

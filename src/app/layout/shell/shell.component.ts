@@ -48,6 +48,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
   sidebarOpen = signal(false);
   pageTitle = signal('Vista general de la flota');
   pageIcon = signal<NavItem['icon']>('dashboard');
+  userMenuOpen = signal(false);
   private navSub?: Subscription;
 
   navSections: NavSection[] = [
@@ -64,7 +65,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
       title: 'Administración',
       expanded: true,
       items: [
-        { label: 'Catálogos', icon: 'catalog', route: '/pos-admin/catalog' },
+        { label: 'Marcas', icon: 'catalog', route: '/pos-admin/catalog' },
         { label: 'Compras', icon: 'orders', route: '/pos-admin/purchase-orders' },
         { label: 'Recepción', icon: 'receiving', route: '/pos-admin/receiving' },
         { label: 'Inventario', icon: 'inventory', route: '/pos-admin/inventory' },
@@ -89,10 +90,10 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'Control POS', icon: 'receipt_long', route: '/pmt/control-pos' },
         { label: 'Historial', icon: 'history', route: '/pmt/historical-records' },
         { label: 'Asignados Hist.', icon: 'swap_horiz', route: '/pmt/assigned-pos-history' },
-        { label: 'Query POS', icon: 'database', route: '/pmt/query' },
+        { label: 'Consultar POS', icon: 'manage_search', route: '/pmt/query' },
         { label: 'Subir Inventario', icon: 'cloud_upload', route: '/pmt/bulk-upload' },
         { label: 'Usuarios', icon: 'group', route: '/pmt/users' },
-        { label: 'Soporte PMT', icon: 'headset_mic', route: '/pmt/soporte-pmt' },
+        { label: 'Soporte', icon: 'headset_mic', route: '/pmt/soporte' },
       ],
     },
   ];
@@ -142,7 +143,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/device-info')) return { title: 'Detalle de dispositivo', icon: 'devices' };
     if (path.startsWith('/device-list')) return { title: 'Dispositivos', icon: 'devices' };
     if (path.startsWith('/device-map')) return { title: 'Mapa', icon: 'map' };
-    if (path.startsWith('/pos-admin/catalog')) return { title: 'Catálogos', icon: 'catalog' };
+    if (path.startsWith('/pos-admin/catalog')) return { title: 'Marcas', icon: 'catalog' };
     if (path.startsWith('/pos-admin/purchase-orders/new')) return { title: 'Nueva orden de compra', icon: 'orders' };
     if (/^\/pos-admin\/purchase-orders\/[^/]+/.test(path)) return { title: 'Orden de compra', icon: 'orders' };
     if (path.startsWith('/pos-admin/purchase-orders')) return { title: 'Compras', icon: 'orders' };
@@ -151,8 +152,28 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (/^\/pos-admin\/merchants\/[^/]+/.test(path)) return { title: 'Comercio', icon: 'merchants' };
     if (path.startsWith('/pos-admin/merchants')) return { title: 'Comercios', icon: 'merchants' };
     if (path.startsWith('/dashboard')) return { title: 'Vista general de la flota', icon: 'dashboard' };
+    
+    // PMT Routes
     if (path.startsWith('/pmt/dashboard')) return { title: 'Vista General', icon: 'dashboard' };
+    if (path.startsWith('/pmt/inventory')) return { title: 'Inventario', icon: 'inventory_2' };
+    if (path.startsWith('/pmt/bodega')) return { title: 'Bodega', icon: 'inventory' };
+    if (path.startsWith('/pmt/pos-inyeccion')) return { title: 'POS Inyección', icon: 'vaccines' };
+    if (path.startsWith('/pmt/asignados')) return { title: 'Asignados', icon: 'manage_accounts' };
+    if (path.startsWith('/pmt/reparacion')) return { title: 'Reparación', icon: 'build' };
+    if (path.startsWith('/pmt/garantia')) return { title: 'Garantía', icon: 'shield' };
+    if (path.startsWith('/pmt/inicializaciones')) return { title: 'Inicializaciones', icon: 'settings_power' };
+    if (path.startsWith('/pmt/sim-cards')) return { title: 'SIM Cards', icon: 'sim_card' };
+    if (path.startsWith('/pmt/solicitudes-soporte')) return { title: 'Soporte Equipo', icon: 'support_agent' };
+    if (path.startsWith('/pmt/solicitudes-equipo')) return { title: 'Solicitudes Equipo', icon: 'hardware' };
+    if (path.startsWith('/pmt/control-pos')) return { title: 'Control POS', icon: 'receipt_long' };
+    if (path.startsWith('/pmt/historical-records')) return { title: 'Historial', icon: 'history' };
+    if (path.startsWith('/pmt/assigned-pos-history')) return { title: 'Asignados Hist.', icon: 'swap_horiz' };
+    if (path.startsWith('/pmt/query')) return { title: 'Consultar POS', icon: 'manage_search' };
+    if (path.startsWith('/pmt/bulk-upload')) return { title: 'Subir Inventario', icon: 'cloud_upload' };
+    if (path.startsWith('/pmt/users')) return { title: 'Usuarios', icon: 'group' };
+    if (path.startsWith('/pmt/soporte')) return { title: 'Soporte', icon: 'headset_mic' };
     if (path.startsWith('/pmt/')) return { title: 'Control POS', icon: 'inventory' };
+
     return { title: this.appName, icon: 'dashboard' };
   }
 

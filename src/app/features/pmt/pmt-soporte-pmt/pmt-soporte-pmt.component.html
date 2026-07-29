@@ -80,7 +80,10 @@
           <label class="cf-label">Cambiar estado</label>
           <div class="row-actions" style="flex-wrap:wrap;gap:6px">
             @for (e of ['pendiente','en_proceso','resuelto']; track e) {
-              <button class="btn-sm" [ngClass]="detail.estado === e ? 'btn-primary' : 'btn-secondary'"
+              <button class="btn-primary btn-sm" 
+                [style.background]="estadoColor(e)"
+                [style.borderColor]="estadoColor(e)"
+                [style.opacity]="detail.estado === e ? '1' : '0.4'"
                 (click)="changeEstado(detail.id, $any(e))">
                 {{ estadoLabel(e) }}
               </button>

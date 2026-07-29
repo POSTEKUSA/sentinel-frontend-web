@@ -75,9 +75,11 @@
               <td class="td-sub">{{ t.updatedAt | date:'dd/MM/yy' }}</td>
               <td style="text-align:right">
                 <div class="row-actions">
-                  <button type="button" class="icon-btn" title="Historial" (click)="openHistory(t)">
-                    <span class="mi">history</span>
-                  </button>
+                  @if (hasHistory(t)) {
+                    <button type="button" class="icon-btn" title="Historial" (click)="openHistory(t)">
+                      <span class="mi">history</span>
+                    </button>
+                  }
                   <button type="button" class="icon-btn" title="Editar" (click)="openEdit(t)">
                     <span class="mi">edit</span>
                   </button>

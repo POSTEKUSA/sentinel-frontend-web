@@ -52,8 +52,16 @@ export class PmtGarantiaComponent implements OnInit {
     this.showSustitucion = false;
   }
 
+  terminalARetirar: Terminal | null = null;
+
   retirar(t: Terminal): void {
-    if (confirm(`¿Confirmar retiro de garantía del terminal ${t.serie}?`))
-      this.svc.changeEstado(t.id, 'retirado', 'Retirado de garantía');
+    this.terminalARetirar = t;
+  }
+
+  confirmarRetiro(): void {
+    if (this.terminalARetirar) {
+      this.svc.changeEstado(this.terminalARetirar.id, 'retirado', 'Retirado de garantía');
+      this.terminalARetirar = null;
+    }
   }
 }

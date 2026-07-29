@@ -88,4 +88,23 @@
       </div>
     </div>
   }
+  @if (terminalARetirar) {
+    <div class="dialog-backdrop" (click)="terminalARetirar = null">
+      <div class="dialog dialog-sm" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Confirmar Retiro</h2>
+          <button class="icon-btn" (click)="terminalARetirar = null"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2);font-size:14px;margin-bottom:8px">
+            ¿Confirmar retiro de garantía del terminal <strong>{{ terminalARetirar.serie }}</strong>?
+          </p>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn-secondary" (click)="terminalARetirar = null">Cancelar</button>
+          <button class="btn-primary" (click)="confirmarRetiro()">Retirar de Garantía</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>
