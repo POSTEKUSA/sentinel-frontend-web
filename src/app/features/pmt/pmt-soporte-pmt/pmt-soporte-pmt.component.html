@@ -1,0 +1,120 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Soporte PMT</h1>
+      <p class="count">{{ filtered.length }} tickets de soporte técnico PMT</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn-primary" (click)="showCreate = true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Nuevo Ticket
+      </button>
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" formControlName="q" placeholder="Buscar serie, terminal, tipo…" />
+      </label>
+      <select class="cf-input filter-input" formControlName="estado">
+        <option value="">Todos los estados</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="en_proceso">En Proceso</option>
+        <option value="resuelto">Resuelto</option>
+      </select>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr><th>#</th><th>Tipo</th><th>Serie</th><th>Terminal</th><th>Descripción</th><th>Estado</th><th>Creado</th><th style="text-align:right">Acciones</th></tr>
+        </thead>
+        <tbody>
+          @if (filtered.length === 0) {
+            <tr><td colspan="8" class="admin-empty"><span class="mi">headset_mic</span><span>Sin tickets de soporte</span></td></tr>
+          }
+          @for (s of filtered; track s.id) {
+            <tr>
+              <td class="td-sub">{{ s.id }}</td>
+              <td>{{ s.tipo ?? '—' }}</td>
+              <td><span class="code">{{ s.serie ?? '—' }}</span></td>
+              <td>{{ s.terminal ?? '—' }}</td>
+              <td class="td-truncate" [title]="s.descripcion ?? ''">{{ s.descripcion ?? '—' }}</td>
+              <td>
+                <span class="cf-badge" [ngClass]="estadoBadge(s.estado)">
+                  <span class="dot"></span>{{ estadoLabel(s.estado) }}
+                </span>
+              </td>
+              <td>{{ s.createdAt | date:'dd/MM/yy' }}</td>
+              <td style="text-align:right">
+                <div class="row-actions">
+                  <button class="icon-btn" title="Ver detalle" (click)="detail = s"><span class="mi">open_in_new</span></button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (detail) {
+    <div class="dialog-backdrop" (click)="detail = null">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Ticket #{{ detail.id }}</h2>
+          <button class="icon-btn" (click)="detail = null"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <div class="grid-2" style="margin-bottom:12px">
+            <div><span class="cf-label">Serie:</span> <span class="code">{{ detail.serie ?? '—' }}</span></div>
+            <div><span class="cf-label">Terminal:</span> {{ detail.terminal ?? '—' }}</div>
+            <div><span class="cf-label">Tipo:</span> {{ detail.tipo ?? '—' }}</div>
+            <div><span class="cf-label">Creado:</span> {{ detail.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+          </div>
+          <p style="font-size:13px;color:var(--ink-2);margin-bottom:16px">{{ detail.descripcion }}</p>
+          <label class="cf-label">Cambiar estado</label>
+          <div class="row-actions" style="flex-wrap:wrap;gap:6px">
+            @for (e of ['pendiente','en_proceso','resuelto']; track e) {
+              <button class="btn-sm" [ngClass]="detail.estado === e ? 'btn-primary' : 'btn-secondary'"
+                (click)="changeEstado(detail.id, $any(e))">
+                {{ estadoLabel(e) }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (showCreate) {
+    <div class="dialog-backdrop" (click)="showCreate = false">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Nuevo Ticket de Soporte PMT</h2>
+          <button class="icon-btn" (click)="showCreate = false"><span class="mi">close</span></button>
+        </div>
+        <form [formGroup]="createData" class="dialog-body" (ngSubmit)="create()">
+          <div class="grid-2">
+            <div><label class="cf-label">Serie (opcional)</label><input class="cf-input" formControlName="serie" placeholder="SN123456" /></div>
+            <div><label class="cf-label">Terminal ID (opcional)</label><input class="cf-input" formControlName="terminal" placeholder="T00001" /></div>
+            <div class="span-2"><label class="cf-label">Tipo</label><input class="cf-input" formControlName="tipo" placeholder="Fallo de comunicación, Error de app…" /></div>
+          </div>
+          <div style="margin-top:10px">
+            <label class="cf-label">Descripción *</label>
+            <textarea class="cf-input" formControlName="descripcion" rows="4" placeholder="Describa el problema técnico…"></textarea>
+          </div>
+          @if (createError) { <p class="form-error">{{ createError }}</p> }
+          <div class="dialog-foot">
+            <button type="button" class="btn-secondary" (click)="showCreate = false">Cancelar</button>
+            <button type="submit" class="btn-primary">Crear Ticket</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

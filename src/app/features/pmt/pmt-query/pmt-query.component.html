@@ -1,0 +1,66 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Query POS</h1>
+      <p class="count">{{ filtered.length }} de {{ all.length }} registros · Página {{ page }} de {{ totalPages }}</p>
+    </div>
+    <div class="head-actions">
+      @if (hasFilters()) {
+        <button class="btn-secondary" (click)="clearFilters()"><span class="mi">filter_alt_off</span> Limpiar filtros</button>
+      }
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      @for (f of [
+        {name:'terminal', ph:'Terminal'},
+        {name:'codigo', ph:'Código'},
+        {name:'comercio', ph:'Comercio'},
+        {name:'ciudad', ph:'Ciudad'},
+        {name:'zona', ph:'Zona'}
+      ]; track f.name) {
+        <input class="cf-input filter-input" [formControlName]="f.name" [placeholder]="f.ph" />
+      }
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            @for (col of cols; track col) { <th>{{ colLabel(col) }}</th> }
+            <th style="text-align:right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (paged.length === 0) {
+            <tr><td [attr.colspan]="cols.length + 2" class="admin-empty"><span class="mi">database</span><span>Sin registros</span></td></tr>
+          }
+          @for (r of paged; track r.id) {
+            <tr>
+              <td class="td-sub">{{ r.id }}</td>
+              @for (col of cols; track col) {
+                <td class="td-truncate" [title]="colValue(r, col)">{{ colValue(r, col) }}</td>
+              }
+              <td style="text-align:right">
+                <button class="icon-btn icon-btn--danger" (click)="delete(r.id)" title="Eliminar">
+                  <span class="mi">delete</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (totalPages > 1) {
+      <div class="cf-pagination">
+        <span class="cf-pagination-info">{{ all.length }} registros totales · Página {{ page }} / {{ totalPages }}</span>
+        <button class="btn-secondary btn-sm" [disabled]="page === 1" (click)="page = page - 1"><span class="mi">chevron_left</span></button>
+        <button class="btn-secondary btn-sm" [disabled]="page >= totalPages" (click)="page = page + 1"><span class="mi">chevron_right</span></button>
+      </div>
+    }
+  </div>
+</div>

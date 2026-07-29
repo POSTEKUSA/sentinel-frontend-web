@@ -1,0 +1,202 @@
+<div class="admin-page pmt-dashboard">
+
+  <!-- Header -->
+  <header class="cf-head">
+    <div>
+      <p class="count">Resumen general del inventario POS · {{ today }}</p>
+    </div>
+    <div class="head-actions">
+      <a routerLink="/pmt/inventory" class="btn-secondary btn-sm">
+        <span class="mi">inventory_2</span> Ver inventario completo
+      </a>
+    </div>
+  </header>
+
+  @if (summary) {
+    <!-- Total hero card -->
+    <div class="kpi-hero">
+      <div class="kpi-hero-card">
+        <div class="kpi-hero-inner">
+          <span class="kpi-hero-label">Total Terminales</span>
+          <span class="kpi-hero-value">{{ summary.total.toLocaleString() }}</span>
+          <span class="kpi-hero-sub">Todos los estados</span>
+        </div>
+        <span class="mi kpi-hero-icon">devices</span>
+      </div>
+    </div>
+
+    <!-- Primary stats -->
+    <div class="kpi-grid kpi-grid-3">
+      @for (stat of primaryStats; track stat.key) {
+        <div class="kpi-card kpi-card--{{ stat.color }}">
+          <div class="kpi-card-body">
+            <div>
+              <p class="kpi-label">{{ stat.label }}</p>
+              <p class="kpi-value">{{ getValue(stat.key).toLocaleString() }}</p>
+              <p class="kpi-pct">{{ pct(getValue(stat.key)) }} del total</p>
+            </div>
+            <span class="mi kpi-icon">{{ stat.icon }}</span>
+          </div>
+          <div class="kpi-bar-track">
+            <div class="kpi-bar kpi-bar--{{ stat.color }}"
+                 [style.width]="pct(getValue(stat.key))"></div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Secondary stats -->
+    <div class="kpi-grid kpi-grid-4">
+      @for (stat of secondaryStats; track stat.key) {
+        <div class="kpi-card kpi-card--{{ stat.color }}">
+          <div class="kpi-card-body">
+            <div>
+              <p class="kpi-label">{{ stat.label }}</p>
+              <p class="kpi-value">{{ getValue(stat.key).toLocaleString() }}</p>
+              <p class="kpi-pct">{{ pct(getValue(stat.key)) }} del total</p>
+            </div>
+            <span class="mi kpi-icon">{{ stat.icon }}</span>
+          </div>
+          <div class="kpi-bar-track">
+            <div class="kpi-bar kpi-bar--{{ stat.color }}"
+                 [style.width]="pct(getValue(stat.key))"></div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Tertiary stats -->
+    <div class="kpi-grid kpi-grid-4">
+      @for (stat of tertiaryStats; track stat.key) {
+        <div class="kpi-card kpi-card--{{ stat.color }}">
+          <div class="kpi-card-body">
+            <div>
+              <p class="kpi-label">{{ stat.label }}</p>
+              <p class="kpi-value">{{ getValue(stat.key).toLocaleString() }}</p>
+              <p class="kpi-pct">{{ pct(getValue(stat.key)) }} del total</p>
+            </div>
+            <span class="mi kpi-icon">{{ stat.icon }}</span>
+          </div>
+          <div class="kpi-bar-track">
+            <div class="kpi-bar kpi-bar--{{ stat.color }}"
+                 [style.width]="pct(getValue(stat.key))"></div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Charts row -->
+    <div class="dash-charts">
+
+      <!-- Por zona -->
+      <div class="panel dash-chart-panel">
+        <div class="dash-chart-head">
+          <span class="dash-chart-title">Distribución por Zona</span>
+          <span class="dash-chart-sub">Terminales por zona geográfica</span>
+        </div>
+        <div class="zone-bars">
+          @for (z of byZone; track z.name) {
+            <div class="zone-row">
+              <span class="zone-name">{{ z.name }}</span>
+              <div class="zone-bar-track">
+                <div class="zone-bar" [style.width]="barWidth(z.count, maxZoneCount)"></div>
+              </div>
+              <span class="zone-count">{{ z.count }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Por modelo -->
+      <div class="panel dash-chart-panel">
+        <div class="dash-chart-head">
+          <span class="dash-chart-title">Terminales por Modelo</span>
+          <span class="dash-chart-sub">Distribución actual de equipos</span>
+        </div>
+        <div class="zone-bars">
+          @for (m of byModel; track m.name) {
+            <div class="zone-row">
+              <span class="zone-name">{{ m.name }}</span>
+              <div class="zone-bar-track">
+                <div class="zone-bar zone-bar--secondary" [style.width]="barWidth(m.count, byModel[0]?.count ?? 1)"></div>
+              </div>
+              <span class="zone-count">{{ m.count }}</span>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SIM Cards y actividad reciente -->
+    <div class="dash-bottom">
+
+      <!-- SIM Cards summary -->
+      @if (simStats) {
+        <div class="panel dash-sim-panel">
+          <div class="dash-chart-head">
+            <span class="dash-chart-title">SIM Cards</span>
+            <span class="dash-chart-sub">Total: {{ simStats.total }}</span>
+          </div>
+          <div class="sim-stats-grid">
+            @for (item of simStats.byEstado; track item.name) {
+              <div class="sim-stat-item">
+                <span class="sim-stat-label">{{ item.name | titlecase }}</span>
+                <span class="sim-stat-value">{{ item.count }}</span>
+              </div>
+            }
+          </div>
+          <hr class="dash-divider">
+          <div class="dash-chart-head" style="margin-bottom:8px">
+            <span class="dash-chart-sub">Por compañía</span>
+          </div>
+          <div class="sim-stats-grid">
+            @for (item of simStats.byCompany; track item.name) {
+              <div class="sim-stat-item">
+                <span class="sim-stat-label">{{ item.name }}</span>
+                <span class="sim-stat-value">{{ item.count }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Actividad reciente -->
+      <div class="panel dash-activity-panel">
+        <div class="dash-chart-head">
+          <span class="dash-chart-title">Actividad Reciente</span>
+        </div>
+        @if (recentTracking.length === 0) {
+          <p class="dash-no-activity">Sin actividad reciente</p>
+        } @else {
+          <div class="activity-list">
+            @for (ev of recentTracking; track ev.id) {
+              <div class="activity-item">
+                <div class="activity-dot"></div>
+                <div class="activity-body">
+                  <p class="activity-text">
+                    <strong>{{ ev.createdBy ?? 'Sistema' }}</strong> cambió
+                    <span class="code">{{ ev.serie }}</span>
+                  </p>
+                  @if (ev.previousStatus && ev.newStatus) {
+                    <p class="activity-sub">
+                      {{ labels[ev.previousStatus] || ev.previousStatus }}
+                      &rarr;
+                      {{ labels[ev.newStatus] || ev.newStatus }}
+                    </p>
+                  }
+                  @if (ev.comment) {
+                    <p class="activity-comment">{{ ev.comment }}</p>
+                  }
+                  <p class="activity-time">{{ ev.createdAt | date:'dd MMM yyyy, HH:mm' }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </div>
+  }
+
+</div>

@@ -83,6 +83,82 @@ const routes: Routes = [
             m => m.MerchantDetailComponent,
           ),
       },
+      {
+        path: 'pmt/dashboard',
+        loadComponent: () => import('./features/pmt/pmt-dashboard/pmt-dashboard.component').then(m => m.PmtDashboardComponent),
+      },
+      {
+        path: 'pmt/inventory',
+        loadComponent: () => import('./features/pmt/pmt-inventory/pmt-inventory.component').then(m => m.PmtInventoryComponent),
+      },
+      {
+        path: 'pmt/bodega',
+        loadComponent: () => import('./features/pmt/pmt-bodega/pmt-bodega.component').then(m => m.PmtBodegaComponent),
+      },
+      {
+        path: 'pmt/pos-inyeccion',
+        loadComponent: () => import('./features/pmt/pmt-pos-inyeccion/pmt-pos-inyeccion.component').then(m => m.PmtPosInyeccionComponent),
+      },
+      {
+        path: 'pmt/asignados',
+        loadComponent: () => import('./features/pmt/pmt-asignados/pmt-asignados.component').then(m => m.PmtAsignadosComponent),
+      },
+      {
+        path: 'pmt/reparacion',
+        loadComponent: () => import('./features/pmt/pmt-reparacion/pmt-reparacion.component').then(m => m.PmtReparacionComponent),
+      },
+      {
+        path: 'pmt/garantia',
+        loadComponent: () => import('./features/pmt/pmt-garantia/pmt-garantia.component').then(m => m.PmtGarantiaComponent),
+      },
+      {
+        path: 'pmt/inicializaciones',
+        loadComponent: () => import('./features/pmt/pmt-inicializaciones/pmt-inicializaciones.component').then(m => m.PmtInicializacionesComponent),
+      },
+      {
+        path: 'pmt/sim-cards',
+        loadComponent: () => import('./features/pmt/pmt-sim-cards/pmt-sim-cards.component').then(m => m.PmtSimCardsComponent),
+      },
+      {
+        path: 'pmt/solicitudes-soporte',
+        loadComponent: () => import('./features/pmt/pmt-solicitudes-soporte/pmt-solicitudes-soporte.component').then(m => m.PmtSolicitudesSoporteComponent),
+      },
+      {
+        path: 'pmt/solicitudes-equipo',
+        loadComponent: () => import('./features/pmt/pmt-solicitudes-equipo/pmt-solicitudes-equipo.component').then(m => m.PmtSolicitudesEquipoComponent),
+      },
+      {
+        path: 'pmt/control-pos',
+        loadComponent: () => import('./features/pmt/pmt-control-pos/pmt-control-pos.component').then(m => m.PmtControlPosComponent),
+      },
+      {
+        path: 'pmt/historical-records',
+        loadComponent: () => import('./features/pmt/pmt-historical-records/pmt-historical-records.component').then(m => m.PmtHistoricalRecordsComponent),
+      },
+      {
+        path: 'pmt/assigned-pos-history',
+        loadComponent: () => import('./features/pmt/pmt-assigned-pos-history/pmt-assigned-pos-history.component').then(m => m.PmtAssignedPosHistoryComponent),
+      },
+      {
+        path: 'pmt/query',
+        loadComponent: () => import('./features/pmt/pmt-query/pmt-query.component').then(m => m.PmtQueryComponent),
+      },
+      {
+        path: 'pmt/subir-inventario',
+        loadComponent: () => import('./features/pmt/pmt-subir-inventario/pmt-subir-inventario.component').then(m => m.PmtSubirInventarioComponent),
+      },
+      {
+        path: 'pmt/bulk-upload',
+        loadComponent: () => import('./features/pmt/pmt-bulk-upload/pmt-bulk-upload.component').then(m => m.PmtBulkUploadComponent),
+      },
+      {
+        path: 'pmt/users',
+        loadComponent: () => import('./features/pmt/pmt-users/pmt-users.component').then(m => m.PmtUsersComponent),
+      },
+      {
+        path: 'pmt/soporte-pmt',
+        loadComponent: () => import('./features/pmt/pmt-soporte-pmt/pmt-soporte-pmt.component').then(m => m.PmtSoportePmtComponent),
+      }
     ],
   },
   {

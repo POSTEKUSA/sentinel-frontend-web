@@ -1,0 +1,109 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>SIM Cards</h1>
+      <p class="count">{{ filtered.length }} de {{ all.length }} chips</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn-primary" (click)="openCreate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Nueva SIM
+      </button>
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" formControlName="q" placeholder="Buscar ICCID, número, terminal…" />
+      </label>
+      <select class="cf-input filter-input" formControlName="estado">
+        <option value="">Todos los estados</option>
+        @for (k of estadoKeys; track k) {
+          <option [value]="k">{{ estadoLabels[k] }}</option>
+        }
+      </select>
+      <select class="cf-input filter-input" formControlName="compania">
+        <option value="">Todas las compañías</option>
+        @for (c of companias; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>ICCID</th><th>Número</th><th>Compañía</th><th>Estado</th>
+            <th>Terminal</th><th>APN</th><th>IP</th><th style="text-align:right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (filtered.length === 0) {
+            <tr><td colspan="8" class="admin-empty"><span class="mi">sim_card</span><span>Sin SIM Cards</span></td></tr>
+          }
+          @for (s of filtered; track s.id) {
+            <tr>
+              <td><span class="code">{{ s.iccid }}</span></td>
+              <td>{{ s.numero ?? '—' }}</td>
+              <td>{{ s.compania }}</td>
+              <td>
+                <span class="cf-badge" [ngClass]="estadoBadge[s.estado]">
+                  <span class="dot"></span>{{ estadoLabels[s.estado] }}
+                </span>
+              </td>
+              <td>{{ s.terminalSerie ?? s.assignedTo ?? '—' }}</td>
+              <td>{{ s.apn ?? '—' }}</td>
+              <td>{{ s.ip ?? '—' }}</td>
+              <td style="text-align:right">
+                <div class="row-actions">
+                  <button class="icon-btn" title="Editar" (click)="openEdit(s)"><span class="mi">edit</span></button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (showForm) {
+    <div class="dialog-backdrop" (click)="showForm = false">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>{{ editId === null ? 'Nueva SIM Card' : 'Editar SIM Card' }}</h2>
+          <button class="icon-btn" (click)="showForm = false"><span class="mi">close</span></button>
+        </div>
+        <form [formGroup]="formData" class="dialog-body" (ngSubmit)="save()">
+          <div class="grid-2">
+            <div><label class="cf-label">ICCID *</label><input class="cf-input" formControlName="iccid" placeholder="8950410112340001" /></div>
+            <div><label class="cf-label">Número</label><input class="cf-input" formControlName="numero" placeholder="+50430000001" /></div>
+            <div><label class="cf-label">Compañía *</label>
+              <select class="cf-input" formControlName="compania">
+                @for (c of companias; track c) { <option [value]="c">{{ c }}</option> }
+              </select>
+            </div>
+            <div><label class="cf-label">Estado</label>
+              <select class="cf-input" formControlName="estado">
+                @for (k of estadoKeys; track k) { <option [value]="k">{{ estadoLabels[k] }}</option> }
+              </select>
+            </div>
+            <div><label class="cf-label">Terminal (Serie)</label><input class="cf-input" formControlName="terminalSerie" /></div>
+            <div><label class="cf-label">APN</label><input class="cf-input" formControlName="apn" /></div>
+            <div><label class="cf-label">IP</label><input class="cf-input" formControlName="ip" /></div>
+          </div>
+          <div><label class="cf-label">Notas</label><textarea class="cf-input" formControlName="notes" rows="2"></textarea></div>
+          @if (formError) { <p class="form-error">{{ formError }}</p> }
+          <div class="dialog-foot">
+            <button type="button" class="btn-secondary" (click)="showForm = false">Cancelar</button>
+            <button type="submit" class="btn-primary">{{ editId === null ? 'Crear' : 'Guardar' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

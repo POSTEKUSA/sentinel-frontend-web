@@ -1,0 +1,59 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Control POS — Transacciones ISO 8583</h1>
+      <p class="count">{{ filtered.length }} de {{ all.length }} transacciones</p>
+    </div>
+    <div class="head-actions">
+      @if (stats) {
+        <span class="cf-badge cf-badge-info"><span class="dot"></span>{{ stats.total }} total</span>
+      }
+      <button class="btn-secondary" (click)="clearFilters()"><span class="mi">filter_alt_off</span> Limpiar</button>
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      <input class="cf-input filter-input" formControlName="serie" placeholder="Serie…" />
+      <input class="cf-input filter-input" formControlName="terminal" placeholder="Terminal ID…" />
+      <input class="cf-input filter-input" formControlName="mti" placeholder="MTI…" />
+      <input class="cf-input filter-input" formControlName="respuesta" placeholder="Respuesta…" />
+      <input class="cf-input filter-input" formControlName="comercio" placeholder="Comercio…" />
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>Fecha</th><th>Serie</th><th>Terminal</th><th>MTI</th>
+            <th>APN</th><th>App</th><th>Comercio</th><th>Monto</th><th>Respuesta</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (filtered.length === 0) {
+            <tr><td colspan="9" class="admin-empty"><span class="mi">receipt_long</span><span>Sin transacciones</span></td></tr>
+          }
+          @for (t of filtered; track t.id) {
+            <tr>
+              <td>{{ t.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+              <td><span class="code">{{ t.serie ?? '—' }}</span></td>
+              <td>{{ t.terminal ?? '—' }}</td>
+              <td><span class="code">{{ t.mti ?? '—' }}</span></td>
+              <td>{{ t.apn ?? '—' }}</td>
+              <td>{{ t.aplicacion ?? '—' }}</td>
+              <td class="td-truncate" [title]="t.comercio ?? ''">{{ t.comercio ?? '—' }}</td>
+              <td>{{ t.monto != null ? ('L ' + t.monto.toLocaleString()) : '—' }}</td>
+              <td>
+                <span class="cf-badge" [ngClass]="respuestaBadge(t.respuesta)">
+                  <span class="dot"></span>{{ respuestaLabel(t.respuesta) }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

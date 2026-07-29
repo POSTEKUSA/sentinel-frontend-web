@@ -1,0 +1,105 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Gestión de Usuarios</h1>
+      <p class="count">{{ filtered.length }} de {{ all.length }} usuarios</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn-primary" (click)="openCreate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Nuevo Usuario
+      </button>
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" formControlName="q" placeholder="Buscar usuario, nombre, email…" />
+      </label>
+      <select class="cf-input filter-input" formControlName="role">
+        <option value="">Todos los roles</option>
+        @for (k of roleKeys; track k) { <option [value]="k">{{ roleLabels[k] }}</option> }
+      </select>
+      <select class="cf-input filter-input" formControlName="active">
+        <option value="">Todos</option>
+        <option value="true">Activos</option>
+        <option value="false">Inactivos</option>
+      </select>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr><th>Username</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Primer Login</th><th>Creado</th><th style="text-align:right">Acciones</th></tr>
+        </thead>
+        <tbody>
+          @if (filtered.length === 0) {
+            <tr><td colspan="8" class="admin-empty"><span class="mi">person</span><span>Sin usuarios</span></td></tr>
+          }
+          @for (u of filtered; track u.id) {
+            <tr>
+              <td><span class="code">{{ u.username }}</span></td>
+              <td>{{ u.nombre ?? '—' }}</td>
+              <td class="td-sub">{{ u.email ?? '—' }}</td>
+              <td><span class="cf-badge cf-badge-muted"><span class="dot"></span>{{ roleLabels[u.role] }}</span></td>
+              <td>
+                <span class="cf-badge" [ngClass]="u.active ? 'cf-badge-ok' : 'cf-badge-off'">
+                  <span class="dot"></span>{{ u.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                @if (u.firstLogin) {
+                  <span class="cf-badge cf-badge-warn"><span class="dot"></span>Pendiente</span>
+                } @else {
+                  <span class="td-sub">No</span>
+                }
+              </td>
+              <td>{{ u.createdAt | date:'dd/MM/yyyy' }}</td>
+              <td style="text-align:right">
+                <div class="row-actions">
+                  <button class="icon-btn" title="{{ u.active ? 'Desactivar' : 'Activar' }}" (click)="toggleActive(u)">
+                    <span class="mi">{{ u.active ? 'person_off' : 'person' }}</span>
+                  </button>
+                  <button class="icon-btn" title="Editar" (click)="openEdit(u)"><span class="mi">edit</span></button>
+                  <button class="icon-btn icon-btn--danger" title="Eliminar" (click)="delete(u.id)"><span class="mi">delete</span></button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (showForm) {
+    <div class="dialog-backdrop" (click)="showForm = false">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>{{ editId === null ? 'Nuevo Usuario' : 'Editar Usuario' }}</h2>
+          <button class="icon-btn" (click)="showForm = false"><span class="mi">close</span></button>
+        </div>
+        <form [formGroup]="formData" class="dialog-body" (ngSubmit)="save()">
+          <div class="grid-2">
+            <div><label class="cf-label">Username *</label><input class="cf-input" formControlName="username" placeholder="jlopez" /></div>
+            <div><label class="cf-label">Nombre</label><input class="cf-input" formControlName="nombre" placeholder="Juan López" /></div>
+            <div><label class="cf-label">Email</label><input class="cf-input" formControlName="email" type="email" placeholder="jlopez@postek.com" /></div>
+            <div><label class="cf-label">Rol</label>
+              <select class="cf-input" formControlName="role">
+                @for (k of roleKeys; track k) { <option [value]="k">{{ roleLabels[k] }}</option> }
+              </select>
+            </div>
+          </div>
+          @if (formError) { <p class="form-error">{{ formError }}</p> }
+          <div class="dialog-foot">
+            <button type="button" class="btn-secondary" (click)="showForm = false">Cancelar</button>
+            <button type="submit" class="btn-primary">{{ editId === null ? 'Crear' : 'Guardar' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

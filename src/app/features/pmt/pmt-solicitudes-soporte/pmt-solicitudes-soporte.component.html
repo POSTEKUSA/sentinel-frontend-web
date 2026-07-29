@@ -1,0 +1,152 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Solicitudes de Soporte</h1>
+      <p class="count">{{ filtered.length }} solicitudes</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn-primary" (click)="showCreate = true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Nueva Solicitud
+      </button>
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" formControlName="q" placeholder="Buscar serie, descripción…" />
+      </label>
+      <select class="cf-input filter-input" formControlName="estado">
+        <option value="">Todos los estados</option>
+        @for (k of estadoKeys; track k) {
+          <option [value]="k">{{ estadoLabels[k] }}</option>
+        }
+      </select>
+      <select class="cf-input filter-input" formControlName="tipo">
+        <option value="">Todos los tipos</option>
+        <option value="tecnico">Técnico</option>
+        <option value="software">Software</option>
+        <option value="hardware">Hardware</option>
+        <option value="otro">Otro</option>
+      </select>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>#</th><th>Tipo</th><th>Descripción</th><th>Serie</th>
+            <th>Estado</th><th>Comentarios</th><th>Creado</th><th style="text-align:right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (filtered.length === 0) {
+            <tr><td colspan="8" class="admin-empty"><span class="mi">support_agent</span><span>Sin solicitudes</span></td></tr>
+          }
+          @for (s of filtered; track s.id) {
+            <tr>
+              <td class="td-sub">{{ s.id }}</td>
+              <td><span class="cf-badge cf-badge-muted"><span class="dot"></span>{{ s.tipo | titlecase }}</span></td>
+              <td class="td-truncate" [title]="s.descripcion">{{ s.descripcion }}</td>
+              <td><span class="code">{{ s.serie ?? '—' }}</span></td>
+              <td>
+                <span class="cf-badge" [ngClass]="estadoBadge[s.estado]">
+                  <span class="dot"></span>{{ estadoLabels[s.estado] }}
+                </span>
+              </td>
+              <td>{{ s.comments.length }}</td>
+              <td>{{ s.createdAt | date:'dd/MM/yy' }}</td>
+              <td style="text-align:right">
+                <button class="icon-btn" title="Ver detalle" (click)="openDetail(s)"><span class="mi">open_in_new</span></button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Detail dialog -->
+  @if (detail) {
+    <div class="dialog-backdrop" (click)="detail = null">
+      <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Solicitud #{{ detail.id }}</h2>
+          <button class="icon-btn" (click)="detail = null"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <div class="grid-2" style="margin-bottom:12px">
+            <div><span class="cf-label">Tipo:</span> <span>{{ detail.tipo | titlecase }}</span></div>
+            <div><span class="cf-label">Serie:</span> <span class="code">{{ detail.serie ?? '—' }}</span></div>
+            <div><span class="cf-label">Creado por:</span> <span>{{ detail.createdBy ?? '—' }}</span></div>
+            <div><span class="cf-label">Creado:</span> <span>{{ detail.createdAt | date:'dd/MM/yyyy HH:mm' }}</span></div>
+          </div>
+          <p style="font-size:13px;color:var(--ink-2);margin-bottom:14px">{{ detail.descripcion }}</p>
+
+          <div style="margin-bottom:12px">
+            <label class="cf-label">Cambiar estado</label>
+            <div class="row-actions" style="flex-wrap:wrap;gap:6px">
+              @for (k of estadoKeys; track k) {
+                <button class="btn-sm" [ngClass]="detail.estado === k ? 'btn-primary' : 'btn-secondary'" (click)="changeEstado(detail.id, k)">
+                  {{ estadoLabels[k] }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
+          <p class="cf-label" style="margin-bottom:8px">Comentarios ({{ detail.comments.length }})</p>
+          <div style="display:flex;flex-direction:column;gap:10px;max-height:200px;overflow-y:auto;margin-bottom:14px">
+            @for (c of detail.comments; track c.id) {
+              <div style="padding:8px 10px;background:var(--surface-alt);border-radius:6px;font-size:13px">
+                <div style="font-weight:600;margin-bottom:2px">{{ c.createdBy }} <span style="font-weight:400;color:var(--ink-3)">· {{ c.createdAt | date:'dd/MM/yy HH:mm' }}</span></div>
+                <div>{{ c.comment }}</div>
+              </div>
+            }
+          </div>
+          <label class="cf-label">Agregar comentario</label>
+          <textarea class="cf-input" rows="2" [(ngModel)]="newComment" placeholder="Escribe un comentario…"></textarea>
+          <button class="btn-primary btn-sm" style="margin-top:8px" (click)="addComment()">Enviar comentario</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Create dialog -->
+  @if (showCreate) {
+    <div class="dialog-backdrop" (click)="showCreate = false">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Nueva Solicitud de Soporte</h2>
+          <button class="icon-btn" (click)="showCreate = false"><span class="mi">close</span></button>
+        </div>
+        <form [formGroup]="createForm" class="dialog-body" (ngSubmit)="create()">
+          <div class="grid-2">
+            <div><label class="cf-label">Serie (opcional)</label><input class="cf-input" formControlName="serie" placeholder="SN123456" /></div>
+            <div><label class="cf-label">Tipo</label>
+              <select class="cf-input" formControlName="tipo">
+                <option value="tecnico">Técnico</option>
+                <option value="software">Software</option>
+                <option value="hardware">Hardware</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <label class="cf-label">Descripción *</label>
+            <textarea class="cf-input" formControlName="descripcion" rows="4" placeholder="Describa el problema…"></textarea>
+          </div>
+          @if (createError) { <p class="form-error">{{ createError }}</p> }
+          <div class="dialog-foot">
+            <button type="button" class="btn-secondary" (click)="showCreate = false">Cancelar</button>
+            <button type="submit" class="btn-primary">Crear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

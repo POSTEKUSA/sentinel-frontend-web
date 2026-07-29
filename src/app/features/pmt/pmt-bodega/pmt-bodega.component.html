@@ -1,0 +1,140 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>POS en Bodega</h1>
+      <p class="count">{{ filtered.length }} terminales en almacén · {{ selectedIds.size }} seleccionados</p>
+    </div>
+    <div class="head-actions">
+      @if (selectedIds.size > 0) {
+        <button class="btn-secondary" (click)="actionType = 'asignar'">
+          <span class="mi">person_add</span> Asignar ({{ selectedIds.size }})
+        </button>
+        <button class="btn-secondary" (click)="actionType = 'inyeccion'">
+          <span class="mi">vaccines</span> Pasar a Inyección
+        </button>
+        <button class="btn-secondary" (click)="actionType = 'reparacion'">
+          <span class="mi">build</span> Enviar Reparación
+        </button>
+      }
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      <input class="cf-input filter-input" formControlName="serie" placeholder="Serie…" />
+      <input class="cf-input filter-input" formControlName="inventario" placeholder="Inventario…" />
+      <input class="cf-input filter-input" formControlName="modelo" placeholder="Modelo…" />
+      <input class="cf-input filter-input" formControlName="caja" placeholder="Caja…" />
+      <select class="cf-input filter-input" formControlName="inyectado">
+        <option value="">Inyectado: Todos</option>
+        <option value="Si">Sí</option>
+        <option value="No">No</option>
+      </select>
+      <button type="button" [class]="hasFilters ? 'btn-primary' : 'btn-secondary'" (click)="clearFilters()">
+        <span class="mi">filter_alt_off</span> Limpiar
+      </button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th style="width:40px">
+              <input type="checkbox" [checked]="allSelected" (change)="toggleAll()" />
+            </th>
+            <th>Serie</th>
+            <th>Inventario</th>
+            <th>Modelo</th>
+            <th>Zona</th>
+            <th>Caja</th>
+            <th>Inyectado</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (filtered.length === 0) {
+            <tr><td colspan="8" class="admin-empty"><span class="mi">inventory</span><span>Sin terminales en bodega</span></td></tr>
+          }
+          @for (t of filtered; track t.id) {
+            <tr [class.row-selected]="selectedIds.has(t.id)">
+              <td><input type="checkbox" [checked]="selectedIds.has(t.id)" (change)="toggleSelect(t.id)" /></td>
+              <td><span class="code">{{ t.serie }}</span></td>
+              <td>{{ t.inventario ?? '—' }}</td>
+              <td>{{ t.modelo ?? '—' }}</td>
+              <td>{{ t.zona ?? '—' }}</td>
+              <td>{{ t.caja ?? '—' }}</td>
+              <td>
+                <span class="cf-badge" [ngClass]="t.inyectado === 'Si' ? 'cf-badge-ok' : 'cf-badge-off'">
+                  <span class="dot"></span>{{ t.inyectado ?? '—' }}
+                </span>
+              </td>
+              <td>{{ t.fecha ?? '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Action dialogs -->
+  @if (actionType === 'inyeccion' || actionType === 'reparacion') {
+    <div class="dialog-backdrop" (click)="actionType = null">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>{{ actionType === 'inyeccion' ? 'Pasar a Inyección' : 'Enviar a Reparación' }}</h2>
+          <button class="icon-btn" (click)="actionType = null"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
+            Se aplicará la acción a <strong>{{ selectedIds.size }}</strong> terminal(es).
+          </p>
+          <label class="cf-label">Comentario (opcional)</label>
+          <textarea class="cf-input" rows="3" [(ngModel)]="actionComment" placeholder="Motivo…"></textarea>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn-secondary" (click)="actionType = null">Cancelar</button>
+          <button class="btn-primary" (click)="applyAction()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (actionType === 'asignar') {
+    <div class="dialog-backdrop" (click)="actionType = null">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Asignar POS</h2>
+          <button class="icon-btn" (click)="actionType = null"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
+            Asignando <strong>{{ selectedIds.size }}</strong> terminal(es).
+          </p>
+          <div class="grid-2">
+            <div>
+              <label class="cf-label">Tipo de asignación</label>
+              <select class="cf-input" [(ngModel)]="assignRole">
+                <option value="supervisor">Supervisor</option>
+                <option value="tecnico">Técnico</option>
+              </select>
+            </div>
+            <div>
+              <label class="cf-label">Usuario</label>
+              <input class="cf-input" [(ngModel)]="assignTo" placeholder="username…" />
+            </div>
+          </div>
+          <div style="margin-top:12px">
+            <label class="cf-label">Comentario (opcional)</label>
+            <textarea class="cf-input" rows="2" [(ngModel)]="actionComment" placeholder="Motivo…"></textarea>
+          </div>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn-secondary" (click)="actionType = null">Cancelar</button>
+          <button class="btn-primary" (click)="applyAction()">Asignar</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

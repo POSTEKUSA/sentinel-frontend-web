@@ -1,0 +1,92 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Inicializaciones</h1>
+      <p class="count">{{ filtered.length }} registros de {{ all.length }} totales</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn-primary" (click)="showForm = true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Registrar
+      </button>
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" formControlName="q" placeholder="Buscar serie, terminal, versión…" />
+      </label>
+      <select class="cf-input filter-input" formControlName="resultado">
+        <option value="">Resultado: Todos</option>
+        <option value="OK">OK</option>
+        <option value="FALLO">Fallo</option>
+      </select>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>Fecha</th><th>Serie</th><th>Terminal ID</th>
+            <th>Versión</th><th>APN</th><th>Resultado</th><th>Registrado por</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (filtered.length === 0) {
+            <tr><td colspan="7" class="admin-empty"><span class="mi">refresh</span><span>Sin inicializaciones</span></td></tr>
+          }
+          @for (i of filtered; track i.id) {
+            <tr>
+              <td>{{ i.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td><span class="code">{{ i.serie }}</span></td>
+              <td>{{ i.terminal ?? '—' }}</td>
+              <td>{{ i.version ?? '—' }}</td>
+              <td>{{ i.apn ?? '—' }}</td>
+              <td>
+                <span class="cf-badge" [ngClass]="(i.resultado ?? '').startsWith('OK') ? 'cf-badge-ok' : 'cf-badge-off'">
+                  <span class="dot"></span>{{ i.resultado ?? '—' }}
+                </span>
+              </td>
+              <td>{{ i.createdBy ?? '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (showForm) {
+    <div class="dialog-backdrop" (click)="showForm = false">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Registrar Inicialización</h2>
+          <button class="icon-btn" (click)="showForm = false"><span class="mi">close</span></button>
+        </div>
+        <form [formGroup]="formData" class="dialog-body" (ngSubmit)="save()">
+          <div class="grid-2">
+            <div><label class="cf-label">Serie *</label><input class="cf-input" formControlName="serie" placeholder="SN123456" /></div>
+            <div><label class="cf-label">Terminal ID</label><input class="cf-input" formControlName="terminal" placeholder="T00001" /></div>
+            <div><label class="cf-label">Versión</label><input class="cf-input" formControlName="version" placeholder="4.12.5" /></div>
+            <div><label class="cf-label">APN</label><input class="cf-input" formControlName="apn" placeholder="internet.claro.hn" /></div>
+            <div><label class="cf-label">Resultado</label>
+              <select class="cf-input" formControlName="resultado">
+                <option value="OK">OK</option>
+                <option value="FALLO">FALLO</option>
+              </select>
+            </div>
+            <div><label class="cf-label">Registrado por</label><input class="cf-input" formControlName="createdBy" placeholder="usuario" /></div>
+          </div>
+          @if (formError) { <p class="form-error">{{ formError }}</p> }
+          <div class="dialog-foot">
+            <button type="button" class="btn-secondary" (click)="showForm = false">Cancelar</button>
+            <button type="submit" class="btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

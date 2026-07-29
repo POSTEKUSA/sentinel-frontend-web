@@ -1,0 +1,80 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>POS en Inyección</h1>
+      <p class="count">{{ filtered.length }} terminales en proceso de inyección de software · {{ selectedIds.size }} seleccionados</p>
+    </div>
+    <div class="head-actions">
+      @if (selectedIds.size > 0) {
+        <button class="btn-primary" (click)="showConfirm = true">
+          <span class="mi">check_circle</span> Marcar Salida ({{ selectedIds.size }})
+        </button>
+      }
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" formControlName="q" placeholder="Buscar serie, modelo, zona…" />
+      </label>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th style="width:40px"><input type="checkbox" [checked]="allSelected" (change)="toggleAll()" /></th>
+            <th>Serie</th>
+            <th>Inventario</th>
+            <th>Modelo</th>
+            <th>Zona</th>
+            <th>Caja</th>
+            <th>Fecha Entrada</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (filtered.length === 0) {
+            <tr><td colspan="7" class="admin-empty"><span class="mi">vaccines</span><span>Sin terminales en inyección</span></td></tr>
+          }
+          @for (t of filtered; track t.id) {
+            <tr [class.row-selected]="selectedIds.has(t.id)">
+              <td><input type="checkbox" [checked]="selectedIds.has(t.id)" (change)="toggleSelect(t.id)" /></td>
+              <td><span class="code">{{ t.serie }}</span></td>
+              <td>{{ t.inventario ?? '—' }}</td>
+              <td>{{ t.modelo ?? '—' }}</td>
+              <td>{{ t.zona ?? '—' }}</td>
+              <td>{{ t.caja ?? '—' }}</td>
+              <td>{{ t.updatedAt | date:'dd/MM/yyyy' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (showConfirm) {
+    <div class="dialog-backdrop" (click)="showConfirm = false">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Registrar Salida de Inyección</h2>
+          <button class="icon-btn" (click)="showConfirm = false"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2);font-size:13px;margin-bottom:12px">
+            Se marcará la salida de <strong>{{ selectedIds.size }}</strong> terminal(es) y quedarán como <strong>Asignado Supervisor</strong>.
+          </p>
+          <label class="cf-label">Comentario (opcional)</label>
+          <textarea class="cf-input" rows="2" [(ngModel)]="comment" placeholder="Observaciones de la inyección…"></textarea>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn-secondary" (click)="showConfirm = false">Cancelar</button>
+          <button class="btn-primary" (click)="marcarSalida()">Confirmar Salida</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

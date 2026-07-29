@@ -1,0 +1,144 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Solicitudes de Equipo</h1>
+      <p class="count">{{ filtered.length }} solicitudes</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn-primary" (click)="showCreate = true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Nueva Solicitud
+      </button>
+    </div>
+  </header>
+
+  <div class="panel toolbar-panel">
+    <form class="toolbar">
+      <select class="cf-input filter-input" [(ngModel)]="filterEstado" (ngModelChange)="applyFilters()" name="filterEstado">
+        <option value="">Todos los estados</option>
+        @for (k of estadoKeys; track k) { <option [value]="k">{{ estadoLabels[k] }}</option> }
+      </select>
+    </form>
+  </div>
+
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr><th>#</th><th>Solicitado por</th><th>Items</th><th>Estado</th><th>Fecha</th><th style="text-align:right">Ver</th></tr>
+        </thead>
+        <tbody>
+          @if (filtered.length === 0) {
+            <tr><td colspan="6" class="admin-empty"><span class="mi">inventory</span><span>Sin solicitudes</span></td></tr>
+          }
+          @for (s of filtered; track s.id) {
+            <tr>
+              <td class="td-sub">{{ s.id }}</td>
+              <td>{{ s.solicitadoPor }}</td>
+              <td>{{ s.items.length }} ítem(s)</td>
+              <td>
+                <span class="cf-badge" [ngClass]="estadoBadge[s.estado]">
+                  <span class="dot"></span>{{ estadoLabels[s.estado] }}
+                </span>
+              </td>
+              <td>{{ s.createdAt | date:'dd/MM/yy' }}</td>
+              <td style="text-align:right">
+                <button class="icon-btn" (click)="openDetail(s)"><span class="mi">open_in_new</span></button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Detail -->
+  @if (detail) {
+    <div class="dialog-backdrop" (click)="detail = null">
+      <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Solicitud #{{ detail.id }}</h2>
+          <button class="icon-btn" (click)="detail = null"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <div class="grid-2" style="margin-bottom:14px">
+            <div><span class="cf-label">Solicitado por:</span> {{ detail.solicitadoPor }}</div>
+            <div><span class="cf-label">Fecha:</span> {{ detail.createdAt | date:'dd/MM/yyyy' }}</div>
+            <div><span class="cf-label">Estado actual:</span>
+              <span class="cf-badge" [ngClass]="estadoBadge[detail.estado]"><span class="dot"></span>{{ estadoLabels[detail.estado] }}</span>
+            </div>
+          </div>
+          @if (detail.notas) {
+            <p style="font-size:13px;color:var(--ink-2);margin-bottom:14px">{{ detail.notas }}</p>
+          }
+
+          <p class="cf-label" style="margin-bottom:8px">Ítems solicitados</p>
+          <table class="cf-table" style="margin-bottom:14px">
+            <thead><tr><th>Artículo</th><th style="text-align:right">Cantidad</th></tr></thead>
+            <tbody>
+              @for (item of detail.items; track item.nombre) {
+                <tr><td>{{ item.nombre }}</td><td style="text-align:right"><strong>{{ item.cantidad }}</strong></td></tr>
+              }
+            </tbody>
+          </table>
+
+          @if (detail.history.length > 0) {
+            <p class="cf-label" style="margin-bottom:8px">Historial</p>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;max-height:140px;overflow-y:auto">
+              @for (h of detail.history; track h.id) {
+                <div style="font-size:12px;padding:6px 10px;background:var(--surface-alt);border-radius:6px">
+                  <span class="cf-badge" [ngClass]="estadoBadge[h.estado]"><span class="dot"></span>{{ estadoLabels[h.estado] }}</span>
+                  <span style="color:var(--ink-2);margin-left:8px">{{ h.createdBy }} · {{ h.createdAt | date:'dd/MM/yy HH:mm' }}</span>
+                  @if (h.comment) { <p style="margin-top:4px;color:var(--ink)">{{ h.comment }}</p> }
+                </div>
+              }
+            </div>
+          }
+
+          <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
+          <p class="cf-label" style="margin-bottom:8px">Cambiar estado</p>
+          <div class="grid-2">
+            <select class="cf-input" [(ngModel)]="historyEstado" name="historyEstado">
+              @for (k of estadoKeys; track k) { <option [value]="k">{{ estadoLabels[k] }}</option> }
+            </select>
+            <input class="cf-input" [(ngModel)]="historyComment" name="historyComment" placeholder="Comentario…" />
+          </div>
+          <button class="btn-primary btn-sm" style="margin-top:10px" (click)="applyHistoryAction()">Aplicar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Create -->
+  @if (showCreate) {
+    <div class="dialog-backdrop" (click)="showCreate = false">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Nueva Solicitud de Equipo</h2>
+          <button class="icon-btn" (click)="showCreate = false"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <div style="margin-bottom:12px">
+            <label class="cf-label">Notas (opcional)</label>
+            <textarea class="cf-input" [(ngModel)]="newNotas" name="newNotas" rows="2" placeholder="Observaciones…"></textarea>
+          </div>
+          <p class="cf-label" style="margin-bottom:8px">Ítems</p>
+          @for (item of newItems; track $index; let i = $index) {
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+              <select class="cf-input" [(ngModel)]="item.nombre" [name]="'item_name_' + i" style="flex:2">
+                @for (eq of equipoItems; track eq) { <option [value]="eq">{{ eq }}</option> }
+              </select>
+              <input class="cf-input" type="number" min="1" [(ngModel)]="item.cantidad" [name]="'item_qty_' + i" style="flex:0 0 80px" />
+              <button class="icon-btn icon-btn--danger" (click)="removeItem(i)"><span class="mi">close</span></button>
+            </div>
+          }
+          <button class="btn-secondary btn-sm" (click)="addItem()"><span class="mi">add</span> Agregar ítem</button>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn-secondary" (click)="showCreate = false">Cancelar</button>
+          <button class="btn-primary" (click)="create()">Crear Solicitud</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

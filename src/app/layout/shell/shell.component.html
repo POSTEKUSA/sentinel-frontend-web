@@ -82,6 +82,9 @@
               @case ('merchants') {
                 <span class="mi" aria-hidden="true">storefront</span>
               }
+              @default {
+                <span class="mi" aria-hidden="true">{{ item.icon }}</span>
+              }
             }
             <span>{{ item.label }}</span>
           </a>

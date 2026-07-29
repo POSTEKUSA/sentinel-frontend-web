@@ -1,0 +1,107 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Carga Masiva de Terminales</h1>
+      <p class="count">Importe múltiples equipos al inventario via CSV o JSON</p>
+    </div>
+  </header>
+
+  <div class="cf-tabs" role="tablist">
+    <button class="cf-tab" [class.active]="activeTab === 'csv'" (click)="activeTab = 'csv'; reset()">
+      <span class="mi">upload_file</span> Archivo CSV
+    </button>
+    <button class="cf-tab" [class.active]="activeTab === 'json'" (click)="activeTab = 'json'; reset()">
+      <span class="mi">data_object</span> JSON Manual
+    </button>
+  </div>
+
+  <div class="upload-layout">
+
+    <!-- Input panel -->
+    <div class="panel upload-card">
+      @if (activeTab === 'csv') {
+        <h2 class="upload-card-title"><span class="mi">upload_file</span> Archivo CSV</h2>
+        <p class="upload-card-sub">Columnas: serie*, modelo, estado, nombre, zona, caja, inyectado, fecha, ciudad</p>
+        <div class="dropzone" (click)="csvInput.click()">
+          <span class="mi dropzone-icon">{{ fileName ? 'description' : 'cloud_upload' }}</span>
+          <p class="dropzone-text">{{ fileName ?? 'Haga clic para seleccionar archivo' }}</p>
+          <p class="dropzone-sub">Formatos: .csv</p>
+          <input #csvInput type="file" class="hidden-input" accept=".csv" (change)="onFileChange($event)" />
+        </div>
+      }
+      @if (activeTab === 'json') {
+        <h2 class="upload-card-title"><span class="mi">data_object</span> JSON Manual</h2>
+        <p class="upload-card-sub">Ingrese un array JSON con los terminales a importar.</p>
+        <textarea class="cf-input" rows="12" [(ngModel)]="jsonInput" style="font-family:monospace;font-size:12px"
+          placeholder='[&#10;  { "serie": "SN123", "modelo": "VX520", "estado": "en_bodega" }&#10;]'></textarea>
+        <button class="btn-secondary btn-sm" style="margin-top:8px" (click)="parseJson()">
+          <span class="mi">check</span> Validar JSON
+        </button>
+      }
+
+      @if (parsedData && !uploadResult) {
+        <div class="upload-actions">
+          <button class="btn-primary" (click)="upload()">
+            <span class="mi">cloud_upload</span> Procesar {{ parsedData.length }} terminal(es)
+          </button>
+          <button class="btn-secondary" (click)="reset()"><span class="mi">close</span></button>
+        </div>
+      }
+      @if (uploadResult) {
+        <button class="btn-secondary" style="margin-top:12px;width:100%" (click)="reset()">
+          <span class="mi">refresh</span> Nueva Carga
+        </button>
+      }
+    </div>
+
+    <!-- Result panel -->
+    <div class="panel upload-result">
+      <h2 class="upload-card-title">Resultado</h2>
+      @if (!parsedData && !parseError && !uploadResult) {
+        <p style="color:var(--ink-3);font-size:13px">Seleccione un método de importación.</p>
+      }
+      @if (parseError) {
+        <div class="alert alert--error"><span class="mi alert-icon">error</span><div><p class="alert-title">Error de validación</p><p>{{ parseError }}</p></div></div>
+      }
+      @if (parsedData && !uploadResult) {
+        <div class="alert alert--info"><span class="mi alert-icon">check_circle</span><div>
+          <p class="alert-title">Vista previa ({{ parsedData.length }} registros)</p>
+          <p>Revise los datos y presione "Procesar".</p>
+        </div></div>
+        <div class="admin-table-wrap" style="max-height:300px;overflow-y:auto;margin-top:12px">
+          <table class="cf-table">
+            <thead><tr>@for (c of previewCols; track c) { <th>{{ colLabel(c) }}</th> }</tr></thead>
+            <tbody>
+              @for (row of parsedData.slice(0,20); track $index) {
+                <tr>@for (c of previewCols; track c) { <td>{{ colValue(row, c) }}</td> }</tr>
+              }
+              @if (parsedData.length > 20) {
+                <tr><td [attr.colspan]="previewCols.length" style="text-align:center;font-size:12px;color:var(--ink-3)">… y {{ parsedData.length - 20 }} más</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+      @if (uploadResult) {
+        <div class="alert" [ngClass]="uploadResult.errors.length > 0 ? 'alert--warn' : 'alert--ok'">
+          <span class="mi alert-icon">{{ uploadResult.errors.length > 0 ? 'warning' : 'check_circle' }}</span>
+          <div>
+            <p class="alert-title">Proceso Completado</p>
+            <p><strong>{{ uploadResult.created }}</strong> terminales creadas.
+              @if (uploadResult.errors.length > 0) {
+                <span style="color:var(--danger)"> {{ uploadResult.errors.length }} errores.</span>
+              }
+            </p>
+          </div>
+        </div>
+        @if (uploadResult.errors.length > 0) {
+          <div style="margin-top:10px;max-height:200px;overflow-y:auto">
+            @for (e of uploadResult.errors; track e.row) {
+              <div style="font-size:12px;color:var(--danger);padding:2px 0">Fila {{ e.row }}: {{ e.serie }} — {{ e.message }}</div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>

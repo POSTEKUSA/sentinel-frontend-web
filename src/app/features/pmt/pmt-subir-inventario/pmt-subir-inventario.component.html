@@ -1,0 +1,108 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Subir Inventario</h1>
+      <p class="count">Carga masiva de terminales POS desde archivo CSV</p>
+    </div>
+  </header>
+
+  <div class="upload-layout">
+
+    <!-- Upload card -->
+    <div class="panel upload-card">
+      <h2 class="upload-card-title">
+        <span class="mi">upload_file</span> Archivo CSV / Excel
+      </h2>
+      <p class="upload-card-sub">El archivo debe contener al menos la columna <strong>SERIE</strong>.</p>
+      <p class="upload-card-sub" style="margin-top:4px">
+        Columnas reconocidas: Serie, Inventario, Modelo, Caja, Estado, Inyectado, Fecha, Nombre, Zona.
+      </p>
+
+      <div class="dropzone" (click)="fileInput.click()">
+        <span class="mi dropzone-icon">{{ fileName ? 'description' : 'cloud_upload' }}</span>
+        <p class="dropzone-text">{{ fileName ?? 'Haga clic para seleccionar archivo' }}</p>
+        <p class="dropzone-sub">{{ fileName ? '' : 'Formatos soportados: .csv' }}</p>
+        <input #fileInput type="file" class="hidden-input" accept=".csv,.xlsx,.xls" (change)="onFileChange($event)" />
+      </div>
+
+      @if (parsedData && !uploadResult) {
+        <div class="upload-actions">
+          <button class="btn-primary" (click)="upload()">
+            <span class="mi">cloud_upload</span> Subir {{ parsedData.length }} terminal(es)
+          </button>
+          <button class="btn-secondary" (click)="reset()"><span class="mi">close</span></button>
+        </div>
+      }
+      @if (uploadResult) {
+        <button class="btn-secondary" style="margin-top:12px;width:100%" (click)="reset()">
+          <span class="mi">refresh</span> Cargar otro archivo
+        </button>
+      }
+    </div>
+
+    <!-- Result card -->
+    <div class="panel upload-result">
+      <h2 class="upload-card-title">Resultado</h2>
+      @if (!parsedData && !parseError && !uploadResult) {
+        <p style="color:var(--ink-3);font-size:13px">Seleccione un archivo para comenzar.</p>
+      }
+      @if (parseError) {
+        <div class="alert alert--error"><span class="mi alert-icon">error</span><div><p class="alert-title">Error al leer el archivo</p><p>{{ parseError }}</p></div></div>
+      }
+      @if (parsedData && !uploadResult) {
+        <div class="alert alert--info"><span class="mi alert-icon">check_circle</span><div><p class="alert-title">Archivo listo</p><p><strong>{{ parsedData.length }}</strong> fila(s) válidas. Presione "Subir" para importar.</p></div></div>
+      }
+      @if (uploadResult) {
+        <div class="alert" [ngClass]="uploadResult.errors.length > 0 ? 'alert--warn' : 'alert--ok'">
+          <span class="mi alert-icon">{{ uploadResult.errors.length > 0 ? 'warning' : 'check_circle' }}</span>
+          <div>
+            <p class="alert-title">Carga completada</p>
+            <p><strong>{{ uploadResult.created }}</strong> terminal(es) creadas.
+              @if (uploadResult.errors.length > 0) {
+                <span style="color:var(--danger)"> {{ uploadResult.errors.length }} errores.</span>
+              }
+            </p>
+          </div>
+        </div>
+        @if (uploadResult.errors.length > 0) {
+          <div style="margin-top:12px;max-height:200px;overflow-y:auto">
+            @for (e of uploadResult.errors; track e.row) {
+              <div style="font-size:12px;color:var(--danger);padding:2px 0">Fila {{ e.row }}: {{ e.serie }} — {{ e.message }}</div>
+            }
+          </div>
+        }
+      }
+    </div>
+
+  </div>
+
+  <!-- Preview table -->
+  @if (parsedData && parsedData.length > 0) {
+    <div class="panel" style="margin-top:16px">
+      <p class="result-count" style="margin:0 0 10px">Vista previa — {{ parsedData.length }} filas</p>
+      <div class="admin-table-wrap">
+        <table class="cf-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              @for (col of previewCols; track col) { <th>{{ colLabel(col) }}</th> }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of parsedData.slice(0, 50); track $index; let i = $index) {
+              <tr>
+                <td class="td-sub">{{ i + 1 }}</td>
+                @for (col of previewCols; track col) {
+                  <td class="td-truncate" [title]="colValue(row, col)">{{ colValue(row, col) }}</td>
+                }
+              </tr>
+            }
+            @if (parsedData.length > 50) {
+              <tr><td [attr.colspan]="previewCols.length + 1" style="text-align:center;color:var(--ink-3);font-size:12px;padding:8px">… y {{ parsedData.length - 50 }} fila(s) más</td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

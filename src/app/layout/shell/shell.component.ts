@@ -17,7 +17,7 @@ import appConfig from '../../core/config/app-config.json';
 
 interface NavItem {
   label: string;
-  icon: 'dashboard' | 'devices' | 'map' | 'catalog' | 'orders' | 'receiving' | 'inventory' | 'merchants';
+  icon: 'dashboard' | 'devices' | 'map' | 'catalog' | 'orders' | 'receiving' | 'inventory' | 'merchants' | string;
   route: string;
 }
 
@@ -66,6 +66,30 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'Recepción', icon: 'receiving', route: '/pos-admin/receiving' },
         { label: 'Inventario', icon: 'inventory', route: '/pos-admin/inventory' },
         { label: 'Comercios', icon: 'merchants', route: '/pos-admin/merchants' },
+      ],
+    },
+    {
+      title: 'OLD Control POS',
+      items: [
+        { label: 'Dashboard PMT', icon: 'dashboard', route: '/pmt/dashboard' },
+        { label: 'Inventario', icon: 'inventory_2', route: '/pmt/inventory' },
+        { label: 'Bodega', icon: 'inventory', route: '/pmt/bodega' },
+        { label: 'POS Inyección', icon: 'vaccines', route: '/pmt/pos-inyeccion' },
+        { label: 'Asignados', icon: 'manage_accounts', route: '/pmt/asignados' },
+        { label: 'Reparación', icon: 'build', route: '/pmt/reparacion' },
+        { label: 'Garantía', icon: 'shield', route: '/pmt/garantia' },
+        { label: 'Inicializaciones', icon: 'settings_power', route: '/pmt/inicializaciones' },
+        { label: 'SIM Cards', icon: 'sim_card', route: '/pmt/sim-cards' },
+        { label: 'Soporte Equipo', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
+        { label: 'Solicitudes Equipo', icon: 'hardware', route: '/pmt/solicitudes-equipo' },
+        { label: 'Control POS', icon: 'receipt_long', route: '/pmt/control-pos' },
+        { label: 'Historial', icon: 'history', route: '/pmt/historical-records' },
+        { label: 'Asignados Hist.', icon: 'swap_horiz', route: '/pmt/assigned-pos-history' },
+        { label: 'Query POS', icon: 'database', route: '/pmt/query' },
+        { label: 'Subir Inventario', icon: 'upload_file', route: '/pmt/subir-inventario' },
+        { label: 'Bulk Upload', icon: 'cloud_upload', route: '/pmt/bulk-upload' },
+        { label: 'Usuarios', icon: 'group', route: '/pmt/users' },
+        { label: 'Soporte PMT', icon: 'headset_mic', route: '/pmt/soporte-pmt' },
       ],
     },
   ];
@@ -124,6 +148,8 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (/^\/pos-admin\/merchants\/[^/]+/.test(path)) return { title: 'Comercio', icon: 'merchants' };
     if (path.startsWith('/pos-admin/merchants')) return { title: 'Comercios', icon: 'merchants' };
     if (path.startsWith('/dashboard')) return { title: 'Vista general de la flota', icon: 'dashboard' };
+    if (path.startsWith('/pmt/dashboard')) return { title: 'Dashboard PMT', icon: 'dashboard' };
+    if (path.startsWith('/pmt/')) return { title: 'Control POS', icon: 'inventory' };
     return { title: this.appName, icon: 'dashboard' };
   }
 

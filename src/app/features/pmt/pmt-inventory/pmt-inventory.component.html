@@ -1,0 +1,227 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <h1>Inventario de Terminales POS</h1>
+      <p class="count">{{ filtered.length }} equipo(s) encontrados de {{ all.length }} totales</p>
+    </div>
+    <div class="head-actions">
+      <button type="button" class="btn-primary" (click)="openCreate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Nuevo Terminal
+      </button>
+    </div>
+  </header>
+
+  <!-- Filters -->
+  <div class="panel toolbar-panel">
+    <form [formGroup]="filterForm" class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" formControlName="q" placeholder="Buscar serie, modelo, comercio…" autocomplete="off" />
+      </label>
+      <select class="cf-input filter-input" formControlName="estado">
+        <option value="">Todos los estados</option>
+        @for (k of estadoKeys; track k) {
+          <option [value]="k">{{ estadoLabels[k] }}</option>
+        }
+      </select>
+      <input class="cf-input filter-input" formControlName="zona" placeholder="Zona…" />
+      <input class="cf-input filter-input" formControlName="modelo" placeholder="Modelo…" />
+      <button type="button" [class]="hasFilters ? 'btn-primary' : 'btn-secondary'" (click)="clearFilters()">
+        <span class="mi">filter_alt_off</span> Limpiar
+      </button>
+    </form>
+  </div>
+
+  <!-- Table -->
+  <div class="panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>Serie</th>
+            <th>Inventario</th>
+            <th>Modelo</th>
+            <th>Estado</th>
+            <th>Zona</th>
+            <th>Comercio</th>
+            <th>Ciudad</th>
+            <th>Actualizado</th>
+            <th style="text-align:right">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (paged.length === 0) {
+            <tr>
+              <td colspan="9" class="admin-empty">
+                <span class="mi">search_off</span>
+                <span>Sin resultados</span>
+              </td>
+            </tr>
+          }
+          @for (t of paged; track t.id) {
+            <tr>
+              <td><span class="code">{{ t.serie }}</span></td>
+              <td>{{ t.inventario ?? '—' }}</td>
+              <td>{{ t.modelo ?? '—' }}</td>
+              <td>
+                <span class="cf-badge" [ngClass]="estadoBadge[t.estado]">
+                  <span class="dot"></span>{{ estadoLabels[t.estado] }}
+                </span>
+              </td>
+              <td>{{ t.zona ?? '—' }}</td>
+              <td class="td-truncate" [title]="t.nombre ?? ''">{{ t.nombre ?? '—' }}</td>
+              <td>{{ t.ciudad ?? '—' }}</td>
+              <td class="td-sub">{{ t.updatedAt | date:'dd/MM/yy' }}</td>
+              <td style="text-align:right">
+                <div class="row-actions">
+                  <button type="button" class="icon-btn" title="Historial" (click)="openHistory(t)">
+                    <span class="mi">history</span>
+                  </button>
+                  <button type="button" class="icon-btn" title="Editar" (click)="openEdit(t)">
+                    <span class="mi">edit</span>
+                  </button>
+                  <button type="button" class="icon-btn icon-btn--danger" title="Eliminar" (click)="delete(t.id)">
+                    <span class="mi">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+      <div class="cf-pagination">
+        <span class="cf-pagination-info">Página {{ page }} de {{ totalPages }}</span>
+        <button class="btn-secondary btn-sm" [disabled]="page === 1" (click)="prevPage()">
+          <span class="mi">chevron_left</span>
+        </button>
+        <button class="btn-secondary btn-sm" [disabled]="page >= totalPages" (click)="nextPage()">
+          <span class="mi">chevron_right</span>
+        </button>
+      </div>
+    }
+  </div>
+
+  <!-- Create / Edit dialog -->
+  @if (showForm) {
+    <div class="dialog-backdrop" (click)="showForm = false">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>{{ editId === null ? 'Nuevo Terminal' : 'Editar Terminal' }}</h2>
+          <button type="button" class="icon-btn" (click)="showForm = false"><span class="mi">close</span></button>
+        </div>
+        <form [formGroup]="formData" class="dialog-body" (ngSubmit)="saveForm()">
+          <div class="grid-2">
+            <div>
+              <label class="cf-label">Serie *</label>
+              <input class="cf-input" formControlName="serie" placeholder="SN123456" />
+            </div>
+            <div>
+              <label class="cf-label">Inventario</label>
+              <input class="cf-input" formControlName="inventario" placeholder="INV-001" />
+            </div>
+            <div>
+              <label class="cf-label">Modelo</label>
+              <input class="cf-input" formControlName="modelo" placeholder="Verifone VX520" />
+            </div>
+            <div>
+              <label class="cf-label">Estado</label>
+              <select class="cf-input" formControlName="estado">
+                @for (k of estadoKeys; track k) {
+                  <option [value]="k">{{ estadoLabels[k] }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="cf-label">Zona</label>
+              <input class="cf-input" formControlName="zona" placeholder="Norte" />
+            </div>
+            <div>
+              <label class="cf-label">Caja</label>
+              <input class="cf-input" formControlName="caja" placeholder="CAJA-01" />
+            </div>
+            <div>
+              <label class="cf-label">Inyectado</label>
+              <select class="cf-input" formControlName="inyectado">
+                <option value="">—</option>
+                <option value="Si">Sí</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div>
+              <label class="cf-label">Fecha</label>
+              <input class="cf-input" type="date" formControlName="fecha" />
+            </div>
+            <div>
+              <label class="cf-label">Nombre Comercio</label>
+              <input class="cf-input" formControlName="nombre" placeholder="Supermercado…" />
+            </div>
+            <div>
+              <label class="cf-label">Ciudad</label>
+              <input class="cf-input" formControlName="ciudad" placeholder="Tegucigalpa" />
+            </div>
+          </div>
+          <div>
+            <label class="cf-label">Dirección</label>
+            <input class="cf-input" formControlName="direccion" placeholder="Av. Principal 123" style="margin-top:0" />
+          </div>
+          @if (formError) {
+            <p class="form-error">{{ formError }}</p>
+          }
+          <div class="dialog-foot">
+            <button type="button" class="btn-secondary" (click)="showForm = false">Cancelar</button>
+            <button type="submit" class="btn-primary">{{ editId === null ? 'Crear' : 'Guardar' }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- History dialog -->
+  @if (historyTerminal) {
+    <div class="dialog-backdrop" (click)="historyTerminal = null">
+      <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Historial — <span class="code">{{ historyTerminal.serie }}</span></h2>
+          <button type="button" class="icon-btn" (click)="historyTerminal = null"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          @if (terminalTracking.length === 0) {
+            <p style="color:var(--ink-3); text-align:center; padding:24px">Sin historial disponible</p>
+          } @else {
+            <table class="cf-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Estado anterior</th>
+                  <th>Estado nuevo</th>
+                  <th>Comentario</th>
+                  <th>Usuario</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (ev of terminalTracking; track ev.id) {
+                  <tr>
+                    <td>{{ ev.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>{{ ev.previousStatus ? estadoLabels[ev.previousStatus] : '—' }}</td>
+                    <td>
+                      <span class="cf-badge" [ngClass]="estadoBadge[ev.newStatus]">
+                        <span class="dot"></span>{{ estadoLabels[ev.newStatus] }}
+                      </span>
+                    </td>
+                    <td>{{ ev.comment ?? '—' }}</td>
+                    <td>{{ ev.createdBy ?? '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>
