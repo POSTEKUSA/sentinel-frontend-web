@@ -86,12 +86,48 @@
 }
 
 .section-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 14px 10px 6px;
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.7px;
   color: var(--ink-3);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.14s ease;
+}
+
+.section-label:hover {
+  color: var(--ink-2);
+}
+
+.section-label .chevron {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.section-label .chevron.rotated {
+  transform: rotate(-90deg);
+}
+
+.section-items {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.2s ease;
+}
+
+.section-items.collapsed {
+  grid-template-rows: 0fr;
+}
+
+.section-items-inner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .nav-item {

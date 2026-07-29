@@ -23,6 +23,7 @@ interface NavItem {
 
 interface NavSection {
   title?: string;
+  expanded?: boolean;
   items: NavItem[];
 }
 
@@ -52,6 +53,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
   navSections: NavSection[] = [
     {
       title: 'Monitoreo',
+      expanded: true,
       items: [
         { label: 'Vista General', icon: 'dashboard', route: '/dashboard' },
         { label: 'Dispositivos', icon: 'devices', route: '/device-list' },
@@ -60,6 +62,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     },
     {
       title: 'Administración',
+      expanded: true,
       items: [
         { label: 'Catálogos', icon: 'catalog', route: '/pos-admin/catalog' },
         { label: 'Compras', icon: 'orders', route: '/pos-admin/purchase-orders' },
@@ -70,8 +73,9 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     },
     {
       title: 'OLD Control POS',
+      expanded: true,
       items: [
-        { label: 'Dashboard PMT', icon: 'dashboard', route: '/pmt/dashboard' },
+        { label: 'Vista General', icon: 'dashboard', route: '/pmt/dashboard' },
         { label: 'Inventario', icon: 'inventory_2', route: '/pmt/inventory' },
         { label: 'Bodega', icon: 'inventory', route: '/pmt/bodega' },
         { label: 'POS Inyección', icon: 'vaccines', route: '/pmt/pos-inyeccion' },
@@ -148,7 +152,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (/^\/pos-admin\/merchants\/[^/]+/.test(path)) return { title: 'Comercio', icon: 'merchants' };
     if (path.startsWith('/pos-admin/merchants')) return { title: 'Comercios', icon: 'merchants' };
     if (path.startsWith('/dashboard')) return { title: 'Vista general de la flota', icon: 'dashboard' };
-    if (path.startsWith('/pmt/dashboard')) return { title: 'Dashboard PMT', icon: 'dashboard' };
+    if (path.startsWith('/pmt/dashboard')) return { title: 'Vista General', icon: 'dashboard' };
     if (path.startsWith('/pmt/')) return { title: 'Control POS', icon: 'inventory' };
     return { title: this.appName, icon: 'dashboard' };
   }
@@ -184,6 +188,10 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
 
   toggleSidebar(): void {
     this.sidebarOpen.update(v => !v);
+  }
+
+  toggleSection(section: NavSection): void {
+    section.expanded = !section.expanded;
   }
 
   closeSidebar(): void {

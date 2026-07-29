@@ -1004,8 +1004,8 @@ a.mat-mdc-raised-button.mat-primary:hover {
 
 .filter-input {
   width: auto;
-  min-width: 120px;
-  flex: 0 1 140px;
+  min-width: 180px;
+  flex: 0 1 220px;
   height: 42px;
 }
 
@@ -1417,3 +1417,112 @@ a.mat-mdc-raised-button.mat-primary:hover {
   }
 }
 
+/* ── Custom Modal Dialogs (PMT) ── */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 23, 28, 0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: dialogFadeIn 0.2s ease;
+}
+
+@keyframes dialogFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dialog {
+  background: var(--surface);
+  border-radius: var(--r);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: dialogScaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dialog.dialog--lg {
+  max-width: 800px;
+}
+
+@keyframes dialogScaleIn {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.dialog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.dialog-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dialog-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.dialog-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--line-2);
+  background: var(--surface-alt);
+}
+
+/* ── Icon Buttons & Row Actions ── */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--ink-2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover {
+  background: var(--surface-alt);
+  color: var(--ink);
+}
+
+.icon-btn.icon-btn--danger:hover {
+  background: rgba(193, 39, 45, 0.1);
+  color: #c1272d;
+}
+
+.icon-btn .mi {
+  font-size: 20px;
+}
+
+.row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}

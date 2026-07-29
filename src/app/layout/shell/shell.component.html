@@ -28,67 +28,74 @@
     <nav class="nav" aria-label="Principal">
       @for (section of navSections; track section.title) {
         @if (section.title) {
-          <div class="section-label">{{ section.title }}</div>
+          <div class="section-label" (click)="toggleSection(section)" role="button" tabindex="0">
+            <span>{{ section.title }}</span>
+            <span class="mi chevron" [class.rotated]="!section.expanded">expand_more</span>
+          </div>
         }
-        @for (item of section.items; track item.route) {
-          <a
-            class="nav-item"
-            [routerLink]="item.route"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
-            (click)="closeSidebar()">
-            @switch (item.icon) {
-              @case ('dashboard') {
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                  <rect x="3" y="3" width="7" height="7" rx="1" />
-                  <rect x="14" y="3" width="7" height="7" rx="1" />
-                  <rect x="14" y="14" width="7" height="7" rx="1" />
-                  <rect x="3" y="14" width="7" height="7" rx="1" />
-                </svg>
-              }
-              @case ('devices') {
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                  <rect x="7" y="2" width="10" height="20" rx="2" />
-                  <path d="M11 18h2" />
-                </svg>
-              }
-              @case ('map') {
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                  <path d="M9 3 3 5v16l6-2 6 2 6-2V3l-6 2-6-2Z" />
-                  <path d="M9 3v16M15 5v16" />
-                </svg>
-              }
-              @case ('catalog') {
-                <span class="mi" aria-hidden="true">category</span>
-              }
-              @case ('orders') {
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                  <path d="M7 3h10v18H7z" />
-                  <path d="M10 7h4M10 11h4M10 15h3" />
-                </svg>
-              }
-              @case ('receiving') {
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                  <path d="M4 7h16v12H4z" />
-                  <path d="M8 7V5h8v2M12 11v5M9.5 14.5 12 17l2.5-2.5" />
-                </svg>
-              }
-              @case ('inventory') {
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                  <path d="M3 7 12 3l9 4v10l-9 4-9-4V7Z" />
-                  <path d="M12 12v9M3 7l9 5 9-5" />
-                </svg>
-              }
-              @case ('merchants') {
-                <span class="mi" aria-hidden="true">storefront</span>
-              }
-              @default {
-                <span class="mi" aria-hidden="true">{{ item.icon }}</span>
-              }
+        <div class="section-items" [class.collapsed]="!section.expanded">
+          <div class="section-items-inner">
+            @for (item of section.items; track item.route) {
+              <a
+                class="nav-item"
+                [routerLink]="item.route"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+                (click)="closeSidebar()">
+                @switch (item.icon) {
+                  @case ('dashboard') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                      <rect x="3" y="3" width="7" height="7" rx="1" />
+                      <rect x="14" y="3" width="7" height="7" rx="1" />
+                      <rect x="14" y="14" width="7" height="7" rx="1" />
+                      <rect x="3" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                  }
+                  @case ('devices') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                      <rect x="7" y="2" width="10" height="20" rx="2" />
+                      <path d="M11 18h2" />
+                    </svg>
+                  }
+                  @case ('map') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                      <path d="M9 3 3 5v16l6-2 6 2 6-2V3l-6 2-6-2Z" />
+                      <path d="M9 3v16M15 5v16" />
+                    </svg>
+                  }
+                  @case ('catalog') {
+                    <span class="mi" aria-hidden="true">category</span>
+                  }
+                  @case ('orders') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                      <path d="M7 3h10v18H7z" />
+                      <path d="M10 7h4M10 11h4M10 15h3" />
+                    </svg>
+                  }
+                  @case ('receiving') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                      <path d="M4 7h16v12H4z" />
+                      <path d="M8 7V5h8v2M12 11v5M9.5 14.5 12 17l2.5-2.5" />
+                    </svg>
+                  }
+                  @case ('inventory') {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                      <path d="M3 7 12 3l9 4v10l-9 4-9-4V7Z" />
+                      <path d="M12 12v9M3 7l9 5 9-5" />
+                    </svg>
+                  }
+                  @case ('merchants') {
+                    <span class="mi" aria-hidden="true">storefront</span>
+                  }
+                  @default {
+                    <span class="mi" aria-hidden="true">{{ item.icon }}</span>
+                  }
+                }
+                <span>{{ item.label }}</span>
+              </a>
             }
-            <span>{{ item.label }}</span>
-          </a>
-        }
+          </div>
+        </div>
       }
     </nav>
 
@@ -171,7 +178,7 @@
           }
         </div>
       </div>
-      <span class="env-badge">PROTOTIPO</span>
+      <span class="env-badge">MVP</span>
     </header>
 
     <main class="page">
