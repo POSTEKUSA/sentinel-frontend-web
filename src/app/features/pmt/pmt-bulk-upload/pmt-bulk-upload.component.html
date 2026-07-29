@@ -20,8 +20,16 @@
     <!-- Input panel -->
     <div class="panel upload-card">
       @if (activeTab === 'csv') {
-        <h2 class="upload-card-title"><span class="mi">upload_file</span> Archivo CSV</h2>
-        <p class="upload-card-sub">Columnas: serie*, modelo, estado, nombre, zona, caja, inyectado, fecha, ciudad</p>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h2 class="upload-card-title"><span class="mi">upload_file</span> Archivo CSV</h2>
+            <p class="upload-card-sub">Columnas: serie*, modelo, estado, inventario, zona, caja, inyectado, fecha, nombre, ciudad, comunicacion, version</p>
+          </div>
+          <button class="btn-secondary btn-sm" (click)="downloadTemplate()" title="Descargar CSV con datos de ejemplo">
+            <span class="mi">download</span> Plantilla
+          </button>
+        </div>
+
         <div class="dropzone" (click)="csvInput.click()">
           <span class="mi dropzone-icon">{{ fileName ? 'description' : 'cloud_upload' }}</span>
           <p class="dropzone-text">{{ fileName ?? 'Haga clic para seleccionar archivo' }}</p>
@@ -42,7 +50,7 @@
       @if (parsedData && !uploadResult) {
         <div class="upload-actions">
           <button class="btn-primary" (click)="upload()">
-            <span class="mi">cloud_upload</span> Procesar {{ parsedData.length }} terminal(es)
+            <span class="mi">cloud_upload</span> Importar {{ parsedData.length }} terminal(es)
           </button>
           <button class="btn-secondary" (click)="reset()"><span class="mi">close</span></button>
         </div>

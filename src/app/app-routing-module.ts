@@ -144,10 +144,6 @@ const routes: Routes = [
         loadComponent: () => import('./features/pmt/pmt-query/pmt-query.component').then(m => m.PmtQueryComponent),
       },
       {
-        path: 'pmt/subir-inventario',
-        loadComponent: () => import('./features/pmt/pmt-subir-inventario/pmt-subir-inventario.component').then(m => m.PmtSubirInventarioComponent),
-      },
-      {
         path: 'pmt/bulk-upload',
         loadComponent: () => import('./features/pmt/pmt-bulk-upload/pmt-bulk-upload.component').then(m => m.PmtBulkUploadComponent),
       },
