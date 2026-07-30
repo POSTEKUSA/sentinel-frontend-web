@@ -35,81 +35,75 @@ sentinel-frontend-web/
 │   │   │   ├── guards/              # Guards de autenticación
 │   │   │   ├── mock/                # Datos mock para desarrollo
 │   │   │   ├── models/              # Interfaces y tipos TypeScript
-│   │   │   ├── services/            # Servicios de negocio (telemetría, auth, PMT)
+│   │   │   ├── services/            # Servicios de negocio
 │   │   │   └── utils/               # Utilidades (fleet-analytics, etc.)
 │   │   ├── features/                # Módulos funcionales (lazy-loaded)
 │   │   │   ├── auth/                # Login
-│   │   │   ├── dashboard/           # Dashboard de monitoreo
-│   │   │   ├── device-info/         # Detalle de dispositivo
-│   │   │   ├── device-list/         # Listado de dispositivos
-│   │   │   ├── device-map/          # Mapa interactivo (Leaflet)
+│   │   │   ├── dashboard/           # Vista General (Monitoreo)
+│   │   │   ├── device-info/         # Detalle de Dispositivo
+│   │   │   ├── device-list/         # Dispositivos (Monitoreo)
+│   │   │   ├── device-map/          # Mapa (Monitoreo)
 │   │   │   ├── pos-admin/           # Administración POS
-│   │   │   │   ├── catalog/         #   Marcas, modelos, proveedores, accesorios
-│   │   │   │   ├── purchase-orders/ #   Órdenes de compra
-│   │   │   │   ├── receiving/       #   Recepción de equipos
-│   │   │   │   ├── inventory/       #   Inventario central
-│   │   │   │   └── merchants/       #   Gestión de comercios
-│   │   │   └── pmt/                 # Control POS (ciclo de vida de terminales)
-│   │   │       ├── pmt-dashboard/   #   Dashboard PMT
-│   │   │       ├── pmt-inventory/   #   Inventario de terminales
-│   │   │       ├── pmt-bulk-upload/ #   Carga masiva CSV/JSON
-│   │   │       ├── pmt-bodega/      #   Control de bodega
-│   │   │       ├── pmt-pos-inyeccion/  # Inyección de software
-│   │   │       ├── pmt-asignados/   #   Terminales asignados
-│   │   │       ├── pmt-reparacion/  #   Equipos en reparación
-│   │   │       ├── pmt-garantia/    #   Garantía y sustitución de serie
-│   │   │       ├── pmt-sim-cards/   #   Gestión de SIM Cards
-│   │   │       ├── pmt-query/       #   Merchant Config (consultas)
-│   │   │       ├── pmt-inicializaciones/ # Registro de inicializaciones
-│   │   │       ├── pmt-control-pos/ #   Monitor de transacciones
+│   │   │   │   ├── catalog/         #   Marcas
+│   │   │   │   ├── purchase-orders/ #   Compras
+│   │   │   │   ├── receiving/       #   Recepción
+│   │   │   │   ├── inventory/       #   Inventario
+│   │   │   │   └── merchants/       #   Comercios
+│   │   │   └── pmt/                 # Control POS (en unificación)
+│   │   │       ├── pmt-dashboard/   #   Vista General
+│   │   │       ├── pmt-inventory/   #   Inventario
+│   │   │       ├── pmt-bulk-upload/ #   Subir Inventario
+│   │   │       ├── pmt-bodega/      #   Bodega
+│   │   │       ├── pmt-pos-inyeccion/  # Inyección
+│   │   │       ├── pmt-asignados/   #   Asignados
+│   │   │       ├── pmt-reparacion/  #   Reparación
+│   │   │       ├── pmt-garantia/    #   Garantía
+│   │   │       ├── pmt-sim-cards/   #   SIM Cards
+│   │   │       ├── pmt-query/       #   Merchant Config
+│   │   │       ├── pmt-inicializaciones/ # Inicializaciones
+│   │   │       ├── pmt-control-pos/ #   Tráfico
 │   │   │       ├── pmt-solicitudes-equipo/ # Requisiciones
-│   │   │       ├── pmt-solicitudes-soporte/ # Tickets de soporte
-│   │   │       └── pmt-users/       #   Gestión de usuarios
+│   │   │       ├── pmt-solicitudes-soporte/ # Soporte
+│   │   │       └── pmt-users/       #   Usuarios
 │   │   ├── layout/                  # Shell (sidebar + header + content)
 │   │   └── shared/                  # Componentes reutilizables
-│   │       ├── battery-indicator/
-│   │       ├── busy-loader/
-│   │       ├── confirm-dialog/
-│   │       ├── empty-state/
-│   │       └── status-badge/
 │   └── public/                      # Assets estáticos
 ├── docs/                            # Documentación del sistema
-│   └── caracteristicas.md           # Características y funcionalidad completa
+│   ├── caracteristicas.md           # Características y funcionalidad completa
+│   └── ventas/                      # Material de presentación
 └── pmt/                             # Proyecto PMT original (referencia)
-    └── docs/                        # Documentación técnica PMT
 ```
 
 ---
 
-## Características Principales
+## Módulos Principales
 
-> 📄 Documentación detallada de todas las funcionalidades en [`docs/caracteristicas.md`](./docs/caracteristicas.md)
+> 📄 Documentación detallada en [`docs/caracteristicas.md`](./docs/caracteristicas.md)
 
-### 🛰️ Monitoreo de Flota
-- Dashboard ejecutivo con KPIs en tiempo real (dispositivos online, retrasados, offline)
-- Desglose por organización y por comercio con porcentajes
-- Panel de dispositivos que requieren atención, ordenados por antigüedad
-- Mapa interactivo con geolocalización del usuario y marcadores por estado
-- Listado de dispositivos con búsqueda, filtros por estado y parámetros de URL
-- Detalle individual: batería, red, ubicación GPS, historial de telemetría
+### 🛰️ Monitoreo
+- **Vista General** — Dashboard ejecutivo con KPIs en tiempo real, desglose por organización y comercio, mapa de atención
+- **Dispositivos** — Listado completo con búsqueda, filtros por estado, detalle individual con batería, red, GPS y telemetría
+- **Mapa** — Mapa interactivo con geolocalización, marcadores por estado y popups informativos
 
-### 🏪 Administración POS
-- Catálogo de marcas, modelos, proveedores y accesorios
-- Órdenes de compra con tracking de progreso de recepción
-- Recepción de equipos individual y masiva (CSV) con detección de duplicados
-- Inventario central con vistas por ubicación, custodia y accesorios
-- Gestión de comercios afiliados con reporte por MCC
+### 🏪 Administración
 
-### 📱 Control POS (Ciclo de Vida de Terminales)
-- **Bodega** → **Inyección** → **Asignación** (supervisor/técnico) → **Instalación**
-- Reparación con resolución (reparado, garantía, irreparable, obsoleto)
-- Garantía con sustitución de serie automática
-- Gestión de SIM Cards (ICCID, compañía, estado, terminal asociada)
-- Monitor de transacciones ISO 8583 con estadísticas
-- Carga masiva de inventario (CSV / JSON) con mapeo inteligente de columnas
-- Requisiciones de equipo con flujo de aprobación
-- Tickets de soporte técnico con comentarios y estados
-- Gestión de usuarios y roles (Admin, Inventario, Supervisor, Técnico, Ejecutivo, Consulta)
+**Administración POS:**
+- **Marcas** — Catálogo de marcas, modelos, proveedores y accesorios
+- **Compras** — Órdenes de compra con tracking de progreso de recepción
+- **Recepción** — Ingreso de equipos individual y masivo (CSV) con detección de duplicados
+- **Inventario** — Vista central por ubicación, custodia y accesorios
+- **Comercios** — Gestión de afiliados con reporte por MCC
+
+**Control POS (en proceso de unificación con Administración POS):**
+- **Bodega** → **Inyección** → **Asignados** (supervisor/técnico) → instalación en campo
+- **Reparación** con resolución (reparado, garantía, irreparable, obsoleto)
+- **Garantía** con sustitución automática de serie
+- **SIM Cards** — ICCID, compañía, estado, terminal asociada
+- **Tráfico** — Monitor de transacciones ISO 8583
+- **Subir Inventario** — Carga masiva CSV/JSON con mapeo inteligente
+- **Requisiciones** — Solicitudes de equipo con flujo de aprobación
+- **Soporte** — Tickets de soporte técnico con comentarios y estados
+- **Usuarios** — Gestión de roles (Admin, Inventario, Supervisor, Técnico, Ejecutivo, Consulta)
 
 ---
 
@@ -138,13 +132,12 @@ npm run start
 
 | Script | Comando | Descripción |
 |---|---|---|
-| **dev** | `npm run dev` | Inicia servidor de desarrollo en puerto 4200 |
+| **dev** | `npm run dev` | Servidor de desarrollo en puerto 4200 |
 | **start** | `npm run start` | Igual que `dev` |
 | **build** | `npm run build` | Compila para producción |
-| **build:pages** | `npm run build:pages` | Compila con configuración para GitHub Pages |
+| **build:pages** | `npm run build:pages` | Compila para GitHub Pages |
 | **test** | `npm run test` | Ejecuta las pruebas |
-| **lint** | `npm run lint` | Verifica estilo de código con ESLint |
-| **watch** | `npm run watch` | Compila en modo watch para desarrollo |
+| **lint** | `npm run lint` | Verifica estilo de código |
 
 ---
 
@@ -152,36 +145,7 @@ npm run start
 
 | Documento | Descripción |
 |---|---|
-| [`docs/caracteristicas.md`](./docs/caracteristicas.md) | Características completas del sistema: módulos, funcionalidades, procesos de negocio y ciclo de vida de terminales |
-
----
-
-## Arquitectura de la Aplicación
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Angular App                              │
-│                                                                 │
-│  ┌─────────┐  ┌──────────────┐  ┌───────────────────────────┐  │
-│  │  Core   │  │   Features   │  │         Layout            │  │
-│  │         │  │              │  │                           │  │
-│  │ Guards  │  │  Dashboard   │  │  Shell (Sidebar + Header) │  │
-│  │ Models  │  │  Devices     │  │                           │  │
-│  │ Services│  │  POS Admin   │  └───────────────────────────┘  │
-│  │ Utils   │  │  PMT         │                                 │
-│  │ Config  │  │  Auth        │  ┌───────────────────────────┐  │
-│  │ Mock    │  │              │  │        Shared             │  │
-│  └─────────┘  └──────────────┘  │  StatusBadge, Battery,   │  │
-│                                  │  BusyLoader, EmptyState,  │  │
-│                                  │  ConfirmDialog            │  │
-│                                  └───────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-- **Core:** Servicios singleton, modelos, guardias de autenticación, configuración y datos mock.
-- **Features:** Módulos funcionales cargados de forma lazy. Cada módulo es un standalone component con su template, estilos y lógica.
-- **Layout:** Shell principal con sidebar colapsable, header con breadcrumb, y area de contenido.
-- **Shared:** Componentes reutilizables sin lógica de negocio.
+| [`docs/caracteristicas.md`](./docs/caracteristicas.md) | Características completas: módulos, funcionalidades, procesos de negocio y ciclo de vida |
 
 ---
 
