@@ -41,6 +41,7 @@
                 [routerLink]="item.route"
                 routerLinkActive="active"
                 [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+                [title]="item.tooltip || ''"
                 (click)="closeSidebar()">
                 @switch (item.icon) {
                   @case ('dashboard') {

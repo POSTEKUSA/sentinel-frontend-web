@@ -37,11 +37,12 @@
             <th>Ciudad</th>
             <th>Asignado a</th>
             <th>Fecha Asignación</th>
+            <th style="text-align:right">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @if (filtered.length === 0) {
-            <tr><td colspan="7" class="admin-empty"><span class="mi">manage_accounts</span><span>Sin terminales asignados</span></td></tr>
+            <tr><td colspan="8" class="admin-empty"><span class="mi">manage_accounts</span><span>Sin terminales asignados</span></td></tr>
           }
           @for (t of filtered; track t.id) {
             <tr>
@@ -54,10 +55,63 @@
                 <span class="cf-badge cf-badge-info"><span class="dot"></span>{{ t.assignedTo ?? '—' }}</span>
               </td>
               <td>{{ t.assignedAt | date:'dd/MM/yyyy' }}</td>
+              <td style="text-align:right">
+                <div class="row-actions">
+                  @if (hasHistory(t)) {
+                    <button type="button" class="icon-btn" title="Historial de asignaciones" (click)="openHistory(t)">
+                      <span class="mi">history</span>
+                    </button>
+                  }
+                </div>
+              </td>
             </tr>
           }
         </tbody>
       </table>
     </div>
   </div>
+
+  <!-- History dialog -->
+  @if (historyTerminal) {
+    <div class="dialog-backdrop" (click)="historyTerminal = null">
+      <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Historial de Asignaciones — <span class="code">{{ historyTerminal.serie }}</span></h2>
+          <button type="button" class="icon-btn" (click)="historyTerminal = null"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          @if (terminalHistory.length === 0) {
+            <p style="color:var(--ink-3); text-align:center; padding:24px">Sin historial disponible</p>
+          } @else {
+            <table class="cf-table">
+              <thead>
+                <tr>
+                  <th>Fecha Asignación</th>
+                  <th>Fecha Retorno</th>
+                  <th>Asignado a</th>
+                  <th>Rol</th>
+                  <th>Comentario</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (h of terminalHistory; track h.id) {
+                  <tr>
+                    <td>{{ h.assignedAt | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ h.returnedAt ? (h.returnedAt | date:'dd/MM/yyyy') : '—' }}</td>
+                    <td><strong>{{ h.assignedTo }}</strong></td>
+                    <td>
+                      <span class="cf-badge" [ngClass]="h.role === 'supervisor' ? 'cf-badge-info' : 'cf-badge-ok'">
+                        <span class="dot"></span>{{ h.role | titlecase }}
+                      </span>
+                    </td>
+                    <td>{{ h.comment ?? '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </div>
+      </div>
+    </div>
+  }
 </div>

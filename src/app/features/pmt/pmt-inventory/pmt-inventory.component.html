@@ -192,35 +192,79 @@
           <button type="button" class="icon-btn" (click)="historyTerminal = null"><span class="mi">close</span></button>
         </div>
         <div class="dialog-body">
-          @if (terminalTracking.length === 0) {
-            <p style="color:var(--ink-3); text-align:center; padding:24px">Sin historial disponible</p>
-          } @else {
-            <table class="cf-table">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Estado anterior</th>
-                  <th>Estado nuevo</th>
-                  <th>Comentario</th>
-                  <th>Usuario</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (ev of terminalTracking; track ev.id) {
+          <div class="cf-tabs" style="margin-top:-8px; margin-bottom:16px" role="tablist">
+            <button type="button" class="cf-tab" [class.active]="historyTab === 'status'" (click)="setHistoryTab('status')">
+              Cambios de Estado
+            </button>
+            <button type="button" class="cf-tab" [class.active]="historyTab === 'events'" (click)="setHistoryTab('events')">
+              Eventos Logísticos
+            </button>
+          </div>
+
+          @if (historyTab === 'status') {
+            @if (terminalTracking.length === 0) {
+              <p style="color:var(--ink-3); text-align:center; padding:24px">Sin historial de estados disponible</p>
+            } @else {
+              <table class="cf-table">
+                <thead>
                   <tr>
-                    <td>{{ ev.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-                    <td>{{ ev.previousStatus ? estadoLabels[ev.previousStatus] : '—' }}</td>
-                    <td>
-                      <span class="cf-badge" [ngClass]="estadoBadge[ev.newStatus]">
-                        <span class="dot"></span>{{ estadoLabels[ev.newStatus] }}
-                      </span>
-                    </td>
-                    <td>{{ ev.comment ?? '—' }}</td>
-                    <td>{{ ev.createdBy ?? '—' }}</td>
+                    <th>Fecha</th>
+                    <th>Estado anterior</th>
+                    <th>Estado nuevo</th>
+                    <th>Comentario</th>
+                    <th>Usuario</th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (ev of terminalTracking; track ev.id) {
+                    <tr>
+                      <td>{{ ev.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+                      <td>{{ ev.previousStatus ? estadoLabels[ev.previousStatus] : '—' }}</td>
+                      <td>
+                        <span class="cf-badge" [ngClass]="estadoBadge[ev.newStatus]">
+                          <span class="dot"></span>{{ estadoLabels[ev.newStatus] }}
+                        </span>
+                      </td>
+                      <td>{{ ev.comment ?? '—' }}</td>
+                      <td>{{ ev.createdBy ?? '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          }
+
+          @if (historyTab === 'events') {
+            @if (terminalLifecycle.length === 0) {
+              <p style="color:var(--ink-3); text-align:center; padding:24px">Sin eventos logísticos registrados</p>
+            } @else {
+              <table class="cf-table">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Acción</th>
+                    <th>Comercio</th>
+                    <th>Ciudad</th>
+                    <th>Zona</th>
+                    <th>Descripción</th>
+                    <th>Usuario</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (r of terminalLifecycle; track r.id) {
+                    <tr>
+                      <td>{{ r.createdAt | date:'dd/MM/yyyy' }}</td>
+                      <td><span class="cf-badge cf-badge-muted"><span class="dot"></span>{{ r.accion | titlecase }}</span></td>
+                      <td class="td-sub">{{ r.comercio ?? '—' }}</td>
+                      <td>{{ r.ciudad ?? '—' }}</td>
+                      <td>{{ r.zona ?? '—' }}</td>
+                      <td class="td-truncate" [title]="r.descripcion ?? ''">{{ r.descripcion ?? '—' }}</td>
+                      <td>{{ r.createdBy ?? '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
           }
         </div>
       </div>

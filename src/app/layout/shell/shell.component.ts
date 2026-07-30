@@ -19,6 +19,7 @@ interface NavItem {
   label: string;
   icon: 'dashboard' | 'devices' | 'map' | 'catalog' | 'orders' | 'receiving' | 'inventory' | 'merchants' | string;
   route: string;
+  tooltip?: string;
 }
 
 interface NavSection {
@@ -78,22 +79,21 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
       items: [
         { label: 'Vista General', icon: 'dashboard', route: '/pmt/dashboard' },
         { label: 'Inventario', icon: 'inventory_2', route: '/pmt/inventory' },
+        { label: 'Subir Inventario', icon: 'cloud_upload', route: '/pmt/bulk-upload' },
         { label: 'Bodega', icon: 'inventory', route: '/pmt/bodega' },
-        { label: 'POS Inyección', icon: 'vaccines', route: '/pmt/pos-inyeccion' },
+        { label: 'Inyección', icon: 'vaccines', route: '/pmt/pos-inyeccion' },
         { label: 'Asignados', icon: 'manage_accounts', route: '/pmt/asignados' },
         { label: 'Reparación', icon: 'build', route: '/pmt/reparacion' },
         { label: 'Garantía', icon: 'shield', route: '/pmt/garantia' },
-        { label: 'Inicializaciones', icon: 'settings_power', route: '/pmt/inicializaciones' },
         { label: 'SIM Cards', icon: 'sim_card', route: '/pmt/sim-cards' },
-        { label: 'Soporte Equipo', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
-        { label: 'Solicitudes Equipo', icon: 'hardware', route: '/pmt/solicitudes-equipo' },
-        { label: 'Control POS', icon: 'receipt_long', route: '/pmt/control-pos' },
-        { label: 'Historial', icon: 'history', route: '/pmt/historical-records' },
-        { label: 'Asignados Hist.', icon: 'swap_horiz', route: '/pmt/assigned-pos-history' },
-        { label: 'Consultar POS', icon: 'manage_search', route: '/pmt/query' },
-        { label: 'Subir Inventario', icon: 'cloud_upload', route: '/pmt/bulk-upload' },
+        
+        { label: 'Merchant Config', icon: 'storefront', route: '/pmt/query' },
+        { label: 'Inicializaciones', icon: 'settings_power', route: '/pmt/inicializaciones' },
+        { label: 'Tráfico', icon: 'sync_alt', route: '/pmt/control-pos' },
+        
+        { label: 'Requisiciones', icon: 'shopping_cart', route: '/pmt/solicitudes-equipo', tooltip: 'Solicitudes de Producto o Compras a activo fijo' },
+        { label: 'Soporte', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
         { label: 'Usuarios', icon: 'group', route: '/pmt/users' },
-        { label: 'Soporte', icon: 'headset_mic', route: '/pmt/soporte' },
       ],
     },
   ];
@@ -163,15 +163,12 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/pmt/garantia')) return { title: 'Garantía', icon: 'shield' };
     if (path.startsWith('/pmt/inicializaciones')) return { title: 'Inicializaciones', icon: 'settings_power' };
     if (path.startsWith('/pmt/sim-cards')) return { title: 'SIM Cards', icon: 'sim_card' };
-    if (path.startsWith('/pmt/solicitudes-soporte')) return { title: 'Soporte Equipo', icon: 'support_agent' };
-    if (path.startsWith('/pmt/solicitudes-equipo')) return { title: 'Solicitudes Equipo', icon: 'hardware' };
-    if (path.startsWith('/pmt/control-pos')) return { title: 'Control POS', icon: 'receipt_long' };
-    if (path.startsWith('/pmt/historical-records')) return { title: 'Historial', icon: 'history' };
-    if (path.startsWith('/pmt/assigned-pos-history')) return { title: 'Asignados Hist.', icon: 'swap_horiz' };
-    if (path.startsWith('/pmt/query')) return { title: 'Consultar POS', icon: 'manage_search' };
+    if (path.startsWith('/pmt/solicitudes-soporte')) return { title: 'Soporte', icon: 'support_agent' };
+    if (path.startsWith('/pmt/solicitudes-equipo')) return { title: 'Requisiciones', icon: 'shopping_cart' };
+    if (path.startsWith('/pmt/control-pos')) return { title: 'Tráfico', icon: 'sync_alt' };
+    if (path.startsWith('/pmt/query')) return { title: 'Merchant Config', icon: 'storefront' };
     if (path.startsWith('/pmt/bulk-upload')) return { title: 'Subir Inventario', icon: 'cloud_upload' };
     if (path.startsWith('/pmt/users')) return { title: 'Usuarios', icon: 'group' };
-    if (path.startsWith('/pmt/soporte')) return { title: 'Soporte', icon: 'headset_mic' };
     if (path.startsWith('/pmt/')) return { title: 'Control POS', icon: 'inventory' };
 
     return { title: this.appName, icon: 'dashboard' };

@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
-import { Terminal, TerminalEstado, TERMINAL_ESTADO_LABELS } from '../../../core/models/pmt/terminal.model';
+import { Terminal, TerminalEstado, TERMINAL_ESTADO_LABELS, AssignedPosHistory } from '../../../core/models/pmt/terminal.model';
 
 @Component({
   selector: 'app-pmt-asignados',
@@ -21,6 +21,10 @@ export class PmtAsignadosComponent implements OnInit {
   activeTab: 'supervisor' | 'tecnico' = 'supervisor';
 
   filterForm = this.fb.group({ q: [''], assignedTo: [''] });
+
+  // History dialog
+  historyTerminal: Terminal | null = null;
+  terminalHistory: AssignedPosHistory[] = [];
 
   get tabEstado(): TerminalEstado {
     return this.activeTab === 'supervisor' ? 'asignado_supervisor' : 'asignado_tecnico';
@@ -56,5 +60,16 @@ export class PmtAsignadosComponent implements OnInit {
   reasignar(t: Terminal, newUser: string): void {
     if (!newUser.trim()) return;
     this.svc.changeEstado(t.id, t.estado, `Reasignado de ${t.assignedTo} a ${newUser}`, 'admin', { assignedTo: newUser, assignedAt: new Date().toISOString() });
+  }
+
+  // ── History ───────────────────────────────────────────────────────────────
+
+  hasHistory(t: Terminal): boolean {
+    return this.svc.assignedHistory.some(h => h.serie === t.serie);
+  }
+
+  openHistory(t: Terminal): void {
+    this.historyTerminal = t;
+    this.terminalHistory = this.svc.assignedHistory.filter(h => h.serie === t.serie).reverse();
   }
 }

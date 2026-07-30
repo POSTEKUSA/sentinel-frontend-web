@@ -25,6 +25,14 @@ export class PmtSolicitudesSoporteComponent implements OnInit {
   readonly estadoBadge  = SOLICITUD_SOPORTE_ESTADO_BADGE;
   readonly estadoKeys   = Object.keys(SOLICITUD_SOPORTE_ESTADO_LABELS) as SolicitudSoporteEstado[];
 
+  estadoColor(e: SolicitudSoporteEstado): string {
+    if (e === 'pendiente') return '#ca8a04';
+    if (e === 'en_proceso') return '#0a5fa5';
+    if (e === 'resuelto') return '#2a7c34';
+    if (e === 'cerrado') return '#8a929c';
+    return '#8a929c';
+  }
+
   filterForm = this.fb.group({ q: [''], estado: [''], tipo: [''] });
 
   // Detail dialog

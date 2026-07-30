@@ -131,14 +131,8 @@ const routes: Routes = [
         path: 'pmt/control-pos',
         loadComponent: () => import('./features/pmt/pmt-control-pos/pmt-control-pos.component').then(m => m.PmtControlPosComponent),
       },
-      {
-        path: 'pmt/historical-records',
-        loadComponent: () => import('./features/pmt/pmt-historical-records/pmt-historical-records.component').then(m => m.PmtHistoricalRecordsComponent),
-      },
-      {
-        path: 'pmt/assigned-pos-history',
-        loadComponent: () => import('./features/pmt/pmt-assigned-pos-history/pmt-assigned-pos-history.component').then(m => m.PmtAssignedPosHistoryComponent),
-      },
+
+
       {
         path: 'pmt/query',
         loadComponent: () => import('./features/pmt/pmt-query/pmt-query.component').then(m => m.PmtQueryComponent),
@@ -151,10 +145,7 @@ const routes: Routes = [
         path: 'pmt/users',
         loadComponent: () => import('./features/pmt/pmt-users/pmt-users.component').then(m => m.PmtUsersComponent),
       },
-      {
-        path: 'pmt/soporte',
-        loadComponent: () => import('./features/pmt/pmt-soporte-pmt/pmt-soporte-pmt.component').then(m => m.PmtSoportePmtComponent),
-      }
+
     ],
   },
   {

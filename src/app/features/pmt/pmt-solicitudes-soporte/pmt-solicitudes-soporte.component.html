@@ -91,7 +91,11 @@
             <label class="cf-label">Cambiar estado</label>
             <div class="row-actions" style="flex-wrap:wrap;gap:6px">
               @for (k of estadoKeys; track k) {
-                <button class="btn-sm" [ngClass]="detail.estado === k ? 'btn-primary' : 'btn-secondary'" (click)="changeEstado(detail.id, k)">
+                <button class="btn-sm" 
+                  [ngClass]="detail.estado === k ? 'btn-primary' : 'btn-secondary'"
+                  [style.background]="detail.estado === k ? estadoColor(k) : null"
+                  [style.borderColor]="detail.estado === k ? estadoColor(k) : null"
+                  (click)="changeEstado(detail.id, k)">
                   {{ estadoLabels[k] }}
                 </button>
               }

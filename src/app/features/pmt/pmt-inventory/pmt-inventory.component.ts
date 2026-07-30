@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
 import {
-  Terminal, TerminalEstado, TrackingEvent,
+  Terminal, TerminalEstado, TrackingEvent, HistoricalRecord,
   TERMINAL_ESTADO_LABELS, TERMINAL_ESTADO_BADGE
 } from '../../../core/models/pmt/terminal.model';
 
@@ -61,7 +61,9 @@ export class PmtInventoryComponent implements OnInit {
 
   // History dialog
   historyTerminal: Terminal | null = null;
+  historyTab: 'status' | 'events' = 'status';
   terminalTracking: TrackingEvent[] = [];
+  terminalLifecycle: HistoricalRecord[] = [];
 
   ngOnInit(): void {
     this.svc.terminals$.subscribe(ts => {
@@ -132,12 +134,19 @@ export class PmtInventoryComponent implements OnInit {
   // ── History ───────────────────────────────────────────────────────────────
 
   hasHistory(t: Terminal): boolean {
-    return this.svc.tracking.some(e => e.terminalId === t.id);
+    return this.svc.tracking.some(e => e.terminalId === t.id) ||
+           this.svc.historical.some(h => h.serie === t.serie);
   }
 
   openHistory(t: Terminal): void {
     this.historyTerminal = t;
+    this.historyTab = 'status';
     this.terminalTracking = this.svc.tracking.filter(e => e.terminalId === t.id);
+    this.terminalLifecycle = this.svc.historical.filter(h => h.serie === t.serie).reverse();
+  }
+
+  setHistoryTab(tab: 'status' | 'events'): void {
+    this.historyTab = tab;
   }
 
   // ── Pagination ────────────────────────────────────────────────────────────
