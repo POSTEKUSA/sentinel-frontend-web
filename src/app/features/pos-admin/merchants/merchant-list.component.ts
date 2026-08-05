@@ -22,6 +22,8 @@ export class MerchantListComponent implements OnInit {
 
   all: Merchant[] = [];
   filtered: Merchant[] = [];
+  departments: string[] = [];
+  municipalities: string[] = [];
 
   mccReport: { mcc: string; description: string; count: number }[] = [];
   mccMax = 1;
@@ -45,11 +47,24 @@ export class MerchantListComponent implements OnInit {
   ngOnInit(): void {
     this.merchantSvc.merchants$.subscribe(merchants => {
       this.all = merchants;
+      this.departments = [...new Set(merchants.map(m => m.department))].sort();
+      this.refreshMunicipalities();
       this.applyFilters();
       this.mccReport = this.merchantSvc.countByMcc();
       this.mccMax = Math.max(1, ...this.mccReport.map(r => r.count));
     });
+    this.filterForm.get('department')?.valueChanges.subscribe(() => {
+      this.filterForm.patchValue({ municipality: '' }, { emitEvent: false });
+      this.refreshMunicipalities();
+      this.applyFilters();
+    });
     this.filterForm.valueChanges.subscribe(() => this.applyFilters());
+  }
+
+  private refreshMunicipalities(): void {
+    const dept = this.filterForm.getRawValue().department;
+    const source = dept ? this.all.filter(m => m.department === dept) : this.all;
+    this.municipalities = [...new Set(source.map(m => m.municipality))].sort();
   }
 
   applyFilters(): void {
@@ -59,8 +74,8 @@ export class MerchantListComponent implements OnInit {
         (!f.affiliateCode || m.affiliateCode.toLowerCase().includes(f.affiliateCode.toLowerCase())) &&
         (!f.tradeName || m.tradeName.toLowerCase().includes(f.tradeName.toLowerCase())) &&
         (!f.mcc || m.mcc.includes(f.mcc)) &&
-        (!f.department || m.department.toLowerCase().includes(f.department.toLowerCase())) &&
-        (!f.municipality || m.municipality.toLowerCase().includes(f.municipality.toLowerCase())) &&
+        (!f.department || m.department === f.department) &&
+        (!f.municipality || m.municipality === f.municipality) &&
         (!f.status || m.status === f.status),
     );
   }
@@ -74,6 +89,7 @@ export class MerchantListComponent implements OnInit {
       municipality: '',
       status: '',
     });
+    this.refreshMunicipalities();
   }
 
   get hasActiveFilters(): boolean {

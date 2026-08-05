@@ -1442,6 +1442,15 @@ a.mat-mdc-raised-button.mat-primary:hover {
   background: var(--surface-alt);
 }
 
+.cf-menu-item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cf-menu-item:disabled:hover {
+  background: transparent;
+}
+
 .cf-menu-item.danger {
   color: #c1272d;
 }

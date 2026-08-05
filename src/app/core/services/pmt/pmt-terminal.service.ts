@@ -12,6 +12,7 @@ import {
 
 let terminalSeq = MOCK_PMT_TERMINALS.length + 1;
 let trackingSeq = MOCK_PMT_TRACKING.length + 1;
+let initSeq = MOCK_PMT_INITIALIZATIONS.length + 1;
 
 @Injectable({ providedIn: 'root' })
 export class PmtTerminalService {
@@ -71,7 +72,107 @@ export class PmtTerminalService {
       createdAt: now,
     };
     this.trackingSubject.next([event, ...this.tracking]);
-    this.update(id, { estado: newEstado, ...extra });
+    const extraUpdate: Partial<Terminal> = { ...extra };
+    if (newEstado === 'en_inyeccion') {
+      extraUpdate.inyectado = extraUpdate.inyectado ?? 'No';
+    }
+    this.update(id, { estado: newEstado, ...extraUpdate });
+  }
+
+  /** True if terminal already went through inyección (flag or tracking history). */
+  hasPassedInyeccion(t: Terminal): boolean {
+    if ((t.inyectado ?? '').toLowerCase() === 'si') return true;
+    return this.tracking.some(e =>
+      e.terminalId === t.id &&
+      (e.newStatus === 'en_inyeccion' || e.previousStatus === 'en_inyeccion')
+    );
+  }
+
+  canSendToInyeccion(t: Terminal): boolean {
+    return t.estado === 'en_bodega' && !this.hasPassedInyeccion(t);
+  }
+
+  canSendToReparacion(t: Terminal): boolean {
+    return !['en_reparacion', 'irreparable', 'obsoleto', 'retirado', 'serie_sustituida'].includes(t.estado);
+  }
+
+  canSendToGarantia(t: Terminal): boolean {
+    return !['garantia', 'irreparable', 'obsoleto', 'retirado', 'serie_sustituida'].includes(t.estado);
+  }
+
+  /** Builds injection payload from a Merchant Config (query) record + terminal serie. */
+  buildInjectionPayload(serie: string, merchant: QueryRecord, extras?: { version?: string; apn?: string }): Record<string, string> {
+    return {
+      serie,
+      terminal: merchant.terminal ?? '',
+      codigo: merchant.codigo ?? '',
+      comercio: merchant.comercio ?? '',
+      direccion: merchant.direccion ?? '',
+      ciudad: merchant.ciudad ?? '',
+      mcc: merchant.mcc ?? '',
+      limite: merchant.limite ?? '',
+      zona: merchant.zona ?? '',
+      version: extras?.version ?? '4.12.5',
+      apn: extras?.apn ?? 'internet.claro.hn',
+    };
+  }
+
+  /**
+   * Applies merchant injection config to a terminal in `en_inyeccion`.
+   * Marks `inyectado = Si`, copies merchant fields, and logs an Initialization.
+   */
+  applyInjectionFile(
+    terminalId: number,
+    payload: Record<string, string>,
+    opts?: { fileName?: string; createdBy?: string },
+  ): { ok: true } | { ok: false; message: string } {
+    const t = this.terminals.find(x => x.id === terminalId);
+    if (!t) return { ok: false, message: 'Terminal no encontrado' };
+    if (t.estado !== 'en_inyeccion') return { ok: false, message: 'El terminal no está en inyección' };
+    if (!payload['serie']) return { ok: false, message: 'El archivo debe incluir "serie"' };
+    if (payload['serie'].toLowerCase() !== t.serie.toLowerCase()) {
+      return { ok: false, message: `La serie del archivo (${payload['serie']}) no coincide con ${t.serie}` };
+    }
+
+    const fileName = opts?.fileName ?? 'inyeccion.json';
+    const createdBy = opts?.createdBy ?? 'inyector';
+    this.update(terminalId, {
+      inyectado: 'Si',
+      nombre: payload['comercio'] || t.nombre,
+      codigo: payload['codigo'] || t.codigo,
+      terminal: payload['terminal'] || t.terminal,
+      direccion: payload['direccion'] || t.direccion,
+      ciudad: payload['ciudad'] || t.ciudad,
+      mcc: payload['mcc'] || t.mcc,
+      zona: payload['zona'] || t.zona,
+      version: payload['version'] || t.version,
+    });
+
+    const now = new Date().toISOString();
+    const init: Initialization = {
+      id: initSeq++,
+      serie: t.serie,
+      terminal: payload['terminal'] || t.terminal,
+      version: payload['version'] || '4.12.5',
+      apn: payload['apn'] || 'internet.claro.hn',
+      resultado: 'OK',
+      createdBy,
+      createdAt: now,
+    };
+    this.initSubject.next([init, ...this.initializations]);
+
+    const event: TrackingEvent = {
+      id: trackingSeq++,
+      terminalId,
+      serie: t.serie,
+      previousStatus: t.estado,
+      newStatus: t.estado,
+      comment: `Archivo de inyección cargado: ${fileName} → ${payload['comercio'] || 'sin comercio'}`,
+      createdBy,
+      createdAt: now,
+    };
+    this.trackingSubject.next([event, ...this.tracking]);
+    return { ok: true };
   }
 
   // ── Dashboard summary ────────────────────────────────────────────────────
@@ -85,7 +186,7 @@ export class PmtTerminalService {
       enBodega: byEstado('en_bodega'),
       enInyeccion: byEstado('en_inyeccion'),
       asignadoSupervisor: byEstado('asignado_supervisor'),
-      asignadoTecnico: byEstado('asignado_tecnico'),
+      asignadoTecnico: byEstado('asignado_tecnico') + byEstado('asignado_ejecutivo'),
       instalado: byEstado('instalado'),
       enReparacion: byEstado('en_reparacion'),
       garantia: byEstado('garantia'),

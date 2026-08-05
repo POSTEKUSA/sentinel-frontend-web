@@ -211,7 +211,7 @@ export class DeviceMapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private initMap(): void {
     console.log('[DeviceMapComponent] initMap started');
-    const managua: L.LatLngExpression = [12.1150, -86.2362];
+    const tegucigalpa: L.LatLngExpression = [14.0723, -87.1921];
 
     const mapContainer = document.getElementById('leaflet-map');
     console.log('[DeviceMapComponent] leaflet-map container element in DOM:', !!mapContainer);
@@ -228,7 +228,7 @@ export class DeviceMapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     try {
       this.map = L.map('leaflet-map', {
-        center: managua,
+        center: tegucigalpa,
         zoom: 12,
       });
       console.log('[DeviceMapComponent] Leaflet map initialized successfully');

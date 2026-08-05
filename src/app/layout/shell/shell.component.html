@@ -36,6 +36,7 @@
         <div class="section-items" [class.collapsed]="!section.expanded">
           <div class="section-items-inner">
             @for (item of section.items; track item.route) {
+              @if (!item.hidden) {
               <a
                 class="nav-item"
                 [routerLink]="item.route"
@@ -94,6 +95,7 @@
                 }
                 <span>{{ item.label }}</span>
               </a>
+              }
             }
           </div>
         </div>
@@ -104,8 +106,7 @@
       <div class="user" (click)="userMenuOpen.set(!userMenuOpen())" style="cursor: pointer;">
         <div class="avatar">SA</div>
         <div class="min-w-0" style="flex: 1;">
-          <div class="user-name truncate">Super Administrador</div>
-          <div class="user-role truncate">Acceso total</div>
+          <div class="user-name truncate">Super Admin</div>
         </div>
         <span class="mi" style="color: var(--ink-3); font-size: 18px; margin-left: auto;">
           {{ userMenuOpen() ? 'expand_less' : 'expand_more' }}

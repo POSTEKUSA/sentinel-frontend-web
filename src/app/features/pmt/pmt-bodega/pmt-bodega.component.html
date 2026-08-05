@@ -6,14 +6,17 @@
     </div>
     <div class="head-actions">
       @if (selectedIds.size > 0) {
-        <button class="btn-secondary" (click)="actionType = 'asignar'">
+        <button class="btn-secondary" (click)="startBulkAction('asignar')">
           <span class="mi">person_add</span> Asignar ({{ selectedIds.size }})
         </button>
-        <button class="btn-secondary" (click)="actionType = 'inyeccion'">
+        <button class="btn-secondary" (click)="startBulkAction('inyeccion')">
           <span class="mi">vaccines</span> Pasar a Inyección
         </button>
-        <button class="btn-secondary" (click)="actionType = 'reparacion'">
+        <button class="btn-secondary" (click)="startBulkAction('reparacion')">
           <span class="mi">build</span> Enviar Reparación
+        </button>
+        <button class="btn-secondary" (click)="startBulkAction('garantia')">
+          <span class="mi">shield</span> Enviar Garantía
         </button>
       }
     </div>
@@ -22,7 +25,7 @@
   <div class="panel toolbar-panel">
     <form [formGroup]="filterForm" class="toolbar">
       <input class="cf-input filter-input" formControlName="serie" placeholder="Serie…" />
-      <input class="cf-input filter-input" formControlName="inventario" placeholder="Inventario…" />
+      <input class="cf-input filter-input" formControlName="inventario" placeholder="Código…" />
       <input class="cf-input filter-input" formControlName="modelo" placeholder="Modelo…" />
       <input class="cf-input filter-input" formControlName="caja" placeholder="Caja…" />
       <select class="cf-input filter-input" formControlName="inyectado">
@@ -45,17 +48,18 @@
               <input type="checkbox" [checked]="allSelected" (change)="toggleAll()" />
             </th>
             <th>Serie</th>
-            <th>Inventario</th>
+            <th>Código</th>
             <th>Modelo</th>
             <th>Zona</th>
             <th>Caja</th>
             <th>Inyectado</th>
             <th>Fecha</th>
+            <th style="text-align:right;width:56px">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @if (filtered.length === 0) {
-            <tr><td colspan="8" class="admin-empty"><span class="mi">inventory</span><span>Sin terminales en bodega</span></td></tr>
+            <tr><td colspan="9" class="admin-empty"><span class="mi">inventory</span><span>Sin terminales en bodega</span></td></tr>
           }
           @for (t of filtered; track t.id) {
             <tr [class.row-selected]="selectedIds.has(t.id)">
@@ -71,6 +75,35 @@
                 </span>
               </td>
               <td>{{ t.fecha ?? '—' }}</td>
+              <td style="text-align:right">
+                <div class="row-actions" style="justify-content:flex-end">
+                  <div class="cf-menu" [class.open]="openMenuId === 'row-' + t.id">
+                    <button type="button" class="cf-icon-btn" aria-label="Acciones" (click)="toggleMenu('row-' + t.id, $event)">
+                      <span class="mi">more_vert</span>
+                    </button>
+                    <div class="cf-menu-panel">
+                      <button
+                        type="button"
+                        class="cf-menu-item"
+                        [disabled]="!canSendToInyeccion(t)"
+                        [title]="canSendToInyeccion(t) ? '' : 'Este POS ya pasó por inyección'"
+                        (click)="canSendToInyeccion(t) && startRowAction('inyeccion', t, $event)">
+                        <span class="mi">vaccines</span> Enviar a inyección
+                      </button>
+                      @if (canSendToReparacion(t)) {
+                        <button type="button" class="cf-menu-item" (click)="startRowAction('reparacion', t, $event)">
+                          <span class="mi">build</span> Enviar a reparación
+                        </button>
+                      }
+                      @if (canSendToGarantia(t)) {
+                        <button type="button" class="cf-menu-item" (click)="startRowAction('garantia', t, $event)">
+                          <span class="mi">shield</span> Enviar a garantía
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </td>
             </tr>
           }
         </tbody>
@@ -78,23 +111,39 @@
     </div>
   </div>
 
-  <!-- Action dialogs -->
-  @if (actionType === 'inyeccion' || actionType === 'reparacion') {
-    <div class="dialog-backdrop" (click)="actionType = null">
+  <!-- Confirm dialog: inyeccion / reparacion / garantia -->
+  @if (actionType === 'inyeccion' || actionType === 'reparacion' || actionType === 'garantia') {
+    <div class="dialog-backdrop" (click)="cancelAction()">
       <div class="dialog" (click)="$event.stopPropagation()">
         <div class="dialog-head">
-          <h2>{{ actionType === 'inyeccion' ? 'Pasar a Inyección' : 'Enviar a Reparación' }}</h2>
-          <button class="icon-btn" (click)="actionType = null"><span class="mi">close</span></button>
+          <h2>{{ actionTitle() }}</h2>
+          <button class="icon-btn" (click)="cancelAction()"><span class="mi">close</span></button>
         </div>
         <div class="dialog-body">
           <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
-            Se aplicará la acción a <strong>{{ selectedIds.size }}</strong> terminal(es).
+            Se aplicará la acción a <strong>{{ actionIds.length }}</strong> terminal(es).
           </p>
-          <label class="cf-label">Comentario (opcional)</label>
-          <textarea class="cf-input" rows="3" [(ngModel)]="actionComment" placeholder="Motivo…"></textarea>
+          @if (needsMotivo) {
+            <label class="cf-label">Motivo *</label>
+            <select class="cf-input" [(ngModel)]="actionMotivo" style="margin-bottom:12px">
+              <option value="">Seleccione un motivo…</option>
+              @for (m of motivosList; track m) {
+                <option [value]="m">{{ m }}</option>
+              }
+            </select>
+            <label class="cf-label">{{ actionMotivo === 'Otro' ? 'Detalle *' : 'Comentario (opcional)' }}</label>
+            <textarea class="cf-input" rows="3" [(ngModel)]="actionComment"
+              [placeholder]="actionMotivo === 'Otro' ? 'Describa el motivo…' : 'Detalle adicional…'"></textarea>
+          } @else {
+            <label class="cf-label">Comentario (opcional)</label>
+            <textarea class="cf-input" rows="3" [(ngModel)]="actionComment" placeholder="Motivo…"></textarea>
+          }
+          @if (actionError) {
+            <p class="form-error" style="margin-top:10px">{{ actionError }}</p>
+          }
         </div>
         <div class="dialog-foot">
-          <button class="btn-secondary" (click)="actionType = null">Cancelar</button>
+          <button class="btn-secondary" (click)="cancelAction()">Cancelar</button>
           <button class="btn-primary" (click)="applyAction()">Confirmar</button>
         </div>
       </div>
@@ -102,15 +151,15 @@
   }
 
   @if (actionType === 'asignar') {
-    <div class="dialog-backdrop" (click)="actionType = null">
+    <div class="dialog-backdrop" (click)="cancelAction()">
       <div class="dialog" (click)="$event.stopPropagation()">
         <div class="dialog-head">
           <h2>Asignar POS</h2>
-          <button class="icon-btn" (click)="actionType = null"><span class="mi">close</span></button>
+          <button class="icon-btn" (click)="cancelAction()"><span class="mi">close</span></button>
         </div>
         <div class="dialog-body">
           <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
-            Asignando <strong>{{ selectedIds.size }}</strong> terminal(es).
+            Asignando <strong>{{ actionIds.length }}</strong> terminal(es).
           </p>
           <div class="grid-2">
             <div>
@@ -118,6 +167,7 @@
               <select class="cf-input" [(ngModel)]="assignRole">
                 <option value="supervisor">Supervisor</option>
                 <option value="tecnico">Técnico</option>
+                <option value="ejecutivo">Ejecutivo</option>
               </select>
             </div>
             <div>
@@ -131,7 +181,7 @@
           </div>
         </div>
         <div class="dialog-foot">
-          <button class="btn-secondary" (click)="actionType = null">Cancelar</button>
+          <button class="btn-secondary" (click)="cancelAction()">Cancelar</button>
           <button class="btn-primary" (click)="applyAction()">Asignar</button>
         </div>
       </div>

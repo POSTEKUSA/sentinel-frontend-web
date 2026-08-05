@@ -27,13 +27,21 @@
       <table class="cf-table">
         <thead>
           <tr>
-            <th>Fecha</th><th>Serie</th><th>Terminal</th><th>MTI</th>
-            <th>APN</th><th>App</th><th>Comercio</th><th>Monto</th><th>Respuesta</th>
+            <th>Fecha</th>
+            <th>Serie</th>
+            <th title="Identificador lógico del terminal en la red (ISO campo 41)">Terminal</th>
+            <th title="Message Type Indicator — tipo de mensaje ISO 8583 (ej. 0200 = transacción financiera, 0800 = gestión de red)">MTI</th>
+            <th title="Access Point Name — red móvil/datos que usa el POS para conectarse">APN</th>
+            <th title="Versión de la aplicación instalada en el POS">App</th>
+            <th title="Europay Mastercard Visa — versión del kernel EMV para lectura de chip">EMV</th>
+            <th title="Sistema operativo del terminal POS">SO</th>
+            <th>Comercio</th>
+            <th title="Código de respuesta ISO (00 = aprobada)">Respuesta</th>
           </tr>
         </thead>
         <tbody>
           @if (filtered.length === 0) {
-            <tr><td colspan="9" class="admin-empty"><span class="mi">receipt_long</span><span>Sin transacciones</span></td></tr>
+            <tr><td colspan="10" class="admin-empty"><span class="mi">receipt_long</span><span>Sin transacciones</span></td></tr>
           }
           @for (t of filtered; track t.id) {
             <tr>
@@ -42,9 +50,10 @@
               <td>{{ t.terminal ?? '—' }}</td>
               <td><span class="code">{{ t.mti ?? '—' }}</span></td>
               <td>{{ t.apn ?? '—' }}</td>
-              <td>{{ t.aplicacion ?? '—' }}</td>
+              <td><span class="code">{{ t.aplicacion ?? '—' }}</span></td>
+              <td><span class="code">{{ t.emv ?? '—' }}</span></td>
+              <td><span class="code">{{ t.so ?? '—' }}</span></td>
               <td class="td-truncate" [title]="t.comercio ?? ''">{{ t.comercio ?? '—' }}</td>
-              <td>{{ t.monto != null ? ('L ' + t.monto.toLocaleString()) : '—' }}</td>
               <td>
                 <span class="cf-badge" [ngClass]="respuestaBadge(t.respuesta)">
                   <span class="dot"></span>{{ respuestaLabel(t.respuesta) }}

@@ -174,11 +174,11 @@ export class DashboardMiniMapComponent implements AfterViewInit, OnChanges, OnDe
     const el = document.getElementById(this.mapElementId);
     if (!el || this.map) return;
 
-    const defaultCenter: L.LatLngExpression = [12.115, -86.236];
+    const defaultCenter: L.LatLngExpression = [14.0723, -87.1921];
 
     this.map = L.map(this.mapElementId, {
       center: defaultCenter,
-      zoom: 11,
+      zoom: 7,
       zoomControl: true,
       attributionControl: false,
     });

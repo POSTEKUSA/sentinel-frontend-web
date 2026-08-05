@@ -8,6 +8,6 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class CurrentUserService {
   readonly username = 'superadmin';
-  readonly displayName = 'Super Administrador';
+  readonly displayName = 'Super Admin';
   readonly initials = 'SA';
 }

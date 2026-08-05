@@ -33,12 +33,15 @@
             <th>Modelo</th>
             <th>Zona</th>
             <th>Caja</th>
+            <th>Inyectado</th>
+            <th>Comercio</th>
             <th>Fecha Entrada</th>
+            <th style="text-align:right;width:200px">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @if (filtered.length === 0) {
-            <tr><td colspan="7" class="admin-empty"><span class="mi">vaccines</span><span>Sin terminales en inyección</span></td></tr>
+            <tr><td colspan="10" class="admin-empty"><span class="mi">vaccines</span><span>Sin terminales en inyección</span></td></tr>
           }
           @for (t of filtered; track t.id) {
             <tr [class.row-selected]="selectedIds.has(t.id)">
@@ -48,7 +51,18 @@
               <td>{{ t.modelo ?? '—' }}</td>
               <td>{{ t.zona ?? '—' }}</td>
               <td>{{ t.caja ?? '—' }}</td>
+              <td>
+                <span class="cf-badge" [ngClass]="t.inyectado === 'Si' ? 'cf-badge-ok' : 'cf-badge-warn'">
+                  <span class="dot"></span>{{ t.inyectado ?? 'No' }}
+                </span>
+              </td>
+              <td class="td-truncate" [title]="t.nombre ?? ''">{{ t.nombre ?? '—' }}</td>
               <td>{{ t.updatedAt | date:'dd/MM/yyyy' }}</td>
+              <td style="text-align:right">
+                <button type="button" class="btn-secondary btn-sm" (click)="openUpload(t)" title="Subir archivo de inyección">
+                  <span class="mi">upload_file</span> Subir archivo
+                </button>
+              </td>
             </tr>
           }
         </tbody>
@@ -73,6 +87,70 @@
         <div class="dialog-foot">
           <button class="btn-secondary" (click)="showConfirm = false">Cancelar</button>
           <button class="btn-primary" (click)="marcarSalida()">Confirmar Salida</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (uploadTarget) {
+    <div class="dialog-backdrop" (click)="closeUpload()">
+      <div class="dialog dialog-wide" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Subir archivo de inyección</h2>
+          <button class="icon-btn" (click)="closeUpload()"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p class="upload-hint">
+            Inyecta el POS <strong class="code">{{ uploadTarget.serie }}</strong> con la configuración de un merchant,
+            uno a uno. Puedes elegir el merchant, descargar el JSON de ejemplo o subir un archivo.
+          </p>
+
+          <div class="grid-2" style="margin-bottom:14px">
+            <div>
+              <label class="cf-label">Merchant</label>
+              <select class="cf-input" [(ngModel)]="selectedMerchantId" (ngModelChange)="onMerchantChange()">
+                <option [ngValue]="''">Seleccione un comercio…</option>
+                @for (m of merchants; track m.id) {
+                  <option [ngValue]="m.id">{{ m.comercio }} · {{ m.codigo }} · {{ m.ciudad }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="cf-label">O subir archivo JSON</label>
+              <label class="file-drop">
+                <span class="mi">upload_file</span>
+                <span>{{ uploadFileName || 'Elegir archivo .json' }}</span>
+                <input type="file" accept=".json,application/json" (change)="onFileSelected($event)" />
+              </label>
+            </div>
+          </div>
+
+          @if (jsonPreview) {
+            <div class="json-toolbar">
+              <label class="cf-label" style="margin:0">Vista previa del archivo de inyección</label>
+              <button type="button" class="btn-secondary btn-sm" (click)="downloadExampleJson()">
+                <span class="mi">download</span> Descargar JSON
+              </button>
+            </div>
+            <pre class="json-preview">{{ jsonPreview }}</pre>
+          } @else {
+            <div class="json-placeholder">
+              Selecciona un merchant o sube un JSON para ver el payload de inyección.
+            </div>
+          }
+
+          @if (uploadError) {
+            <p class="form-error" style="margin-top:10px">{{ uploadError }}</p>
+          }
+          @if (uploadSuccess) {
+            <p class="form-ok" style="margin-top:10px">{{ uploadSuccess }}</p>
+          }
+        </div>
+        <div class="dialog-foot">
+          <button class="btn-secondary" (click)="closeUpload()">Cancelar</button>
+          <button class="btn-primary" [disabled]="!jsonPreview" (click)="confirmUpload()">
+            <span class="mi">vaccines</span> Aplicar inyección
+          </button>
         </div>
       </div>
     </div>

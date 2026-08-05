@@ -4,6 +4,20 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
 import { Terminal, TerminalEstado, TERMINAL_ESTADO_LABELS, AssignedPosHistory } from '../../../core/models/pmt/terminal.model';
 
+type AsignadosTab = 'supervisor' | 'tecnico' | 'ejecutivo';
+
+const TAB_ESTADO: Record<AsignadosTab, TerminalEstado> = {
+  supervisor: 'asignado_supervisor',
+  tecnico: 'asignado_tecnico',
+  ejecutivo: 'asignado_ejecutivo',
+};
+
+const ROLE_LABEL: Record<AssignedPosHistory['role'], string> = {
+  supervisor: 'Supervisor',
+  tecnico: 'Técnico',
+  ejecutivo: 'Ejecutivo',
+};
+
 @Component({
   selector: 'app-pmt-asignados',
   standalone: true,
@@ -18,7 +32,8 @@ export class PmtAsignadosComponent implements OnInit {
   all: Terminal[] = [];
   filtered: Terminal[] = [];
   readonly estadoLabels = TERMINAL_ESTADO_LABELS;
-  activeTab: 'supervisor' | 'tecnico' = 'supervisor';
+  readonly roleLabel = ROLE_LABEL;
+  activeTab: AsignadosTab = 'supervisor';
 
   filterForm = this.fb.group({ q: [''], assignedTo: [''] });
 
@@ -27,18 +42,22 @@ export class PmtAsignadosComponent implements OnInit {
   terminalHistory: AssignedPosHistory[] = [];
 
   get tabEstado(): TerminalEstado {
-    return this.activeTab === 'supervisor' ? 'asignado_supervisor' : 'asignado_tecnico';
+    return TAB_ESTADO[this.activeTab];
   }
 
   ngOnInit(): void {
     this.svc.terminals$.subscribe(ts => {
-      this.all = ts.filter(t => t.estado === 'asignado_supervisor' || t.estado === 'asignado_tecnico');
+      this.all = ts.filter(t =>
+        t.estado === 'asignado_supervisor' ||
+        t.estado === 'asignado_tecnico' ||
+        t.estado === 'asignado_ejecutivo'
+      );
       this.applyFilters();
     });
     this.filterForm.valueChanges.subscribe(() => this.applyFilters());
   }
 
-  setTab(tab: 'supervisor' | 'tecnico'): void {
+  setTab(tab: AsignadosTab): void {
     this.activeTab = tab;
     this.applyFilters();
   }
@@ -56,6 +75,7 @@ export class PmtAsignadosComponent implements OnInit {
 
   get supervisorCount(): number { return this.all.filter(t => t.estado === 'asignado_supervisor').length; }
   get tecnicoCount(): number    { return this.all.filter(t => t.estado === 'asignado_tecnico').length; }
+  get ejecutivoCount(): number  { return this.all.filter(t => t.estado === 'asignado_ejecutivo').length; }
 
   reasignar(t: Terminal, newUser: string): void {
     if (!newUser.trim()) return;

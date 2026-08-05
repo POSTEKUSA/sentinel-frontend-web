@@ -6,9 +6,10 @@ export interface Transaccion {
   processingCode?: string;
   apn?: string;
   aplicacion?: string;
+  emv?: string;
+  so?: string;
   comercio?: string;
   mcc?: string;
-  monto?: number;
   respuesta?: string;
   ip?: string;
   createdAt: string;

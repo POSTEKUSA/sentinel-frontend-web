@@ -19,10 +19,10 @@
         <span class="url-filter-tag">Estado: {{ statusLabel(activeStatusFilter) }}</span>
       }
       @if (filterTenantId) {
-        <span class="url-filter-tag">Organización: {{ filterTenantId }}</span>
+        <span class="url-filter-tag">Comercio: {{ filterTenantId }}</span>
       }
       @if (filterMerchantId) {
-        <span class="url-filter-tag">Comercio: {{ filterMerchantId }}</span>
+        <span class="url-filter-tag">Sucursal: {{ filterMerchantId }}</span>
       }
       @if (filterStaleSyncOnly) {
         <span class="url-filter-tag">Solo sincronización desactualizada</span>
@@ -63,7 +63,7 @@
         <input
           type="search"
           [formControl]="searchCtrl"
-          placeholder="Buscar alias, ID de dispositivo, comercio, organización…"
+          placeholder="Buscar alias, ID de dispositivo, comercio, sucursal…"
           autocomplete="off"
           spellcheck="false" />
       </label>
@@ -96,8 +96,8 @@
             <thead>
               <tr>
                 <th>Alias del dispositivo</th>
-                <th>Organización</th>
                 <th>Comercio</th>
+                <th>Sucursal</th>
                 <th>Batería</th>
                 <th>Red</th>
                 <th>Última vez visto</th>

@@ -57,8 +57,18 @@
         </label>
         <input class="cf-input filter-input" formControlName="affiliateCode" placeholder="Código…" autocomplete="off" spellcheck="false" />
         <input class="cf-input filter-input" formControlName="mcc" placeholder="MCC…" autocomplete="off" spellcheck="false" />
-        <input class="cf-input filter-input" formControlName="department" placeholder="Departamento…" autocomplete="off" />
-        <input class="cf-input filter-input" formControlName="municipality" placeholder="Municipio…" autocomplete="off" />
+        <select class="cf-input filter-input" formControlName="department">
+          <option value="">Todos los departamentos</option>
+          @for (d of departments; track d) {
+            <option [value]="d">{{ d }}</option>
+          }
+        </select>
+        <select class="cf-input filter-input" formControlName="municipality">
+          <option value="">Todos los municipios</option>
+          @for (m of municipalities; track m) {
+            <option [value]="m">{{ m }}</option>
+          }
+        </select>
         <select class="cf-input filter-input" formControlName="status">
           <option value="">Todos</option>
           <option value="active">Activo</option>

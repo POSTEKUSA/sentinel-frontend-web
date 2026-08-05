@@ -1,1 +1,252 @@
 .td-truncate { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Allow kebab menus to overflow the table scroll container */
+.admin-table-wrap { overflow: visible; }
+.cf-table td { overflow: visible; }
+
+/* ── History dialog header ─────────────────────────────────────────────── */
+.history-head-meta { min-width: 0; }
+.history-head-meta h2 { margin: 0; }
+.history-sub {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--ink-2);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.history-sep { color: var(--ink-3); }
+
+/* ── Workflow strip ────────────────────────────────────────────────────── */
+.workflow-strip {
+  margin-bottom: 20px;
+  padding: 14px 16px 28px;
+  background: var(--surface-alt, color-mix(in srgb, var(--ink) 3%, transparent));
+  border: 1px solid var(--line, color-mix(in srgb, var(--ink) 10%, transparent));
+  border-radius: 10px;
+}
+.workflow-title {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  margin-bottom: 18px;
+  letter-spacing: .02em;
+}
+.workflow-track {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0 8px;
+}
+.workflow-line {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 15px;
+  height: 2px;
+  background: var(--line, color-mix(in srgb, var(--ink) 12%, transparent));
+  z-index: 0;
+}
+.workflow-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.workflow-node {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface, #fff);
+  border: 2px solid var(--line, #d0d5dd);
+  color: var(--ink-3);
+  transition: border-color .2s, color .2s, box-shadow .2s;
+}
+.workflow-node .mi { font-size: 18px; }
+.workflow-num {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.workflow-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-3);
+  text-align: center;
+  line-height: 1.2;
+  max-width: 100px;
+}
+.workflow-step[data-state='done'] .workflow-node {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.workflow-step[data-state='active'] .workflow-node {
+  border-color: var(--brand);
+  color: var(--brand);
+  box-shadow: 0 0 0 4px var(--brand-soft);
+}
+.workflow-step[data-state='active'] .workflow-label {
+  color: var(--brand);
+  font-weight: 600;
+}
+.workflow-step[data-state='done'] .workflow-label {
+  color: var(--ink-2);
+}
+
+/* ── Timeline ──────────────────────────────────────────────────────────── */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 8px 0;
+  position: relative;
+  border-left: 2px solid var(--line, color-mix(in srgb, var(--ink) 12%, transparent));
+  margin-left: 14px;
+  padding-left: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.timeline-item { position: relative; }
+.timeline-node {
+  position: absolute;
+  left: -43px;
+  top: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface, #fff);
+  border: 2px solid var(--brand);
+  color: var(--brand);
+  box-shadow: 0 0 0 3px var(--surface, #fff);
+}
+.timeline-node .mi { font-size: 15px; }
+.timeline-item[data-kind='field'] .timeline-node {
+  border-color: #0d9488;
+  color: #0d9488;
+}
+
+.timeline-card {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, color-mix(in srgb, var(--ink) 10%, transparent));
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.timeline-card:hover {
+  border-color: color-mix(in srgb, var(--brand) 35%, var(--line, #d0d5dd));
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--ink) 6%, transparent);
+}
+.timeline-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.timeline-card-titles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  min-width: 0;
+}
+.timeline-kind {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.timeline-by {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.timeline-date {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--ink-3);
+  background: var(--surface-alt, color-mix(in srgb, var(--ink) 4%, transparent));
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.timeline-status-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.timeline-arrow {
+  color: var(--ink-3);
+  font-size: 13px;
+}
+
+.timeline-field-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.timeline-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-2);
+  background: var(--surface-alt, color-mix(in srgb, var(--ink) 4%, transparent));
+  border: 1px solid var(--line, color-mix(in srgb, var(--ink) 8%, transparent));
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+.timeline-chip .mi { font-size: 14px; color: #0d9488; }
+.timeline-address {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.timeline-comment {
+  margin: 10px 0 0;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  background: var(--surface-alt, color-mix(in srgb, var(--ink) 3.5%, transparent));
+  border: 1px solid var(--line, color-mix(in srgb, var(--ink) 8%, transparent));
+  border-radius: 8px;
+  white-space: pre-wrap;
+}
+
+.timeline-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 36px 16px;
+  color: var(--ink-3);
+  font-size: 13px;
+  text-align: center;
+}
+.timeline-empty .mi { font-size: 32px; opacity: .7; }
+
+@media (max-width: 560px) {
+  .workflow-label { max-width: 64px; font-size: 10px; }
+  .timeline { margin-left: 10px; padding-left: 22px; }
+  .timeline-node { left: -37px; width: 24px; height: 24px; }
+  .timeline-node .mi { font-size: 13px; }
+  .timeline-card-head { flex-direction: column; align-items: stretch; }
+}

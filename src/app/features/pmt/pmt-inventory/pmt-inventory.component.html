@@ -5,9 +5,13 @@
       <p class="count">{{ filtered.length }} equipo(s) encontrados de {{ all.length }} totales</p>
     </div>
     <div class="head-actions">
+      <a routerLink="/pmt/bulk-upload" class="btn-secondary">
+        <span class="mi">cloud_upload</span>
+        Subir Inventario
+      </a>
       <button type="button" class="btn-primary" (click)="openCreate()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        Nuevo Terminal
+        Nueva Terminal
       </button>
     </div>
   </header>
@@ -25,8 +29,18 @@
           <option [value]="k">{{ estadoLabels[k] }}</option>
         }
       </select>
-      <input class="cf-input filter-input" formControlName="zona" placeholder="Zona…" />
-      <input class="cf-input filter-input" formControlName="modelo" placeholder="Modelo…" />
+      <select class="cf-input filter-input" formControlName="zona">
+        <option value="">Todas las zonas</option>
+        @for (z of zonas; track z) {
+          <option [value]="z">{{ z }}</option>
+        }
+      </select>
+      <select class="cf-input filter-input" formControlName="modelo">
+        <option value="">Todos los modelos</option>
+        @for (m of modelos; track m) {
+          <option [value]="m">{{ m }}</option>
+        }
+      </select>
       <button type="button" [class]="hasFilters ? 'btn-primary' : 'btn-secondary'" (click)="clearFilters()">
         <span class="mi">filter_alt_off</span> Limpiar
       </button>
@@ -74,18 +88,43 @@
               <td>{{ t.ciudad ?? '—' }}</td>
               <td class="td-sub">{{ t.updatedAt | date:'dd/MM/yy' }}</td>
               <td style="text-align:right">
-                <div class="row-actions">
-                  @if (hasHistory(t)) {
-                    <button type="button" class="icon-btn" title="Historial" (click)="openHistory(t)">
-                      <span class="mi">history</span>
-                    </button>
-                  }
+                <div class="row-actions" style="justify-content:flex-end">
                   <button type="button" class="icon-btn" title="Editar" (click)="openEdit(t)">
                     <span class="mi">edit</span>
                   </button>
-                  <button type="button" class="icon-btn icon-btn--danger" title="Eliminar" (click)="delete(t.id)">
-                    <span class="mi">delete</span>
-                  </button>
+                  <div class="cf-menu" [class.open]="openMenuId === 'inv-' + t.id">
+                    <button type="button" class="cf-icon-btn" aria-label="Acciones" (click)="toggleMenu('inv-' + t.id, $event)">
+                      <span class="mi">more_vert</span>
+                    </button>
+                    <div class="cf-menu-panel">
+                      @if (hasHistory(t)) {
+                        <button type="button" class="cf-menu-item" (click)="openHistory(t); closeMenus()">
+                          <span class="mi">history</span> Historial
+                        </button>
+                      }
+                      <button
+                        type="button"
+                        class="cf-menu-item"
+                        [disabled]="!canSendToInyeccion(t)"
+                        [title]="canSendToInyeccion(t) ? '' : 'Solo desde bodega y si aún no pasó por inyección'"
+                        (click)="canSendToInyeccion(t) && startWorkflow('inyeccion', t, $event)">
+                        <span class="mi">vaccines</span> Enviar a inyección
+                      </button>
+                      @if (canSendToReparacion(t)) {
+                        <button type="button" class="cf-menu-item" (click)="startWorkflow('reparacion', t, $event)">
+                          <span class="mi">build</span> Enviar a reparación
+                        </button>
+                      }
+                      @if (canSendToGarantia(t)) {
+                        <button type="button" class="cf-menu-item" (click)="startWorkflow('garantia', t, $event)">
+                          <span class="mi">shield</span> Enviar a garantía
+                        </button>
+                      }
+                      <button type="button" class="cf-menu-item danger" (click)="delete(t.id); closeMenus()">
+                        <span class="mi">delete_outline</span> Eliminar
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -128,7 +167,12 @@
             </div>
             <div>
               <label class="cf-label">Modelo</label>
-              <input class="cf-input" formControlName="modelo" placeholder="Verifone VX520" />
+              <select class="cf-input" formControlName="modelo">
+                <option value="">—</option>
+                @for (m of modelos; track m) {
+                  <option [value]="m">{{ m }}</option>
+                }
+              </select>
             </div>
             <div>
               <label class="cf-label">Estado</label>
@@ -140,7 +184,12 @@
             </div>
             <div>
               <label class="cf-label">Zona</label>
-              <input class="cf-input" formControlName="zona" placeholder="Norte" />
+              <select class="cf-input" formControlName="zona">
+                <option value="">—</option>
+                @for (z of zonas; track z) {
+                  <option [value]="z">{{ z }}</option>
+                }
+              </select>
             </div>
             <div>
               <label class="cf-label">Caja</label>
@@ -188,84 +237,147 @@
     <div class="dialog-backdrop" (click)="historyTerminal = null">
       <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
         <div class="dialog-head">
-          <h2>Historial — <span class="code">{{ historyTerminal.serie }}</span></h2>
+          <div class="history-head-meta">
+            <h2>Historial de Tracking</h2>
+            <p class="history-sub">
+              Serie: <span class="code">{{ historyTerminal.serie }}</span>
+              @if (historyTerminal.modelo) {
+                <span class="history-sep">·</span> {{ historyTerminal.modelo }}
+              }
+              <span class="history-sep">·</span>
+              <span class="cf-badge" [ngClass]="estadoBadge[historyTerminal.estado]">
+                <span class="dot"></span>{{ estadoLabels[historyTerminal.estado] }}
+              </span>
+            </p>
+          </div>
           <button type="button" class="icon-btn" (click)="historyTerminal = null"><span class="mi">close</span></button>
         </div>
         <div class="dialog-body">
-          <div class="cf-tabs" style="margin-top:-8px; margin-bottom:16px" role="tablist">
-            <button type="button" class="cf-tab" [class.active]="historyTab === 'status'" (click)="setHistoryTab('status')">
-              Cambios de Estado
-            </button>
-            <button type="button" class="cf-tab" [class.active]="historyTab === 'events'" (click)="setHistoryTab('events')">
-              Eventos Logísticos
-            </button>
+          <!-- Workflow strip -->
+          <div class="workflow-strip" aria-label="Flujo de tracking">
+            <span class="workflow-title">Flujo de Tracking</span>
+            <div class="workflow-track">
+              <div class="workflow-line" aria-hidden="true"></div>
+              @for (step of workflowSteps; track step.key) {
+                <div class="workflow-step" [attr.data-state]="step.state">
+                  <div class="workflow-node">
+                    @if (step.state === 'done') {
+                      <span class="mi">check_circle</span>
+                    } @else if (step.state === 'active') {
+                      <span class="mi">radio_button_checked</span>
+                    } @else {
+                      <span class="workflow-num">{{ $index + 1 }}</span>
+                    }
+                  </div>
+                  <span class="workflow-label">{{ step.label }}</span>
+                </div>
+              }
+            </div>
           </div>
 
-          @if (historyTab === 'status') {
-            @if (terminalTracking.length === 0) {
-              <p style="color:var(--ink-3); text-align:center; padding:24px">Sin historial de estados disponible</p>
-            } @else {
-              <table class="cf-table">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Estado anterior</th>
-                    <th>Estado nuevo</th>
-                    <th>Comentario</th>
-                    <th>Usuario</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (ev of terminalTracking; track ev.id) {
-                    <tr>
-                      <td>{{ ev.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-                      <td>{{ ev.previousStatus ? estadoLabels[ev.previousStatus] : '—' }}</td>
-                      <td>
-                        <span class="cf-badge" [ngClass]="estadoBadge[ev.newStatus]">
-                          <span class="dot"></span>{{ estadoLabels[ev.newStatus] }}
-                        </span>
-                      </td>
-                      <td>{{ ev.comment ?? '—' }}</td>
-                      <td>{{ ev.createdBy ?? '—' }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            }
-          }
+          <!-- Unified timeline -->
+          @if (timeline.length === 0) {
+            <div class="timeline-empty">
+              <span class="mi">history</span>
+              <span>Sin registros en el historial de esta terminal</span>
+            </div>
+          } @else {
+            <ol class="timeline">
+              @for (entry of timeline; track entry.id) {
+                <li class="timeline-item" [attr.data-kind]="entry.kind">
+                  <div class="timeline-node" aria-hidden="true">
+                    <span class="mi">{{ entry.icon }}</span>
+                  </div>
+                  <article class="timeline-card">
+                    <header class="timeline-card-head">
+                      <div class="timeline-card-titles">
+                        <span class="timeline-kind">{{ entry.title }}</span>
+                        <span class="timeline-by">por {{ entry.createdBy || 'Sistema' }}</span>
+                      </div>
+                      <time class="timeline-date" [attr.datetime]="entry.createdAt">
+                        {{ entry.createdAt | date:'dd MMM yyyy HH:mm' }}
+                      </time>
+                    </header>
 
-          @if (historyTab === 'events') {
-            @if (terminalLifecycle.length === 0) {
-              <p style="color:var(--ink-3); text-align:center; padding:24px">Sin eventos logísticos registrados</p>
-            } @else {
-              <table class="cf-table">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Acción</th>
-                    <th>Comercio</th>
-                    <th>Ciudad</th>
-                    <th>Zona</th>
-                    <th>Descripción</th>
-                    <th>Usuario</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (r of terminalLifecycle; track r.id) {
-                    <tr>
-                      <td>{{ r.createdAt | date:'dd/MM/yyyy' }}</td>
-                      <td><span class="cf-badge cf-badge-muted"><span class="dot"></span>{{ r.accion | titlecase }}</span></td>
-                      <td class="td-sub">{{ r.comercio ?? '—' }}</td>
-                      <td>{{ r.ciudad ?? '—' }}</td>
-                      <td>{{ r.zona ?? '—' }}</td>
-                      <td class="td-truncate" [title]="r.descripcion ?? ''">{{ r.descripcion ?? '—' }}</td>
-                      <td>{{ r.createdBy ?? '—' }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            }
+                    @if (entry.kind === 'status' && entry.newStatus) {
+                      <div class="timeline-status-row">
+                        @if (entry.previousStatus) {
+                          <span class="cf-badge cf-badge-muted">
+                            <span class="dot"></span>{{ estadoLabels[entry.previousStatus] }}
+                          </span>
+                          <span class="timeline-arrow" aria-hidden="true">→</span>
+                        }
+                        <span class="cf-badge" [ngClass]="estadoBadge[entry.newStatus]">
+                          <span class="dot"></span>{{ estadoLabels[entry.newStatus] }}
+                        </span>
+                      </div>
+                    }
+
+                    @if (entry.kind === 'field') {
+                      <div class="timeline-field-meta">
+                        @if (entry.comercio) {
+                          <span class="timeline-chip"><span class="mi">store</span>{{ entry.comercio }}</span>
+                        }
+                        @if (entry.ciudad) {
+                          <span class="timeline-chip"><span class="mi">location_city</span>{{ entry.ciudad }}</span>
+                        }
+                        @if (entry.zona) {
+                          <span class="timeline-chip"><span class="mi">map</span>{{ entry.zona }}</span>
+                        }
+                      </div>
+                      @if (entry.direccion) {
+                        <p class="timeline-address">{{ entry.direccion }}</p>
+                      }
+                    }
+
+                    @if (entry.comment) {
+                      <p class="timeline-comment">{{ entry.comment }}</p>
+                    }
+                  </article>
+                </li>
+              }
+            </ol>
           }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Workflow action dialog -->
+  @if (workflowAction && workflowTarget) {
+    <div class="dialog-backdrop" (click)="cancelWorkflow()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>{{ workflowTitle() }}</h2>
+          <button type="button" class="icon-btn" (click)="cancelWorkflow()"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
+            Terminal <span class="code">{{ workflowTarget.serie }}</span>
+            · estado actual: <strong>{{ estadoLabels[workflowTarget.estado] }}</strong>
+          </p>
+          @if (workflowNeedsMotivo) {
+            <label class="cf-label">Motivo *</label>
+            <select class="cf-input" [(ngModel)]="workflowMotivo" style="margin-bottom:12px">
+              <option value="">Seleccione un motivo…</option>
+              @for (m of workflowMotivosList; track m) {
+                <option [value]="m">{{ m }}</option>
+              }
+            </select>
+            <label class="cf-label">{{ workflowMotivo === 'Otro' ? 'Detalle *' : 'Comentario (opcional)' }}</label>
+            <textarea class="cf-input" rows="3" [(ngModel)]="workflowComment"
+              [placeholder]="workflowMotivo === 'Otro' ? 'Describa el motivo…' : 'Detalle adicional…'"></textarea>
+          } @else {
+            <label class="cf-label">Comentario (opcional)</label>
+            <textarea class="cf-input" rows="3" [(ngModel)]="workflowComment" placeholder="Motivo…"></textarea>
+          }
+          @if (workflowError) {
+            <p class="form-error" style="margin-top:10px">{{ workflowError }}</p>
+          }
+        </div>
+        <div class="dialog-foot">
+          <button type="button" class="btn-secondary" (click)="cancelWorkflow()">Cancelar</button>
+          <button type="button" class="btn-primary" (click)="applyWorkflow()">Confirmar</button>
         </div>
       </div>
     </div>

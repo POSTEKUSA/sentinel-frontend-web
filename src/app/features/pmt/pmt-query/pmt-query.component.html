@@ -13,15 +13,21 @@
 
   <div class="panel toolbar-panel">
     <form [formGroup]="filterForm" class="toolbar">
-      @for (f of [
-        {name:'terminal', ph:'Terminal'},
-        {name:'codigo', ph:'Código'},
-        {name:'comercio', ph:'Comercio'},
-        {name:'ciudad', ph:'Ciudad'},
-        {name:'zona', ph:'Zona'}
-      ]; track f.name) {
-        <input class="cf-input filter-input" [formControlName]="f.name" [placeholder]="f.ph" />
-      }
+      <input class="cf-input filter-input" formControlName="terminal" placeholder="Terminal" />
+      <input class="cf-input filter-input" formControlName="codigo" placeholder="Código" />
+      <input class="cf-input filter-input" formControlName="comercio" placeholder="Comercio" />
+      <select class="cf-input filter-input" formControlName="ciudad">
+        <option value="">Todas las ciudades</option>
+        @for (c of cities; track c) {
+          <option [value]="c">{{ c }}</option>
+        }
+      </select>
+      <select class="cf-input filter-input" formControlName="zona">
+        <option value="">Todas las zonas</option>
+        @for (z of zones; track z) {
+          <option [value]="z">{{ z }}</option>
+        }
+      </select>
     </form>
   </div>
 

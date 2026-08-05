@@ -3,6 +3,7 @@ export type TerminalEstado =
   | 'en_inyeccion'
   | 'asignado_supervisor'
   | 'asignado_tecnico'
+  | 'asignado_ejecutivo'
   | 'instalado'
   | 'en_reparacion'
   | 'garantia'
@@ -16,6 +17,7 @@ export const TERMINAL_ESTADO_LABELS: Record<TerminalEstado, string> = {
   en_inyeccion: 'En Inyección',
   asignado_supervisor: 'Asignado Supervisor',
   asignado_tecnico: 'Asignado Técnico',
+  asignado_ejecutivo: 'Asignado Ejecutivo',
   instalado: 'Instalado',
   en_reparacion: 'En Reparación',
   garantia: 'Garantía',
@@ -30,6 +32,7 @@ export const TERMINAL_ESTADO_BADGE: Record<TerminalEstado, string> = {
   en_inyeccion: 'cf-badge-warn',
   asignado_supervisor: 'cf-badge-info',
   asignado_tecnico: 'cf-badge-info',
+  asignado_ejecutivo: 'cf-badge-info',
   instalado: 'cf-badge-ok',
   en_reparacion: 'cf-badge-warn',
   garantia: 'cf-badge-warn',
@@ -109,7 +112,7 @@ export interface AssignedPosHistory {
   serie: string;
   modelo?: string;
   assignedTo: string;
-  role: 'supervisor' | 'tecnico';
+  role: 'supervisor' | 'tecnico' | 'ejecutivo';
   assignedAt: string;
   returnedAt?: string;
   comment?: string;

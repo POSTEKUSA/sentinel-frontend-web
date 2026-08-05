@@ -2,7 +2,7 @@
   <header class="cf-head">
     <div>
       <h1>POS Asignados</h1>
-      <p class="count">{{ supervisorCount }} a supervisor · {{ tecnicoCount }} a técnico</p>
+      <p class="count">{{ supervisorCount }} a supervisor · {{ tecnicoCount }} a técnico · {{ ejecutivoCount }} a ejecutivo</p>
     </div>
   </header>
 
@@ -12,6 +12,9 @@
     </button>
     <button type="button" class="cf-tab" [class.active]="activeTab === 'tecnico'" (click)="setTab('tecnico')">
       Técnicos ({{ tecnicoCount }})
+    </button>
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'ejecutivo'" (click)="setTab('ejecutivo')">
+      Ejecutivos ({{ ejecutivoCount }})
     </button>
   </div>
 
@@ -100,8 +103,8 @@
                     <td>{{ h.returnedAt ? (h.returnedAt | date:'dd/MM/yyyy') : '—' }}</td>
                     <td><strong>{{ h.assignedTo }}</strong></td>
                     <td>
-                      <span class="cf-badge" [ngClass]="h.role === 'supervisor' ? 'cf-badge-info' : 'cf-badge-ok'">
-                        <span class="dot"></span>{{ h.role | titlecase }}
+                      <span class="cf-badge" [ngClass]="h.role === 'supervisor' ? 'cf-badge-info' : h.role === 'ejecutivo' ? 'cf-badge-warn' : 'cf-badge-ok'">
+                        <span class="dot"></span>{{ roleLabel[h.role] }}
                       </span>
                     </td>
                     <td>{{ h.comment ?? '—' }}</td>

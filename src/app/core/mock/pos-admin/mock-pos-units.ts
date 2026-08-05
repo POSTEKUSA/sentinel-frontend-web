@@ -17,7 +17,7 @@ export const MOCK_POS_UNITS: PosUnit[] = [
   },
   {
     id: 'unit-2', serialNumber: 'PAX-A920-000102', brand: 'PAX', model: 'A920', posType: 'POS Android',
-    status: 'in_stock', locationType: 'central_warehouse', locationLabel: 'Almacén Central Managua',
+    status: 'in_stock', locationType: 'central_warehouse', locationLabel: 'Almacén Central Tegucigalpa',
     purchaseOrderId: 'po-1', purchaseOrderNumber: 'OC-2026-0001', receivedAt: daysAgoIso(60), receivedBy: 'operador.carlos',
     initialCondition: 'Nuevo, sellado de fábrica',
     history: [
@@ -56,7 +56,7 @@ export const MOCK_POS_UNITS: PosUnit[] = [
   },
   {
     id: 'unit-6', serialNumber: 'SUNMI-V2P-000203', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS Android',
-    status: 'in_stock', locationType: 'regional_warehouse', locationLabel: 'Almacén Regional León',
+    status: 'in_stock', locationType: 'regional_warehouse', locationLabel: 'Almacén Regional San Pedro Sula',
     purchaseOrderId: 'po-2', purchaseOrderNumber: 'OC-2026-0002', receivedAt: daysAgoIso(20), receivedBy: 'operador.andrea',
     initialCondition: 'Nuevo',
     history: [
@@ -96,7 +96,7 @@ export const MOCK_POS_UNITS: PosUnit[] = [
   },
   {
     id: 'unit-10', serialNumber: 'PAX-A80-000501', brand: 'PAX', model: 'A80', posType: 'POS Legacy',
-    status: 'in_transit', locationType: 'in_transit', locationLabel: 'En tránsito a Almacén Regional León',
+    status: 'in_transit', locationType: 'in_transit', locationLabel: 'En tránsito a Almacén Regional San Pedro Sula',
     purchaseOrderId: 'po-3', purchaseOrderNumber: 'OC-2026-0003', receivedAt: daysAgoIso(2), receivedBy: 'operador.jose',
     initialCondition: 'Nuevo',
     history: [

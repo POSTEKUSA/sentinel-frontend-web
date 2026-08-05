@@ -20,6 +20,7 @@ interface NavItem {
   icon: 'dashboard' | 'devices' | 'map' | 'catalog' | 'orders' | 'receiving' | 'inventory' | 'merchants' | string;
   route: string;
   tooltip?: string;
+  hidden?: boolean;
 }
 
 interface NavSection {
@@ -54,46 +55,36 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
 
   navSections: NavSection[] = [
     {
-      title: 'Monitoreo',
-      expanded: true,
-      items: [
-        { label: 'Vista General', icon: 'dashboard', route: '/dashboard' },
-        { label: 'Dispositivos', icon: 'devices', route: '/device-list' },
-        { label: 'Mapa', icon: 'map', route: '/device-map' },
-      ],
-    },
-    {
-      title: 'Administración',
-      expanded: true,
-      items: [
-        { label: 'Marcas', icon: 'catalog', route: '/pos-admin/catalog' },
-        { label: 'Compras', icon: 'orders', route: '/pos-admin/purchase-orders' },
-        { label: 'Recepción', icon: 'receiving', route: '/pos-admin/receiving' },
-        { label: 'Inventario', icon: 'inventory', route: '/pos-admin/inventory' },
-        { label: 'Comercios', icon: 'merchants', route: '/pos-admin/merchants' },
-      ],
-    },
-    {
-      title: 'OLD Control POS',
+      title: 'Administración Activos',
       expanded: true,
       items: [
         { label: 'Vista General', icon: 'dashboard', route: '/pmt/dashboard' },
         { label: 'Inventario', icon: 'inventory_2', route: '/pmt/inventory' },
-        { label: 'Subir Inventario', icon: 'cloud_upload', route: '/pmt/bulk-upload' },
+        { label: 'Recepción', icon: 'receiving', route: '/pos-admin/receiving', hidden: true },
         { label: 'Bodega', icon: 'inventory', route: '/pmt/bodega' },
         { label: 'Inyección', icon: 'vaccines', route: '/pmt/pos-inyeccion' },
         { label: 'Asignados', icon: 'manage_accounts', route: '/pmt/asignados' },
         { label: 'Reparación', icon: 'build', route: '/pmt/reparacion' },
         { label: 'Garantía', icon: 'shield', route: '/pmt/garantia' },
         { label: 'SIM Cards', icon: 'sim_card', route: '/pmt/sim-cards' },
-        
+        { label: 'Comercios', icon: 'merchants', route: '/pos-admin/merchants' },
         { label: 'Merchant Config', icon: 'storefront', route: '/pmt/query' },
+        { label: 'Requisiciones', icon: 'shopping_cart', route: '/pmt/solicitudes-equipo', tooltip: 'Solicitudes de Producto o Compras a activo fijo' },
+        { label: 'Compras', icon: 'orders', route: '/pos-admin/purchase-orders' },
+        { label: 'Soporte', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
+        { label: 'Marcas', icon: 'catalog', route: '/pos-admin/catalog' },
+        { label: 'Usuarios', icon: 'group', route: '/pmt/users' },
+      ],
+    },
+    {
+      title: 'Monitoreo Terminales',
+      expanded: true,
+      items: [
+        { label: 'Vista General', icon: 'dashboard', route: '/dashboard' },
+        { label: 'Dispositivos', icon: 'devices', route: '/device-list' },
+        { label: 'Mapa', icon: 'map', route: '/device-map' },
         { label: 'Inicializaciones', icon: 'settings_power', route: '/pmt/inicializaciones' },
         { label: 'Tráfico', icon: 'sync_alt', route: '/pmt/control-pos' },
-        
-        { label: 'Requisiciones', icon: 'shopping_cart', route: '/pmt/solicitudes-equipo', tooltip: 'Solicitudes de Producto o Compras a activo fijo' },
-        { label: 'Soporte', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
-        { label: 'Usuarios', icon: 'group', route: '/pmt/users' },
       ],
     },
   ];
@@ -169,7 +160,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/pmt/query')) return { title: 'Merchant Config', icon: 'storefront' };
     if (path.startsWith('/pmt/bulk-upload')) return { title: 'Subir Inventario', icon: 'cloud_upload' };
     if (path.startsWith('/pmt/users')) return { title: 'Usuarios', icon: 'group' };
-    if (path.startsWith('/pmt/')) return { title: 'Control POS', icon: 'inventory' };
+    if (path.startsWith('/pmt/')) return { title: 'Administración Activos', icon: 'inventory' };
 
     return { title: this.appName, icon: 'dashboard' };
   }

@@ -1,6 +1,6 @@
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
 import { Terminal, TerminalEstado } from '../../../core/models/pmt/terminal.model';
 
@@ -49,7 +49,7 @@ function mapRow(raw: Record<string, any>): Record<string, string> {
 @Component({
   selector: 'app-pmt-bulk-upload',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './pmt-bulk-upload.component.html',
   styleUrl: './pmt-bulk-upload.component.css',
 })
@@ -57,11 +57,9 @@ export class PmtBulkUploadComponent {
   private svc = inject(PmtTerminalService);
   private cdr = inject(ChangeDetectorRef);
 
-  activeTab: 'csv' | 'json' = 'csv';
   fileName: string | null = null;
   parsedData: Partial<Terminal>[] | null = null;
   parseError: string | null = null;
-  jsonInput = '';
   uploadResult: { created: number; errors: any[] } | null = null;
 
   readonly previewCols = ['serie','modelo','estado','nombre','ciudad'];
@@ -100,24 +98,11 @@ export class PmtBulkUploadComponent {
     });
   }
 
-  parseJson(): void {
-    this.parseError = null; this.parsedData = null; this.uploadResult = null;
-    if (!this.jsonInput.trim()) { this.parseError = 'Ingrese datos JSON.'; return; }
-    try {
-      const data = JSON.parse(this.jsonInput);
-      if (!Array.isArray(data) || !data.length) { this.parseError = 'El JSON debe ser un array no vacío.'; return; }
-      const invalid = data.filter(r => !r.serie);
-      if (invalid.length) { this.parseError = `${invalid.length} fila(s) sin campo "serie".`; return; }
-      this.parsedData = data.map(r => mapRow(r));
-    } catch (e: any) { this.parseError = e.message || 'Error de sintaxis JSON.'; }
-  }
-
   upload(): void {
     if (!this.parsedData) return;
     this.uploadResult = this.svc.bulkImport(this.parsedData);
     this.parsedData = null;
     this.fileName = null;
-    this.jsonInput = '';
   }
 
   downloadTemplate(): void {
@@ -133,7 +118,7 @@ export class PmtBulkUploadComponent {
     URL.revokeObjectURL(url);
   }
 
-  reset(): void { this.parsedData = null; this.parseError = null; this.uploadResult = null; this.fileName = null; this.jsonInput = ''; }
+  reset(): void { this.parsedData = null; this.parseError = null; this.uploadResult = null; this.fileName = null; }
   colLabel(c: string): string { const m: Record<string,string> = {serie:'Serie',modelo:'Modelo',estado:'Estado',nombre:'Comercio',ciudad:'Ciudad'}; return m[c] ?? c; }
   colValue(r: any, c: string): string { return r[c] ?? '—'; }
 }

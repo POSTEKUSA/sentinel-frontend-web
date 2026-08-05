@@ -1,1 +1,5 @@
 .row-selected { background: var(--brand-soft) !important; }
+
+/* Allow kebab menus to overflow the table scroll container */
+.admin-table-wrap { overflow: visible; }
+.cf-table td { overflow: visible; }

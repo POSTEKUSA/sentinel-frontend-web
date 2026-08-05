@@ -1,51 +1,37 @@
 <div class="admin-page">
   <header class="cf-head">
     <div>
-      <h1>Carga Masiva de Terminales</h1>
-      <p class="count">Importe múltiples equipos al inventario via CSV o JSON</p>
+      <h1>Subir Inventario</h1>
+      <p class="count">Importe múltiples equipos al inventario via CSV</p>
+    </div>
+    <div class="head-actions">
+      <a routerLink="/pmt/inventory" class="btn-secondary">
+        <span class="mi">arrow_back</span>
+        Volver a Inventario
+      </a>
     </div>
   </header>
-
-  <div class="cf-tabs" role="tablist">
-    <button class="cf-tab" [class.active]="activeTab === 'csv'" (click)="activeTab = 'csv'; reset()">
-      <span class="mi">upload_file</span> Archivo CSV
-    </button>
-    <button class="cf-tab" [class.active]="activeTab === 'json'" (click)="activeTab = 'json'; reset()">
-      <span class="mi">data_object</span> JSON Manual
-    </button>
-  </div>
 
   <div class="upload-layout">
 
     <!-- Input panel -->
     <div class="panel upload-card">
-      @if (activeTab === 'csv') {
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <div>
-            <h2 class="upload-card-title"><span class="mi">upload_file</span> Archivo CSV</h2>
-            <p class="upload-card-sub">Columnas: serie*, modelo, estado, inventario, zona, caja, inyectado, fecha, nombre, ciudad, comunicacion, version</p>
-          </div>
-          <button class="btn-secondary btn-sm" (click)="downloadTemplate()" title="Descargar CSV con datos de ejemplo">
-            <span class="mi">download</span> Plantilla
-          </button>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <h2 class="upload-card-title"><span class="mi">upload_file</span> Archivo CSV</h2>
+          <p class="upload-card-sub">Columnas: serie*, modelo, estado, inventario, zona, caja, inyectado, fecha, nombre, ciudad, comunicacion, version</p>
         </div>
-
-        <div class="dropzone" (click)="csvInput.click()">
-          <span class="mi dropzone-icon">{{ fileName ? 'description' : 'cloud_upload' }}</span>
-          <p class="dropzone-text">{{ fileName ?? 'Haga clic para seleccionar archivo' }}</p>
-          <p class="dropzone-sub">Formatos: .csv</p>
-          <input #csvInput type="file" class="hidden-input" accept=".csv" (change)="onFileChange($event)" />
-        </div>
-      }
-      @if (activeTab === 'json') {
-        <h2 class="upload-card-title"><span class="mi">data_object</span> JSON Manual</h2>
-        <p class="upload-card-sub">Ingrese un array JSON con los terminales a importar.</p>
-        <textarea class="cf-input" rows="12" [(ngModel)]="jsonInput" style="font-family:monospace;font-size:12px"
-          placeholder='[&#10;  { "serie": "SN123", "modelo": "VX520", "estado": "en_bodega" }&#10;]'></textarea>
-        <button class="btn-secondary btn-sm" style="margin-top:8px" (click)="parseJson()">
-          <span class="mi">check</span> Validar JSON
+        <button class="btn-secondary btn-sm" (click)="downloadTemplate()" title="Descargar CSV con datos de ejemplo">
+          <span class="mi">download</span> Plantilla
         </button>
-      }
+      </div>
+
+      <div class="dropzone" (click)="csvInput.click()">
+        <span class="mi dropzone-icon">{{ fileName ? 'description' : 'cloud_upload' }}</span>
+        <p class="dropzone-text">{{ fileName ?? 'Haga clic para seleccionar archivo' }}</p>
+        <p class="dropzone-sub">Formatos: .csv</p>
+        <input #csvInput type="file" class="hidden-input" accept=".csv" (change)="onFileChange($event)" />
+      </div>
 
       @if (parsedData && !uploadResult) {
         <div class="upload-actions">
@@ -66,7 +52,7 @@
     <div class="panel upload-result">
       <h2 class="upload-card-title">Resultado</h2>
       @if (!parsedData && !parseError && !uploadResult) {
-        <p style="color:var(--ink-3);font-size:13px">Seleccione un método de importación.</p>
+        <p style="color:var(--ink-3);font-size:13px">Seleccione un archivo CSV para importar.</p>
       }
       @if (parseError) {
         <div class="alert alert--error"><span class="mi alert-icon">error</span><div><p class="alert-title">Error de validación</p><p>{{ parseError }}</p></div></div>
@@ -74,7 +60,7 @@
       @if (parsedData && !uploadResult) {
         <div class="alert alert--info"><span class="mi alert-icon">check_circle</span><div>
           <p class="alert-title">Vista previa ({{ parsedData.length }} registros)</p>
-          <p>Revise los datos y presione "Procesar".</p>
+          <p>Revise los datos y presione "Importar".</p>
         </div></div>
         <div class="admin-table-wrap" style="max-height:300px;overflow-y:auto;margin-top:12px">
           <table class="cf-table">

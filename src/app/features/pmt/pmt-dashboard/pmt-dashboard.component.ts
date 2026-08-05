@@ -28,7 +28,7 @@ export class PmtDashboardComponent implements OnInit {
   ];
   readonly secondaryStats = [
     { key: 'asignadoSupervisor', label: 'Asig. Supervisor', icon: 'manage_accounts', color: 'cyan' },
-    { key: 'asignadoTecnico', label: 'Asig. Técnico', icon: 'engineering', color: 'indigo' },
+    { key: 'asignadoTecnico', label: 'Asig. Técnico / Ejecutivo', icon: 'engineering', color: 'indigo' },
     { key: 'enReparacion', label: 'En Reparación', icon: 'build', color: 'amber' },
     { key: 'garantia', label: 'Garantía', icon: 'shield', color: 'teal' },
   ];
