@@ -1,0 +1,66 @@
+<div class="admin-page">
+  <header class="cf-head">
+    <div>
+      <p class="count">Detalle de transacciones · {{ total.toLocaleString('es-HN') }} registro(s) para los filtros seleccionados</p>
+    </div>
+  </header>
+
+  <app-business-filter-bar
+    [options]="options"
+    [filters]="filters"
+    (filtersChange)="onFiltersChange($event)">
+  </app-business-filter-bar>
+
+  <section class="panel dash-chart-panel">
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Comercio</th>
+            <th>Sucursal</th>
+            <th>MCC</th>
+            <th>Marca</th>
+            <th>Tipo</th>
+            <th>Banco adquirente</th>
+            <th class="num">Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tx of rows; track tx.id) {
+            <tr>
+              <td>{{ formatDateTime(tx.createdAt) }}</td>
+              <td><a [routerLink]="['/business-insights/comercio', tx.merchantId]">{{ tx.merchantName }}</a></td>
+              <td><a [routerLink]="['/business-insights/sucursal', tx.branchId]">{{ tx.branchName }}</a></td>
+              <td>{{ mccLabels[tx.mccCategory] }}</td>
+              <td>{{ cardBrandLabels[tx.cardBrand] }}</td>
+              <td>{{ cardTypeLabels[tx.cardType] }}</td>
+              <td>{{ tx.acquirerBank }}</td>
+              <td class="num">{{ formatAmount(tx) }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="8">
+                <app-empty-state icon="receipt_long" title="Sin transacciones" subtitle="No hay transacciones para los filtros seleccionados."></app-empty-state>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages > 1) {
+      <div class="biz-pagination">
+        <span class="biz-pagination-info">Página {{ page }} de {{ totalPages }}</span>
+        <div class="biz-pagination-actions">
+          <button type="button" class="btn-secondary btn-sm" [disabled]="page === 1" (click)="goToPage(page - 1)">
+            <span class="mi">chevron_left</span>
+          </button>
+          <button type="button" class="btn-secondary btn-sm" [disabled]="page >= totalPages" (click)="goToPage(page + 1)">
+            <span class="mi">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    }
+  </section>
+</div>

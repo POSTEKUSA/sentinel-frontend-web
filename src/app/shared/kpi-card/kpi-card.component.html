@@ -1,0 +1,26 @@
+<ng-template #inner>
+  <div class="kpi-card kpi-card--{{ color }}" [class.kpi-card--clickable]="routerLink">
+    <div class="kpi-card-top">
+      <span class="mi kpi-icon">{{ icon }}</span>
+      @if (trend !== null && trend !== undefined) {
+        <span class="kpi-trend" [class.kpi-trend--up]="trend >= 0" [class.kpi-trend--down]="trend < 0">
+          <span class="mi kpi-trend-icon">{{ trend >= 0 ? 'trending_up' : 'trending_down' }}</span>
+          {{ trend >= 0 ? '+' : '' }}{{ trend }}%
+        </span>
+      }
+    </div>
+    <span class="kpi-value">{{ value }}</span>
+    <span class="kpi-label">{{ label }}</span>
+    @if (sublabel) {
+      <span class="kpi-sublabel">{{ sublabel }}</span>
+    }
+  </div>
+</ng-template>
+
+@if (routerLink) {
+  <a class="kpi-card-link" [routerLink]="routerLink" [queryParams]="queryParams">
+    <ng-container *ngTemplateOutlet="inner"></ng-container>
+  </a>
+} @else {
+  <ng-container *ngTemplateOutlet="inner"></ng-container>
+}

@@ -145,6 +145,41 @@ const routes: Routes = [
         path: 'pmt/users',
         loadComponent: () => import('./features/pmt/pmt-users/pmt-users.component').then(m => m.PmtUsersComponent),
       },
+      {
+        path: 'business-insights',
+        loadComponent: () =>
+          import('./features/business-insights/business-insights-dashboard.component').then(
+            m => m.BusinessInsightsDashboardComponent,
+          ),
+      },
+      {
+        path: 'business-insights/comercio/:id',
+        loadComponent: () =>
+          import('./features/business-insights/merchant/business-merchant-detail.component').then(
+            m => m.BusinessMerchantDetailComponent,
+          ),
+      },
+      {
+        path: 'business-insights/sucursal/:id',
+        loadComponent: () =>
+          import('./features/business-insights/branch/business-branch-detail.component').then(
+            m => m.BusinessBranchDetailComponent,
+          ),
+      },
+      {
+        path: 'business-insights/terminal/:id',
+        loadComponent: () =>
+          import('./features/business-insights/terminal/business-terminal-detail.component').then(
+            m => m.BusinessTerminalDetailComponent,
+          ),
+      },
+      {
+        path: 'business-insights/transacciones',
+        loadComponent: () =>
+          import('./features/business-insights/transactions/business-transactions.component').then(
+            m => m.BusinessTransactionsComponent,
+          ),
+      },
 
     ],
   },

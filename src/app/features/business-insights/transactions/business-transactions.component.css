@@ -1,0 +1,25 @@
+.dash-chart-panel {
+  padding: 0;
+}
+
+.dash-chart-panel .admin-table-wrap {
+  padding: 4px;
+}
+
+.biz-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.biz-pagination-info {
+  font-size: 12.5px;
+  color: var(--ink-3);
+}
+
+.biz-pagination-actions {
+  display: flex;
+  gap: 8px;
+}

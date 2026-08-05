@@ -1,0 +1,42 @@
+@if (!data.length) {
+  <div class="chart-empty">{{ emptyMessage }}</div>
+} @else {
+  <div class="line-chart-wrap" [style.height.px]="height">
+    <svg
+      class="line-chart-svg"
+      [attr.viewBox]="'0 0 ' + viewboxWidth + ' ' + height"
+      preserveAspectRatio="none"
+      (mousemove)="onMove($event)"
+      (mouseleave)="onLeave()">
+      @for (g of gridLines; track $index) {
+        <line class="grid-line" x1="0" [attr.y1]="g" [attr.x2]="viewboxWidth" [attr.y2]="g"></line>
+      }
+      <path class="area-path" [attr.d]="areaPath" [style.fill]="color"></path>
+      <path class="line-path" [attr.d]="linePath" [style.stroke]="color"></path>
+      @if (hoveredIndex !== null) {
+        <line
+          class="hover-line"
+          [attr.x1]="points[hoveredIndex].x"
+          y1="0"
+          [attr.x2]="points[hoveredIndex].x"
+          [attr.y2]="height"></line>
+        <circle
+          class="hover-dot"
+          [attr.cx]="points[hoveredIndex].x"
+          [attr.cy]="points[hoveredIndex].y"
+          r="4"
+          [style.fill]="color"></circle>
+      }
+    </svg>
+    @if (hoveredIndex !== null) {
+      <div class="line-tooltip" [style.left.%]="tooltipLeftPct()">
+        <div class="line-tooltip-label">{{ data[hoveredIndex].label }}</div>
+        <div class="line-tooltip-value">{{ valueFormatter(data[hoveredIndex].value) }}</div>
+      </div>
+    }
+  </div>
+  <div class="line-chart-axis">
+    <span>{{ data[0].label }}</span>
+    <span>{{ data[data.length - 1].label }}</span>
+  </div>
+}

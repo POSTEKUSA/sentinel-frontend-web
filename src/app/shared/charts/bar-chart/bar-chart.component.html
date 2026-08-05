@@ -1,0 +1,15 @@
+@if (!data.length) {
+  <div class="chart-empty">{{ emptyMessage }}</div>
+} @else {
+  <div class="bar-chart" [style.height.px]="height">
+    @for (d of data; track d.label; let i = $index) {
+      <div class="bar-col" [class.bar-col--highlight]="highlightLastIndex && i === data.length - 1">
+        <span class="bar-value">{{ valueFormatter(d.value) }}</span>
+        <div class="bar-track">
+          <div class="bar-fill" [style.height.%]="pct(d.value)" [style.background]="color"></div>
+        </div>
+        <span class="bar-label">{{ d.label }}</span>
+      </div>
+    }
+  </div>
+}

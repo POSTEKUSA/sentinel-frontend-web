@@ -87,6 +87,13 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'Tráfico', icon: 'sync_alt', route: '/pmt/control-pos' },
       ],
     },
+    {
+      title: 'Business Insights',
+      expanded: true,
+      items: [
+        { label: 'Business Insights', icon: 'insights', route: '/business-insights', tooltip: 'Comportamiento comercial de la red POS' },
+      ],
+    },
   ];
 
   constructor(
@@ -161,6 +168,13 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/pmt/bulk-upload')) return { title: 'Subir Inventario', icon: 'cloud_upload' };
     if (path.startsWith('/pmt/users')) return { title: 'Usuarios', icon: 'group' };
     if (path.startsWith('/pmt/')) return { title: 'Administración Activos', icon: 'inventory' };
+
+    // Business Insights routes
+    if (/^\/business-insights\/comercio\/[^/]+/.test(path)) return { title: 'Comercio · Business Insights', icon: 'storefront' };
+    if (/^\/business-insights\/sucursal\/[^/]+/.test(path)) return { title: 'Sucursal · Business Insights', icon: 'insights' };
+    if (/^\/business-insights\/terminal\/[^/]+/.test(path)) return { title: 'Terminal POS · Business Insights', icon: 'point_of_sale' };
+    if (path.startsWith('/business-insights/transacciones')) return { title: 'Transacciones · Business Insights', icon: 'receipt_long' };
+    if (path.startsWith('/business-insights')) return { title: 'Business Insights', icon: 'insights' };
 
     return { title: this.appName, icon: 'dashboard' };
   }

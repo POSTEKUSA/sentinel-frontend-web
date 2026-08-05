@@ -1,0 +1,42 @@
+.dash-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.dash-chart-panel {
+  padding: 16px 20px;
+}
+
+.dash-chart-head {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dash-chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dash-chart-sub {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.merchant-map {
+  width: 100%;
+  height: 320px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--surface-alt);
+}
+
+@media (max-width: 900px) {
+  .dash-charts {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,105 @@
+<form [formGroup]="form" class="biz-filter-bar panel">
+  <div class="biz-filter-dates">
+    @for (preset of datePresets; track preset) {
+      <button
+        type="button"
+        class="date-chip"
+        [class.active]="form.value.datePreset === preset"
+        (click)="selectPreset(preset)">
+        {{ presetLabels[preset] }}
+      </button>
+    }
+  </div>
+
+  @if (form.value.datePreset === 'custom') {
+    <div class="biz-filter-custom-dates">
+      <label class="cf-label">
+        Desde
+        <input type="date" class="cf-input" formControlName="dateFrom" />
+      </label>
+      <label class="cf-label">
+        Hasta
+        <input type="date" class="cf-input" formControlName="dateTo" />
+      </label>
+    </div>
+  }
+
+  <div class="biz-filter-grid">
+    @if (showMerchant) {
+      <select class="cf-input filter-input" formControlName="merchantId" aria-label="Comercio">
+        <option value="">Todos los comercios</option>
+        @for (m of options.merchants; track m.id) {
+          <option [value]="m.id">{{ m.name }}</option>
+        }
+      </select>
+    }
+    @if (showBranch) {
+      <select class="cf-input filter-input" formControlName="branchId" aria-label="Sucursal">
+        <option value="">Todas las sucursales</option>
+        @for (b of filteredBranches; track b.id) {
+          <option [value]="b.id">{{ b.name }}</option>
+        }
+      </select>
+    }
+    @if (showTerminal) {
+      <select
+        class="cf-input filter-input"
+        formControlName="terminalId"
+        aria-label="Terminal POS"
+        [disabled]="!filteredTerminals.length">
+        <option value="">Todas las terminales</option>
+        @for (t of filteredTerminals; track t.id) {
+          <option [value]="t.id">{{ t.label }}</option>
+        }
+      </select>
+    }
+    <select class="cf-input filter-input" formControlName="acquirerBank" aria-label="Banco adquirente">
+      <option value="">Todos los bancos</option>
+      @for (b of options.acquirerBanks; track b) {
+        <option [value]="b">{{ b }}</option>
+      }
+    </select>
+    <select class="cf-input filter-input" formControlName="cardBrand" aria-label="Marca de tarjeta">
+      <option value="">Todas las marcas</option>
+      @for (c of options.cardBrands; track c) {
+        <option [value]="c">{{ cardBrandLabels[c] }}</option>
+      }
+    </select>
+    <select class="cf-input filter-input" formControlName="cardType" aria-label="Tipo de tarjeta">
+      <option value="">Todos los tipos</option>
+      @for (c of options.cardTypes; track c) {
+        <option [value]="c">{{ cardTypeLabels[c] }}</option>
+      }
+    </select>
+    <select class="cf-input filter-input" formControlName="mccCategory" aria-label="MCC">
+      <option value="">Todos los MCC</option>
+      @for (c of options.mccCategories; track c) {
+        <option [value]="c">{{ mccLabels[c] }}</option>
+      }
+    </select>
+    <select class="cf-input filter-input" formControlName="department" aria-label="Departamento">
+      <option value="">Todos los departamentos</option>
+      @for (d of options.departments; track d) {
+        <option [value]="d">{{ d }}</option>
+      }
+    </select>
+    <select class="cf-input filter-input" formControlName="city" aria-label="Ciudad">
+      <option value="">Todas las ciudades</option>
+      @for (c of options.cities; track c) {
+        <option [value]="c">{{ c }}</option>
+      }
+    </select>
+    <select class="cf-input filter-input" formControlName="currency" aria-label="Moneda">
+      <option value="">Todas las monedas</option>
+      @for (c of options.currencies; track c) {
+        <option [value]="c">{{ c }}</option>
+      }
+    </select>
+
+    @if (hasActiveFilters) {
+      <button type="button" class="btn-ghost biz-filter-clear" (click)="clearAll()">
+        <span class="mi">filter_alt_off</span> Limpiar filtros
+      </button>
+    }
+  </div>
+</form>

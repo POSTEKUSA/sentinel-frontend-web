@@ -1,0 +1,20 @@
+@if (!data || !data.cells.length) {
+  <div class="chart-empty">Sin datos para el período seleccionado</div>
+} @else {
+  <div class="heatmap">
+    <div class="heatmap-hours">
+      <span class="heatmap-corner"></span>
+      @for (h of data.hourLabels; track h; let i = $index) {
+        <span class="heatmap-hour-label">{{ showHourLabel(i) ? h : '' }}</span>
+      }
+    </div>
+    @for (day of data.dayLabels; track day; let d = $index) {
+      <div class="heatmap-row">
+        <span class="heatmap-day-label">{{ day }}</span>
+        @for (h of data.hourLabels; track h; let hh = $index) {
+          <span class="heatmap-cell" [style.background]="cellColor(d, hh)" [title]="cellTitle(d, hh)"></span>
+        }
+      </div>
+    }
+  </div>
+}

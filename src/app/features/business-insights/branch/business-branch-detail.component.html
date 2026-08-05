@@ -1,0 +1,84 @@
+<div class="admin-page">
+  @if (!branch) {
+    <div class="panel">
+      <app-empty-state icon="storefront" title="Sucursal no encontrada" subtitle="La sucursal solicitada no existe en el dataset de Business Insights."></app-empty-state>
+    </div>
+  } @else {
+    <header class="cf-head">
+      <div>
+        <p class="entity-name">{{ branch.name }}</p>
+        <p class="count">
+          {{ branch.address }} · {{ mccLabels[branch.mccCategory] }}
+          @if (merchant) {
+            · <a [routerLink]="['/business-insights/comercio', merchant.id]">{{ merchant.name }}</a>
+          }
+        </p>
+      </div>
+      <div class="head-actions">
+        @if (merchant) {
+          <a class="btn-secondary" [routerLink]="['/business-insights/comercio', merchant.id]">
+            <span class="mi">arrow_back</span> Volver al comercio
+          </a>
+        }
+      </div>
+    </header>
+
+    @if (kpis) {
+      <section class="admin-kpi-grid" aria-label="Resumen de la sucursal">
+        <app-kpi-card icon="payments" color="blue" [value]="formatCurrency(kpis.volumeToday)" label="Ventas del día"></app-kpi-card>
+        <app-kpi-card icon="calendar_month" color="indigo" [value]="formatCurrency(kpis.volumeMonth)" label="Ventas del mes"></app-kpi-card>
+        <app-kpi-card icon="sell" color="teal" [value]="formatCurrency(kpis.avgTicket)" label="Ticket promedio"></app-kpi-card>
+        <app-kpi-card icon="point_of_sale" color="amber" [value]="formatNumber(terminals.length)" label="Terminales POS"></app-kpi-card>
+        <app-kpi-card icon="wifi" color="green" [value]="formatNumber(onlineTerminals)" label="POS en línea"></app-kpi-card>
+      </section>
+    }
+
+    <section class="panel dash-chart-panel">
+      <div class="dash-chart-head">
+        <span class="dash-chart-title">Ventas de los últimos 30 días</span>
+      </div>
+      <app-line-chart [data]="salesByDay" [valueFormatter]="formatCurrencyShort"></app-line-chart>
+    </section>
+
+    <section class="panel dash-chart-panel">
+      <div class="dash-chart-head">
+        <span class="dash-chart-title">Terminales POS</span>
+        <span class="dash-chart-sub">{{ terminals.length }} terminal(es) instaladas en esta sucursal</span>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="cf-table">
+          <thead>
+            <tr>
+              <th>Serial</th>
+              <th>Modelo</th>
+              <th>Estado</th>
+              <th>Última conexión</th>
+              <th class="th-actions"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of terminals; track t.id) {
+              <tr>
+                <td class="td-name">{{ t.serial }}</td>
+                <td>{{ t.model }}</td>
+                <td><app-status-badge [status]="t.status"></app-status-badge></td>
+                <td>{{ formatDate(t.lastConnectionAt) }}</td>
+                <td class="td-actions">
+                  <a class="row-action" [routerLink]="['/business-insights/terminal', t.id]" title="Ver detalle" aria-label="Ver detalle de terminal">
+                    <span class="mi">chevron_right</span>
+                  </a>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">
+                  <app-empty-state icon="point_of_sale" title="Sin terminales" subtitle="Esta sucursal no tiene terminales POS registradas."></app-empty-state>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</div>

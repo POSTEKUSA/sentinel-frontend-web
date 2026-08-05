@@ -1,0 +1,143 @@
+<div class="admin-page biz-dashboard">
+  <header class="cf-head">
+    <div>
+      <p class="count">Comportamiento comercial de la red POS a nivel nacional · datos simulados</p>
+    </div>
+  </header>
+
+  <app-business-filter-bar
+    [options]="options"
+    [filters]="filters"
+    (filtersChange)="onFiltersChange($event)">
+  </app-business-filter-bar>
+
+  @if (kpis) {
+    <section class="admin-kpi-grid" aria-label="KPIs de Business Insights">
+      <app-kpi-card icon="payments" color="blue" [value]="formatCurrency(kpis.volumeToday)" label="Volumen vendido hoy"></app-kpi-card>
+      <app-kpi-card icon="calendar_month" color="indigo" [value]="formatCurrency(kpis.volumeMonth)" label="Volumen del mes"></app-kpi-card>
+      <app-kpi-card icon="calendar_today" color="purple" [value]="formatCurrency(kpis.volumeYear)" label="Volumen del año"></app-kpi-card>
+      <app-kpi-card icon="receipt_long" color="cyan" [value]="formatNumber(kpis.transactionCount)" label="Transacciones del mes"></app-kpi-card>
+      <app-kpi-card icon="sell" color="teal" [value]="formatCurrency(kpis.avgTicket)" label="Ticket promedio"></app-kpi-card>
+      <app-kpi-card icon="storefront" color="green" [value]="formatNumber(kpis.activeMerchants)" label="Comercios activos" sublabel="Últimos 30 días"></app-kpi-card>
+      <app-kpi-card icon="point_of_sale" color="amber" [value]="formatNumber(kpis.posSoldToday)" label="POS que vendieron hoy"></app-kpi-card>
+      <app-kpi-card icon="warning_amber" color="red" [value]="formatNumber(kpis.posNoSales)" label="POS sin ventas hoy"></app-kpi-card>
+      <app-kpi-card icon="update" [color]="growthColor(kpis.growthVsYesterday)" [value]="formatPercent(kpis.growthVsYesterday)" label="Crecimiento vs ayer"></app-kpi-card>
+      <app-kpi-card icon="insights" [color]="growthColor(kpis.growthVsLastMonth)" [value]="formatPercent(kpis.growthVsLastMonth)" label="Crecimiento vs mes anterior"></app-kpi-card>
+      <app-kpi-card icon="auto_graph" [color]="growthColor(kpis.growthVsLastYear)" [value]="formatPercent(kpis.growthVsLastYear)" label="Crecimiento anual"></app-kpi-card>
+    </section>
+  }
+
+  <section class="dash-charts">
+    <div class="panel dash-chart-panel">
+      <div class="dash-chart-head">
+        <span class="dash-chart-title">Ventas por hora</span>
+        <span class="dash-chart-sub">Distribución horaria del período seleccionado</span>
+      </div>
+      <app-line-chart [data]="salesByHour" color="#0a5fa5" [valueFormatter]="formatCurrencyShort"></app-line-chart>
+    </div>
+    <div class="panel dash-chart-panel">
+      <div class="dash-chart-head">
+        <span class="dash-chart-title">Ventas por día</span>
+        <span class="dash-chart-sub">Evolución diaria del período seleccionado</span>
+      </div>
+      <app-line-chart [data]="salesByDay" color="#16a34a" [valueFormatter]="formatCurrencyShort"></app-line-chart>
+    </div>
+  </section>
+
+  <section class="panel dash-chart-panel biz-month-panel">
+    <div class="dash-chart-head">
+      <span class="dash-chart-title">Ventas por mes</span>
+      <span class="dash-chart-sub">Últimos 12 meses</span>
+    </div>
+    <app-bar-chart [data]="salesByMonth" [height]="200" [highlightLastIndex]="true" color="#0a5fa5" [valueFormatter]="formatCurrencyShort"></app-bar-chart>
+  </section>
+
+  <section class="dash-charts">
+    <div class="panel dash-chart-panel">
+      <div class="dash-chart-head">
+        <span class="dash-chart-title">Top 10 comercios</span>
+        <span class="dash-chart-sub">Por volumen vendido</span>
+      </div>
+      <app-ranked-bar-list [data]="topMerchants" color="#0a5fa5" [valueFormatter]="formatCurrencyShort" [linkFn]="merchantLink"></app-ranked-bar-list>
+    </div>
+    <div class="panel dash-chart-panel">
+      <div class="dash-chart-head">
+        <span class="dash-chart-title">Top 10 sucursales</span>
+        <span class="dash-chart-sub">Por volumen vendido</span>
+      </div>
+      <app-ranked-bar-list [data]="topBranches" color="#7c3aed" [valueFormatter]="formatCurrencyShort" [linkFn]="branchLink"></app-ranked-bar-list>
+    </div>
+  </section>
+
+  <section class="panel dash-chart-panel">
+    <div class="dash-chart-head">
+      <span class="dash-chart-title">Top 10 terminales POS</span>
+      <span class="dash-chart-sub">Por volumen vendido en el período seleccionado</span>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Terminal</th>
+            <th>Comercio</th>
+            <th class="num">Transacciones</th>
+            <th class="num">Volumen</th>
+            <th class="th-actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of topTerminals; track t.id; let i = $index) {
+            <tr>
+              <td>{{ i + 1 }}</td>
+              <td>
+                <div class="td-name">{{ t.label }}</div>
+              </td>
+              <td>{{ terminalMerchantName(t.id) }}</td>
+              <td class="num">{{ formatNumber(t.secondaryValue ?? 0) }}</td>
+              <td class="num">{{ formatCurrency(t.value) }}</td>
+              <td class="td-actions">
+                <a class="row-action" [routerLink]="['/business-insights/terminal', t.id]" title="Ver detalle de terminal" aria-label="Ver detalle de terminal">
+                  <span class="mi">chevron_right</span>
+                </a>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6">
+                <app-empty-state icon="point_of_sale" title="Sin transacciones" subtitle="No hay ventas para los filtros seleccionados."></app-empty-state>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="dash-charts biz-charts-4col">
+    <div class="panel dash-chart-panel">
+      <div class="dash-chart-head"><span class="dash-chart-title">Distribución por MCC</span></div>
+      <app-donut-chart [data]="mccDist" [valueFormatter]="formatCurrencyShort"></app-donut-chart>
+    </div>
+    <div class="panel dash-chart-panel">
+      <div class="dash-chart-head"><span class="dash-chart-title">Marca de tarjeta</span></div>
+      <app-donut-chart [data]="cardBrandDist" [valueFormatter]="formatCurrencyShort"></app-donut-chart>
+    </div>
+    <div class="panel dash-chart-panel">
+      <div class="dash-chart-head"><span class="dash-chart-title">Tipo de tarjeta</span></div>
+      <app-donut-chart [data]="cardTypeDist" [valueFormatter]="formatCurrencyShort"></app-donut-chart>
+    </div>
+    <div class="panel dash-chart-panel">
+      <div class="dash-chart-head"><span class="dash-chart-title">Moneda</span></div>
+      <app-donut-chart [data]="currencyDist" [valueFormatter]="formatCurrencyShort"></app-donut-chart>
+    </div>
+  </section>
+
+  <section class="panel dash-chart-panel">
+    <div class="dash-chart-head">
+      <span class="dash-chart-title">Ventas por hora vs día de la semana</span>
+      <span class="dash-chart-sub">Mapa de calor del período seleccionado</span>
+    </div>
+    <app-heatmap-grid [data]="heatmap" [valueFormatter]="formatCurrencyShort"></app-heatmap-grid>
+  </section>
+</div>

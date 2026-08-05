@@ -1,0 +1,78 @@
+<div class="admin-page">
+  @if (!terminal) {
+    <div class="panel">
+      <app-empty-state icon="point_of_sale" title="Terminal no encontrada" subtitle="La terminal POS solicitada no existe en el dataset de Business Insights."></app-empty-state>
+    </div>
+  } @else {
+    <header class="cf-head">
+      <div>
+        <p class="entity-name">{{ terminal.serial }}</p>
+        <p class="count">
+          {{ terminal.model }} · {{ mccLabels[terminal.mccCategory] }}
+          @if (merchant) {
+            · <a [routerLink]="['/business-insights/comercio', merchant.id]">{{ merchant.name }}</a>
+          }
+        </p>
+      </div>
+      <div class="head-actions">
+        <app-status-badge [status]="terminal.status"></app-status-badge>
+        @if (branch) {
+          <a class="btn-secondary" [routerLink]="['/business-insights/sucursal', branch.id]">
+            <span class="mi">arrow_back</span> Volver a la sucursal
+          </a>
+        }
+        <a class="btn-primary" [routerLink]="['/business-insights/transacciones']" [queryParams]="{ terminalId: terminal.id }">
+          <span class="mi">receipt_long</span> Ver transacciones
+        </a>
+      </div>
+    </header>
+
+    <div class="panel info-panel">
+      <div class="info-grid">
+        <div>
+          <span class="info-label">Modelo</span>
+          <span class="info-value">{{ terminal.model }}</span>
+        </div>
+        <div>
+          <span class="info-label">Serial</span>
+          <span class="info-value">{{ terminal.serial }}</span>
+        </div>
+        <div>
+          <span class="info-label">Comercio</span>
+          <span class="info-value">{{ merchant?.name ?? '—' }}</span>
+        </div>
+        <div>
+          <span class="info-label">Sucursal</span>
+          <span class="info-value">{{ branch?.name ?? '—' }}</span>
+        </div>
+        <div>
+          <span class="info-label">Última conexión</span>
+          <span class="info-value">{{ formatDateTime(terminal.lastConnectionAt) }}</span>
+        </div>
+        <div>
+          <span class="info-label">Instalada desde</span>
+          <span class="info-value">{{ formatDateTime(terminal.installedAt) }}</span>
+        </div>
+      </div>
+    </div>
+
+    @if (metrics) {
+      <section class="admin-kpi-grid" aria-label="Métricas de la terminal">
+        <app-kpi-card icon="payments" color="blue" [value]="formatCurrency(metrics.ventasHoy)" label="Ventas del día"></app-kpi-card>
+        <app-kpi-card icon="calendar_month" color="indigo" [value]="formatCurrency(metrics.ventasMes)" label="Ventas del mes"></app-kpi-card>
+        <app-kpi-card icon="receipt_long" color="cyan" [value]="formatNumber(metrics.transaccionesMes)" label="Transacciones del mes"></app-kpi-card>
+        <app-kpi-card icon="query_stats" color="teal" [value]="formatCurrency(metrics.promedioDiario)" label="Promedio diario (30d)"></app-kpi-card>
+        <app-kpi-card icon="history" color="amber" [value]="formatDateTime(metrics.ultimaVenta)" label="Última venta"></app-kpi-card>
+        <app-kpi-card icon="trending_up" [color]="trendColor" [value]="formatPercent(metrics.tendenciaPercent)" label="Tendencia (7d vs 7d)"></app-kpi-card>
+      </section>
+    }
+
+    <section class="panel dash-chart-panel">
+      <div class="dash-chart-head">
+        <span class="dash-chart-title">Histórico de ventas</span>
+        <span class="dash-chart-sub">Últimos 30 días</span>
+      </div>
+      <app-line-chart [data]="historicoPoints" [valueFormatter]="formatCurrencyShort"></app-line-chart>
+    </section>
+  }
+</div>

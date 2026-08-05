@@ -1,0 +1,29 @@
+@if (!data.length) {
+  <div class="chart-empty">{{ emptyMessage }}</div>
+} @else {
+  <div class="donut-wrap">
+    <svg [attr.width]="size" [attr.height]="size" viewBox="0 0 100 100" class="donut-svg">
+      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--line)" stroke-width="15"></circle>
+      <g transform="rotate(-90 50 50)">
+        @for (seg of segments; track $index) {
+          <circle
+            cx="50" cy="50" r="40" fill="none" stroke-width="15" stroke-linecap="butt"
+            [attr.stroke]="seg.color"
+            [attr.stroke-dasharray]="seg.dasharray"
+            [attr.stroke-dashoffset]="seg.dashoffset"></circle>
+        }
+      </g>
+      <text x="50" y="46" text-anchor="middle" class="donut-total-label">{{ totalLabel }}</text>
+      <text x="50" y="61" text-anchor="middle" class="donut-total-value">{{ valueFormatter(total) }}</text>
+    </svg>
+    <div class="donut-legend">
+      @for (d of data; track d.key) {
+        <div class="donut-legend-row">
+          <span class="donut-dot" [style.background]="paletteColor(d.colorIndex)"></span>
+          <span class="donut-legend-label">{{ d.label }}</span>
+          <span class="donut-legend-pct">{{ d.percent }}%</span>
+        </div>
+      }
+    </div>
+  </div>
+}

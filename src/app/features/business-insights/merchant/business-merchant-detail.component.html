@@ -1,0 +1,85 @@
+<div class="admin-page">
+  @if (!merchant) {
+    <div class="panel">
+      <app-empty-state icon="storefront" title="Comercio no encontrado" subtitle="El comercio solicitado no existe en el dataset de Business Insights."></app-empty-state>
+      <div class="cf-head" style="justify-content:center; padding-top:0;">
+        <a class="btn-ghost" [routerLink]="['/business-insights']">Volver al dashboard</a>
+      </div>
+    </div>
+  } @else {
+    <header class="cf-head">
+      <div>
+        <p class="entity-name">{{ merchant.name }}</p>
+        <p class="count">
+          MCC {{ merchant.mcc }} ({{ mccLabels[merchant.mccCategory] }}) · {{ merchant.municipality }}, {{ merchant.department }} · {{ merchant.acquirerBank }}
+        </p>
+      </div>
+      <div class="head-actions">
+        <a class="btn-secondary" [routerLink]="['/business-insights']">
+          <span class="mi">arrow_back</span> Volver al dashboard
+        </a>
+      </div>
+    </header>
+
+    @if (kpis) {
+      <section class="admin-kpi-grid" aria-label="Resumen del comercio">
+        <app-kpi-card icon="payments" color="blue" [value]="formatCurrency(kpis.volumeToday)" label="Ventas del día"></app-kpi-card>
+        <app-kpi-card icon="calendar_month" color="indigo" [value]="formatCurrency(kpis.volumeMonth)" label="Ventas del mes"></app-kpi-card>
+        <app-kpi-card icon="calendar_today" color="purple" [value]="formatCurrency(kpis.volumeYear)" label="Ventas del año"></app-kpi-card>
+        <app-kpi-card icon="sell" color="teal" [value]="formatCurrency(kpis.avgTicket)" label="Ticket promedio"></app-kpi-card>
+        <app-kpi-card icon="point_of_sale" color="amber" [value]="formatNumber(terminals.length)" label="Cantidad de POS"></app-kpi-card>
+        <app-kpi-card icon="wifi" color="green" [value]="formatNumber(onlineTerminals)" label="POS activos" [sublabel]="formatNumber(branches.length) + ' sucursales'"></app-kpi-card>
+      </section>
+    }
+
+    <section class="panel dash-chart-panel">
+      <div class="dash-chart-head">
+        <span class="dash-chart-title">Mapa de sucursales</span>
+        <span class="dash-chart-sub">{{ branches.length }} sucursal(es) de {{ merchant.name }}</span>
+      </div>
+      <div #mapEl class="merchant-map"></div>
+    </section>
+
+    <section class="dash-charts">
+      <div class="panel dash-chart-panel">
+        <div class="dash-chart-head">
+          <span class="dash-chart-title">Top sucursales</span>
+          <span class="dash-chart-sub">Por volumen vendido</span>
+        </div>
+        <app-ranked-bar-list [data]="topBranches" [valueFormatter]="formatCurrencyShort" [linkFn]="branchLink"></app-ranked-bar-list>
+      </div>
+      <div class="panel dash-chart-panel">
+        <div class="dash-chart-head">
+          <span class="dash-chart-title">Comparación mensual</span>
+          <span class="dash-chart-sub">Últimos 12 meses</span>
+        </div>
+        <app-bar-chart [data]="monthly" [height]="200" [highlightLastIndex]="true" [valueFormatter]="formatCurrencyShort"></app-bar-chart>
+      </div>
+    </section>
+
+    <section class="dash-charts">
+      <div class="panel dash-chart-panel">
+        <div class="dash-chart-head">
+          <span class="dash-chart-title">Productos financieros más utilizados</span>
+          <span class="dash-chart-sub">Distribución por tipo de tarjeta</span>
+        </div>
+        <app-donut-chart [data]="cardTypeDist" [valueFormatter]="formatCurrencyShort"></app-donut-chart>
+      </div>
+      <div class="panel dash-chart-panel">
+        <div class="dash-chart-head">
+          <span class="dash-chart-title">Distribución por tarjetas</span>
+          <span class="dash-chart-sub">Por marca de tarjeta</span>
+        </div>
+        <app-donut-chart [data]="cardBrandDist" [valueFormatter]="formatCurrencyShort"></app-donut-chart>
+      </div>
+    </section>
+
+    <section class="panel dash-chart-panel">
+      <div class="dash-chart-head">
+        <span class="dash-chart-title">Distribución por horas</span>
+        <span class="dash-chart-sub">Ventas por hora del día</span>
+      </div>
+      <app-line-chart [data]="salesByHour" [valueFormatter]="formatCurrencyShort"></app-line-chart>
+    </section>
+  }
+</div>

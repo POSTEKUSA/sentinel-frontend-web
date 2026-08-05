@@ -1,0 +1,71 @@
+.biz-filter-bar {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.biz-filter-dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.date-chip {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.14s ease, color 0.14s ease, background 0.14s ease;
+}
+
+.date-chip:hover {
+  border-color: #c9cfd6;
+  color: var(--ink);
+}
+
+.date-chip.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.biz-filter-custom-dates {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.biz-filter-custom-dates .cf-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink-3);
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.biz-filter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  border-top: 1px solid var(--line-2, #eef0f3);
+  padding-top: 12px;
+}
+
+.biz-filter-clear {
+  margin-left: auto;
+}
+
+@media (max-width: 720px) {
+  .biz-filter-clear {
+    margin-left: 0;
+  }
+}

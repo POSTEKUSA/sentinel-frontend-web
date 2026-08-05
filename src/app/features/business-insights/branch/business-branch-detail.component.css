@@ -1,0 +1,44 @@
+.dash-chart-panel {
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.dash-chart-head {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dash-chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.dash-chart-sub {
+  font-size: 12px;
+  color: var(--ink-3);
+}
+
+.th-actions {
+  width: 44px;
+}
+
+.row-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--brand);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.row-action:hover {
+  background: #e8f3fa;
+}

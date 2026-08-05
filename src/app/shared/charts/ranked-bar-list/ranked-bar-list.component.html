@@ -1,0 +1,29 @@
+@if (!data.length) {
+  <div class="chart-empty">{{ emptyMessage }}</div>
+} @else {
+  <div class="ranked-list">
+    @for (item of data; track item.id; let i = $index) {
+      @if (linkFor(item); as link) {
+        <a class="ranked-row ranked-row--link" [routerLink]="link">
+          <ng-container *ngTemplateOutlet="row; context: { $implicit: item, i: i }"></ng-container>
+        </a>
+      } @else {
+        <div class="ranked-row">
+          <ng-container *ngTemplateOutlet="row; context: { $implicit: item, i: i }"></ng-container>
+        </div>
+      }
+    }
+  </div>
+}
+
+<ng-template #row let-item let-i="i">
+  <span class="ranked-index">{{ i + 1 }}</span>
+  <span class="ranked-label" [title]="item.label">{{ item.label }}</span>
+  <div class="ranked-track">
+    <div class="ranked-bar" [style.width.%]="pct(item.value)" [style.background]="color"></div>
+  </div>
+  <span class="ranked-value">{{ valueFormatter(item.value) }}</span>
+  @if (item.secondaryValue !== undefined) {
+    <span class="ranked-secondary">{{ secondaryFormatter(item.secondaryValue) }}</span>
+  }
+</ng-template>
