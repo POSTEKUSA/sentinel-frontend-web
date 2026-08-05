@@ -19,8 +19,9 @@ export class PmtGarantiaComponent implements OnInit {
   readonly estadoLabels = TERMINAL_ESTADO_LABELS;
 
   showSustitucion = false;
-  serieVieja = '';
-  serieNueva = '';
+  terminalASustituir: Terminal | null = null;
+  serieRegistro = '';
+  codigoSerie = '';
   sustitucionError = '';
 
   filterForm = this.fb.group({ q: [''] });
@@ -38,18 +39,36 @@ export class PmtGarantiaComponent implements OnInit {
     this.filtered = q ? this.all.filter(t => [t.serie, t.modelo].some(v => (v ?? '').toLowerCase().includes(q))) : [...this.all];
   }
 
+  abrirSustitucion(t: Terminal): void {
+    this.terminalASustituir = t;
+    this.serieRegistro = t.serie;
+    this.codigoSerie = '';
+    this.sustitucionError = '';
+    this.showSustitucion = true;
+  }
+
+  cerrarSustitucion(): void {
+    this.showSustitucion = false;
+    this.terminalASustituir = null;
+    this.serieRegistro = '';
+    this.codigoSerie = '';
+    this.sustitucionError = '';
+  }
+
   sustituir(): void {
     this.sustitucionError = '';
-    if (!this.serieVieja.trim() || !this.serieNueva.trim()) {
-      this.sustitucionError = 'Ambas series son requeridas.'; return;
+    if (!this.serieRegistro.trim() || !this.codigoSerie.trim()) {
+      this.sustitucionError = 'Serie de registro y código de serie son requeridos.'; return;
     }
-    const vieja = this.svc.terminals.find(t => t.serie === this.serieVieja.trim());
-    if (!vieja) { this.sustitucionError = `Serie "${this.serieVieja}" no encontrada.`; return; }
-    // Mark old as substituted and create new in bodega
-    this.svc.changeEstado(vieja.id, 'serie_sustituida', `Sustituida por ${this.serieNueva}`);
-    this.svc.create({ serie: this.serieNueva.trim(), estado: 'en_bodega', modelo: vieja.modelo, zona: vieja.zona });
-    this.serieVieja = ''; this.serieNueva = '';
-    this.showSustitucion = false;
+    const vieja = this.terminalASustituir
+      ?? this.svc.terminals.find(t => t.serie === this.serieRegistro.trim());
+    if (!vieja) { this.sustitucionError = `Serie "${this.serieRegistro}" no encontrada.`; return; }
+    const nueva = this.codigoSerie.trim();
+    const dup = this.svc.terminals.find(t => t.serie.toLowerCase() === nueva.toLowerCase());
+    if (dup) { this.sustitucionError = `El código de serie "${nueva}" ya existe.`; return; }
+    this.svc.changeEstado(vieja.id, 'serie_sustituida', `Sustituida por ${nueva}`);
+    this.svc.create({ serie: nueva, estado: 'en_bodega', modelo: vieja.modelo, zona: vieja.zona, inventario: vieja.inventario });
+    this.cerrarSustitucion();
   }
 
   terminalARetirar: Terminal | null = null;

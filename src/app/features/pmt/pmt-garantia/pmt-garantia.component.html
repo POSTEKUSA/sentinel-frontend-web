@@ -4,11 +4,6 @@
       <h1>Garantía</h1>
       <p class="count">{{ filtered.length }} terminales en proceso de garantía</p>
     </div>
-    <div class="head-actions">
-      <button class="btn-primary" (click)="showSustitucion = true">
-        <span class="mi">swap_horiz</span> Sustitución de Serie
-      </button>
-    </div>
   </header>
 
   <div class="panel toolbar-panel">
@@ -45,9 +40,14 @@
               <td>{{ t.zona ?? '—' }}</td>
               <td>{{ t.updatedAt | date:'dd/MM/yyyy' }}</td>
               <td style="text-align:right">
-                <button class="btn-sm btn-secondary" (click)="retirar(t)">
-                  <span class="mi">undo</span> Retirar
-                </button>
+                <div class="row-actions">
+                  <button class="btn-sm btn-primary" (click)="abrirSustitucion(t)" title="Sustitución de serie">
+                    <span class="mi">swap_horiz</span> Sustituir
+                  </button>
+                  <button class="btn-sm btn-secondary" (click)="retirar(t)">
+                    <span class="mi">undo</span> Retirar
+                  </button>
+                </div>
               </td>
             </tr>
           }
@@ -57,24 +57,24 @@
   </div>
 
   @if (showSustitucion) {
-    <div class="dialog-backdrop" (click)="showSustitucion = false">
+    <div class="dialog-backdrop" (click)="cerrarSustitucion()">
       <div class="dialog" (click)="$event.stopPropagation()">
         <div class="dialog-head">
           <h2>Sustitución de Serie</h2>
-          <button class="icon-btn" (click)="showSustitucion = false"><span class="mi">close</span></button>
+          <button class="icon-btn" (click)="cerrarSustitucion()"><span class="mi">close</span></button>
         </div>
         <div class="dialog-body">
           <p style="color:var(--ink-2);font-size:13px;margin-bottom:14px">
-            Ingrese la serie del equipo viejo y la serie del equipo nuevo de reemplazo.
+            La serie de registro se carga del terminal. Ingrese el código de serie del equipo de reemplazo.
           </p>
           <div class="grid-2">
             <div>
-              <label class="cf-label">Serie vieja (en garantía)</label>
-              <input class="cf-input" [(ngModel)]="serieVieja" placeholder="SN123456" />
+              <label class="cf-label">Serie de registro</label>
+              <input class="cf-input" [ngModel]="serieRegistro" readonly />
             </div>
             <div>
-              <label class="cf-label">Serie nueva (reemplazo)</label>
-              <input class="cf-input" [(ngModel)]="serieNueva" placeholder="SN789012" />
+              <label class="cf-label">Código de serie</label>
+              <input class="cf-input" [(ngModel)]="codigoSerie" placeholder="SN789012" autofocus />
             </div>
           </div>
           @if (sustitucionError) {
@@ -82,7 +82,7 @@
           }
         </div>
         <div class="dialog-foot">
-          <button class="btn-secondary" (click)="showSustitucion = false">Cancelar</button>
+          <button class="btn-secondary" (click)="cerrarSustitucion()">Cancelar</button>
           <button class="btn-primary" (click)="sustituir()">Confirmar Sustitución</button>
         </div>
       </div>
