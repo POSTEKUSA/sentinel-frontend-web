@@ -25,6 +25,22 @@
     <div class="panel info-panel">
       <div class="info-grid">
         <div>
+          <span class="info-label">País</span>
+          <span class="info-value">{{ merchant.pais || '—' }}</span>
+        </div>
+        <div>
+          <span class="info-label">Ciudad</span>
+          <span class="info-value">{{ merchant.ciudad || merchant.municipality }}</span>
+        </div>
+        <div>
+          <span class="info-label">Zona</span>
+          <span class="info-value">{{ merchant.zona || '—' }}</span>
+        </div>
+        <div>
+          <span class="info-label">Bodega</span>
+          <span class="info-value">{{ warehouseLabel(merchant.warehouseId) }}</span>
+        </div>
+        <div>
           <span class="info-label">Departamento</span>
           <span class="info-value">{{ merchant.department }}</span>
         </div>
@@ -38,9 +54,7 @@
         </div>
         <div>
           <span class="info-label">Estado</span>
-          <span class="cf-badge" [ngClass]="merchant.status === 'active' ? 'cf-badge-ok' : 'cf-badge-off'">
-            <span class="dot"></span>{{ statusLabels[merchant.status] }}
-          </span>
+          <app-status-switch [value]="merchant.status" [options]="statusOptions" [readonly]="true" />
         </div>
         <div>
           <span class="info-label">Fecha de alta</span>

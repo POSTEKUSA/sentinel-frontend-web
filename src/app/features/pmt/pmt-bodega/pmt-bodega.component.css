@@ -1,5 +1,44 @@
-.row-selected { background: var(--brand-soft) !important; }
+.td-truncate {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-/* Allow kebab menus to overflow the table scroll container */
-.admin-table-wrap { overflow: visible; }
-.cf-table td { overflow: visible; }
+.asset-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+.asset-field--span-2 {
+  grid-column: span 2;
+}
+
+.asset-dialog-foot {
+  margin-top: 16px;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-bottom: -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  width: auto;
+}
+
+/* Kebab overflow above table scroll */
+.admin-table-wrap {
+  overflow: visible;
+}
+
+.cf-table td {
+  overflow: visible;
+}
+
+@media (max-width: 720px) {
+  .asset-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .asset-field--span-2 {
+    grid-column: span 1;
+  }
+}

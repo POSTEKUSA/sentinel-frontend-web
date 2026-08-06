@@ -4,22 +4,34 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
-import { Merchant, MERCHANT_STATUS_LABELS } from '../../../core/models/pos-admin';
+import { Merchant } from '../../../core/models/pos-admin';
 import { MerchantService } from '../../../core/services/pos-admin/merchant.service';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { MerchantDialogComponent } from './dialogs/merchant-dialog.component';
+import {
+  StatusSwitchComponent,
+  STATUS_ACTIVE_INACTIVE,
+  StatusOption,
+} from '../../../shared/status-switch/status-switch.component';
 
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
 
 @Component({
   selector: 'app-merchant-list',
   standalone: true,
-  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, RouterModule, EmptyStateComponent],
+  imports: [
+    CopyableCodeComponent,
+    StatusSwitchComponent,
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    EmptyStateComponent,
+  ],
   templateUrl: './merchant-list.component.html',
   styleUrl: './merchant-list.component.css',
 })
 export class MerchantListComponent implements OnInit {
-  statusLabels: Record<string, string> = MERCHANT_STATUS_LABELS;
+  readonly statusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
   activeTab: 'comercios' | 'mcc' = 'comercios';
 
   all: Merchant[] = [];
@@ -100,12 +112,20 @@ export class MerchantListComponent implements OnInit {
   }
 
   openCreateDialog(): void {
+    this.openMerchantDialog();
+  }
+
+  openEditDialog(m: Merchant): void {
+    this.openMerchantDialog(m);
+  }
+
+  private openMerchantDialog(item?: Merchant): void {
     this.dialog.open(MerchantDialogComponent, {
       width: '520px',
       maxWidth: '94vw',
       panelClass: 'cf-dialog-panel',
       autoFocus: 'dialog',
-      data: {},
+      data: item ? { item } : {},
     });
   }
 

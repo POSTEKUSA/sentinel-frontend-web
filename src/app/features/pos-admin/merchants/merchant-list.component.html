@@ -113,18 +113,22 @@
                     <div class="td-sub">MCC {{ m.mcc }} · {{ m.mccDescription }}</div>
                   </td>
                   <td class="num">{{ activePosCount(m.id) }}</td>
-                  <td>{{ m.municipality }}, {{ m.department }}</td>
+                  <td>{{ m.ciudad || m.municipality }}{{ m.zona ? ' · ' + m.zona : '' }}{{ m.pais ? ', ' + m.pais : (', ' + m.department) }}</td>
                   <td>
-                    <span class="cf-badge" [ngClass]="m.status === 'active' ? 'cf-badge-ok' : 'cf-badge-off'">
-                      <span class="dot"></span>{{ statusLabels[m.status] }}
-                    </span>
+                    <app-status-switch [value]="m.status" [options]="statusOptions" [readonly]="true" />
                   </td>
                   <td>{{ m.createdAt | date: 'mediumDate' }}</td>
                   <td>
-                    <a class="btn-secondary btn-sm" [routerLink]="['/pos-admin/merchants', m.id]">
-                      <span class="mi">visibility</span>
-                      Ver
-                    </a>
+                    <div class="row-actions">
+                      <button type="button" class="btn-secondary btn-sm" (click)="openEditDialog(m)">
+                        <span class="mi">edit</span>
+                        Editar
+                      </button>
+                      <a class="btn-secondary btn-sm" [routerLink]="['/pos-admin/merchants', m.id]">
+                        <span class="mi">visibility</span>
+                        Ver
+                      </a>
+                    </div>
                   </td>
                 </tr>
               }

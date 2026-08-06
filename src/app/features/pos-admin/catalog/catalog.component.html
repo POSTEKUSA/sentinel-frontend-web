@@ -71,9 +71,7 @@
                   <td>{{ row.model }}</td>
                   <td>{{ row.posType }}</td>
                   <td>
-                    <span class="cf-badge" [ngClass]="statusBadgeClass(row.status)">
-                      <span class="dot"></span>{{ statusLabels[row.status] }}
-                    </span>
+                    <app-status-switch [value]="row.status" [options]="catalogStatusOptions" [readonly]="true" />
                   </td>
                   <td>
                     <div>{{ row.createdAt | date:'short' }}</div>
@@ -152,9 +150,7 @@
                     <div class="td-sub">{{ row.suppliedModels.join(', ') }}</div>
                   </td>
                   <td>
-                    <span class="cf-badge" [ngClass]="row.status === 'active' ? 'cf-badge-ok' : 'cf-badge-off'">
-                      <span class="dot"></span>{{ row.status === 'active' ? 'Activo' : 'Inactivo' }}
-                    </span>
+                    <app-status-switch [value]="row.status" [options]="supplierStatusOptions" [readonly]="true" />
                   </td>
                   <td class="td-actions">
                     <div class="row-actions">
@@ -225,9 +221,7 @@
                   <td>{{ row.unitOfMeasure }}</td>
                   <td class="num">{{ row.minStock }}</td>
                   <td>
-                    <span class="cf-badge" [ngClass]="statusBadgeClass(row.status)">
-                      <span class="dot"></span>{{ statusLabels[row.status] }}
-                    </span>
+                    <app-status-switch [value]="row.status" [options]="catalogStatusOptions" [readonly]="true" />
                   </td>
                   <td class="td-actions">
                     <div class="row-actions">

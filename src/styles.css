@@ -1545,7 +1545,7 @@ a.mat-mdc-raised-button.mat-primary:hover {
   gap: 12px;
   padding: 16px 20px;
   border-top: 1px solid var(--line-2);
-  background: var(--surface-alt);
+  background: transparent;
 }
 
 /* ── Icon Buttons & Row Actions ── */

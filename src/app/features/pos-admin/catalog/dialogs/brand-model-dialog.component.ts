@@ -4,6 +4,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { CatalogStatus, POS_TYPES, PosCatalogItem } from '../../../../core/models/pos-admin';
 import { PosCatalogService } from '../../../../core/services/pos-admin/pos-catalog.service';
+import {
+  StatusSwitchComponent,
+  STATUS_CATALOG,
+  StatusOption,
+} from '../../../../shared/status-switch/status-switch.component';
 
 export interface BrandModelDialogData {
   item?: PosCatalogItem;
@@ -12,7 +17,7 @@ export interface BrandModelDialogData {
 @Component({
   selector: 'app-brand-model-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule],
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, StatusSwitchComponent],
   template: `
     <div class="cf-modal">
       <div class="modal-head">
@@ -38,12 +43,8 @@ export interface BrandModelDialogData {
             </select>
           </div>
           <div class="field">
-            <label for="status">Estado</label>
-            <select id="status" formControlName="status">
-              <option value="active">Activo</option>
-              <option value="obsolete">Obsoleto</option>
-              <option value="discontinued">Descontinuado</option>
-            </select>
+            <label>Estado</label>
+            <app-status-switch formControlName="status" [options]="statusOptions" ariaLabel="Estado de marca/modelo" />
           </div>
         </div>
         <div class="field">
@@ -67,6 +68,7 @@ export interface BrandModelDialogData {
 export class BrandModelDialogComponent {
   posTypes = POS_TYPES;
   duplicateError = false;
+  readonly statusOptions: StatusOption[] = STATUS_CATALOG;
 
   dialogRef = inject<MatDialogRef<BrandModelDialogComponent, boolean>>(MatDialogRef);
   data = inject<BrandModelDialogData>(MAT_DIALOG_DATA);

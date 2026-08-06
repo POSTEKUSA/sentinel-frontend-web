@@ -41,6 +41,12 @@
           <option [value]="k">{{ estadoLabels[k] }}</option>
         }
       </select>
+      <select class="cf-input filter-input" formControlName="warehouseId">
+        <option value="">Todas las bodegas</option>
+        @for (w of warehouses; track w.id) {
+          <option [value]="w.id">{{ w.nombre }}</option>
+        }
+      </select>
       <select class="cf-input filter-input" formControlName="zona">
         <option value="">Todas las zonas</option>
         @for (z of zonas; track z) {
@@ -64,9 +70,7 @@
             <th>Modelo</th>
             <th>N° Serie</th>
             <th>Estado</th>
-            <th>Zona</th>
-            <th>Comercio</th>
-            <th>Ciudad</th>
+            <th>Bodega / Comercio</th>
             <th>Actualizado</th>
             <th class="th-actions" style="text-align:right">Acciones</th>
           </tr>
@@ -74,7 +78,7 @@
         <tbody>
           @if (paged.length === 0) {
             <tr>
-              <td colspan="10" class="admin-empty">
+              <td colspan="8" class="admin-empty">
                 <span class="mi">search_off</span>
                 <span>Sin resultados</span>
               </td>
@@ -91,9 +95,7 @@
                   <span class="dot"></span>{{ estadoLabels[t.estado] }}
                 </span>
               </td>
-              <td>{{ t.zona ?? '—' }}</td>
-              <td class="td-truncate" [title]="t.nombre ?? ''">{{ t.nombre ?? '—' }}</td>
-              <td>{{ t.ciudad ?? '—' }}</td>
+              <td class="td-truncate" [title]="placeCell(t)">{{ placeCell(t) }}</td>
               <td class="td-sub">{{ t.updatedAt | date:'dd/MM/yy' }}</td>
               <td class="td-actions">
                 <div class="row-actions" style="justify-content:flex-end">
@@ -176,33 +178,26 @@
                 </span>
               </div>
             </div>
-            <div class="asset-field">
-              <label class="cf-label">Inyectado</label>
-              <div class="asset-view-value">
-                @if (viewTarget.inyectado === 'Si' || viewTarget.inyectado === 'No') {
-                  <span
-                    class="cf-badge"
-                    [ngClass]="viewTarget.inyectado === 'Si' ? 'cf-badge-ok' : 'cf-badge-off'">
-                    {{ viewTarget.inyectado === 'Si' ? 'Sí' : 'No' }}
-                  </span>
-                } @else {
-                  —
-                }
-              </div>
+            <div class="asset-field asset-field--span-2">
+              <label class="cf-label">Bodega / Comercio</label>
+              <div class="asset-view-value">{{ placeCell(viewTarget) }}</div>
             </div>
-            <div class="asset-field" aria-hidden="true"></div>
 
             <div class="asset-field">
               <label class="cf-label">País</label>
-              <div class="asset-view-value">{{ viewTarget.pais ?? '—' }}</div>
+              <div class="asset-view-value">{{ locationOf(viewTarget).pais ?? '—' }}</div>
             </div>
             <div class="asset-field">
               <label class="cf-label">Ciudad</label>
-              <div class="asset-view-value">{{ viewTarget.ciudad ?? '—' }}</div>
+              <div class="asset-view-value">{{ locationOf(viewTarget).ciudad ?? '—' }}</div>
             </div>
             <div class="asset-field">
               <label class="cf-label">Zona</label>
-              <div class="asset-view-value">{{ viewTarget.zona ?? '—' }}</div>
+              <div class="asset-view-value">{{ locationOf(viewTarget).zona ?? '—' }}</div>
+            </div>
+            <div class="asset-field asset-field--span-2">
+              <label class="cf-label">Dirección</label>
+              <div class="asset-view-value">{{ locationOf(viewTarget).direccion ?? '—' }}</div>
             </div>
           </div>
           <div class="dialog-foot asset-dialog-foot">
@@ -274,43 +269,28 @@
                 }
               </select>
             </div>
-            <div class="asset-field">
-              <label class="cf-label">Inyectado</label>
-              <select class="cf-input" formControlName="inyectado">
-                <option value="">—</option>
-                <option value="Si">Sí</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-            <div class="asset-field" aria-hidden="true"></div>
-
-            <div class="asset-field">
-              <label class="cf-label">País</label>
-              <select class="cf-input" formControlName="pais">
-                <option value="">—</option>
-                @for (p of paises; track p) {
-                  <option [value]="p">{{ p }}</option>
-                }
-              </select>
-            </div>
-            <div class="asset-field">
-              <label class="cf-label">Ciudad</label>
-              <select class="cf-input" formControlName="ciudad">
-                <option value="">—</option>
-                @for (c of ciudades; track c) {
-                  <option [value]="c">{{ c }}</option>
-                }
-              </select>
-            </div>
-            <div class="asset-field">
-              <label class="cf-label">Zona</label>
-              <select class="cf-input" formControlName="zona">
-                <option value="">—</option>
-                @for (z of zonas; track z) {
-                  <option [value]="z">{{ z }}</option>
-                }
-              </select>
-            </div>
+            @if (showWarehouseField) {
+              <div class="asset-field asset-field--span-2">
+                <label class="cf-label">Bodega *</label>
+                <select class="cf-input" formControlName="warehouseId">
+                  <option value="">— Seleccione bodega —</option>
+                  @for (w of activeWarehouses; track w.id) {
+                    <option [value]="w.id">{{ w.nombre }}</option>
+                  }
+                </select>
+              </div>
+            }
+            @if (showMerchantSiteField) {
+              <div class="asset-field asset-field--span-2">
+                <label class="cf-label">Comercio / Sucursal *</label>
+                <select class="cf-input" formControlName="merchantSiteId">
+                  <option value="">— Seleccione comercio · sucursal —</option>
+                  @for (o of siteOptionsForForm; track o.site.id) {
+                    <option [value]="o.site.id">{{ o.label }}</option>
+                  }
+                </select>
+              </div>
+            }
           </div>
           @if (formError) {
             <div class="asset-alert asset-alert--danger" role="alert">

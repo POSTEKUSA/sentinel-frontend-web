@@ -17,9 +17,26 @@ export interface Merchant {
   department: string;
   municipality: string;
   address: string;
+  /** Ubicación operativa (además de departamento/municipio legacy). */
+  pais?: string;
+  ciudad?: string;
+  zona?: string;
+  /** Bodega que atiende al comercio. */
+  warehouseId?: number;
   status: MerchantStatus;
   createdAt: string;
   responsibleName?: string;
+}
+
+/** Sucursal / sitio de un comercio (un comercio puede tener varios). */
+export interface MerchantSite {
+  id: string;
+  merchantId: string;
+  name: string;
+  ciudad?: string;
+  zona?: string;
+  address?: string;
+  status: MerchantStatus;
 }
 
 /** HU-013 — Registro de instalación de POS en comercio */

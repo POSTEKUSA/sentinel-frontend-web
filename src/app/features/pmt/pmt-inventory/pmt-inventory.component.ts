@@ -3,15 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
+import { WarehouseService } from '../../../core/services/pmt/warehouse.service';
+import { MerchantService } from '../../../core/services/pos-admin/merchant.service';
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
 
 import {
   Terminal, TerminalEstado,
   TERMINAL_ESTADO_LABELS, TERMINAL_ESTADO_BADGE
 } from '../../../core/models/pmt/terminal.model';
+import { Warehouse } from '../../../core/models/pmt/warehouse.model';
+import { Merchant, MerchantSite } from '../../../core/models/pos-admin';
 import {
   MOTIVOS_REPARACION, MOTIVOS_GARANTIA, buildMotivoComment
 } from '../../../core/models/pmt/terminal-motivos';
+import { ZONAS_DEFAULT } from '../../../core/constants/geo.constants';
 
 export type TimelineKind = 'status' | 'field';
 
@@ -32,6 +37,15 @@ export interface TimelineEntry {
   ciudad?: string;
   zona?: string;
   direccion?: string;
+}
+
+export interface ResolvedLocation {
+  zona?: string;
+  ciudad?: string;
+  direccion?: string;
+  pais?: string;
+  source: 'bodega' | 'comercio' | 'terminal';
+  label?: string;
 }
 
 const FIELD_ACCION_LABELS: Record<string, string> = {
@@ -65,43 +79,16 @@ const WORKFLOW_STEPS: { statuses: TerminalEstado[]; label: string }[] = [
 export class PmtInventoryComponent implements OnInit {
   private fb = inject(FormBuilder);
   private svc = inject(PmtTerminalService);
+  private warehouseSvc = inject(WarehouseService);
+  private merchantSvc = inject(MerchantService);
 
   all: Terminal[] = [];
   filtered: Terminal[] = [];
+  warehouses: Warehouse[] = [];
+  siteOptions: { site: MerchantSite; merchant: Merchant; label: string }[] = [];
   zonas: string[] = [];
   marcas: string[] = [];
   modelos: string[] = [];
-  ciudades: string[] = [];
-  readonly paises = ['Honduras', 'Guatemala', 'El Salvador', 'Nicaragua', 'Costa Rica', 'Panamá'];
-  private readonly ciudadesPorPais: Record<string, string[]> = {
-    Honduras: [
-      'Tegucigalpa', 'Comayagüela', 'San Pedro Sula', 'Choloma', 'La Ceiba',
-      'El Progreso', 'Choluteca', 'Comayagua', 'Puerto Cortés', 'Danlí',
-      'Juticalpa', 'Catacamas', 'Tela', 'Siguatepeque', 'La Lima',
-      'Villanueva', 'Olanchito', 'Santa Rosa de Copán', 'Tocoa', 'Roatán',
-    ],
-    Guatemala: [
-      'Ciudad de Guatemala', 'Mixco', 'Villa Nueva', 'Quetzaltenango', 'Escuintla',
-      'San Juan Sacatepéquez', 'Villa Canales', 'Chinautla', 'Chimaltenango', 'Huehuetenango',
-      'Amatitlán', 'Totonicapán', 'Puerto Barrios', 'Cobán', 'Antigua Guatemala',
-    ],
-    'El Salvador': [
-      'San Salvador', 'Santa Ana', 'San Miguel', 'Soyapango', 'Santa Tecla',
-      'Mejicanos', 'Apopa', 'Delgado', 'Ahuachapán', 'La Unión',
-    ],
-    Nicaragua: [
-      'Managua', 'León', 'Masaya', 'Matagalpa', 'Chinandega',
-      'Granada', 'Estelí', 'Tipitapa', 'Jinotega', 'Bluefields',
-    ],
-    'Costa Rica': [
-      'San José', 'Alajuela', 'Cartago', 'Heredia', 'Puntarenas',
-      'Limón', 'Liberia', 'Desamparados', 'San Carlos', 'Pérez Zeledón',
-    ],
-    Panamá: [
-      'Ciudad de Panamá', 'San Miguelito', 'Colón', 'David', 'La Chorrera',
-      'Arraiján', 'Santiago', 'Chitré', 'Penonomé', 'Las Tablas',
-    ],
-  };
 
   readonly estadoLabels: Record<TerminalEstado, string> = TERMINAL_ESTADO_LABELS;
   readonly estadoBadge: Record<TerminalEstado, string> = TERMINAL_ESTADO_BADGE;
@@ -136,6 +123,7 @@ export class PmtInventoryComponent implements OnInit {
     marca: [''],
     zona: [''],
     modelo: [''],
+    warehouseId: [''],
   });
 
   // Dialog
@@ -148,12 +136,10 @@ export class PmtInventoryComponent implements OnInit {
     marca: [''],
     modelo: [''],
     serie: [''],
-    estado: ['en_bodega'],
-    inyectado: [''],
+    estado: ['en_bodega' as TerminalEstado],
     fecha: [''],
-    pais: ['Honduras'],
-    ciudad: [''],
-    zona: [''],
+    warehouseId: ['' as string | number],
+    merchantSiteId: [''],
   });
   formError = '';
 
@@ -169,9 +155,19 @@ export class PmtInventoryComponent implements OnInit {
   viewTarget: Terminal | null = null;
 
   ngOnInit(): void {
+    this.warehouseSvc.warehouses$.subscribe(list => {
+      this.warehouses = list;
+    });
+    this.merchantSvc.sites$.subscribe(() => {
+      this.siteOptions = this.merchantSvc.activeSiteOptions();
+    });
+    this.siteOptions = this.merchantSvc.activeSiteOptions();
     this.svc.terminals$.subscribe(ts => {
       this.all = ts;
-      this.zonas = [...new Set(ts.map(t => t.zona).filter((z): z is string => !!z))].sort();
+      this.zonas = [...new Set([
+        ...ZONAS_DEFAULT,
+        ...ts.map(t => this.locationOf(t).zona).filter((z): z is string => !!z),
+      ])].sort();
       this.marcas = [...new Set(ts.map(t => t.marca).filter((m): m is string => !!m))].sort();
       this.modelos = [...new Set(ts.map(t => t.modelo).filter((m): m is string => !!m))].sort();
       this.applyFilters();
@@ -180,33 +176,132 @@ export class PmtInventoryComponent implements OnInit {
       this.page = 1;
       this.applyFilters();
     });
-    this.formData.get('pais')!.valueChanges.subscribe(pais => {
-      this.setCiudadesForPais(pais || '', { clearCiudad: true });
+    this.formData.get('estado')!.valueChanges.subscribe(estado => {
+      if (estado !== 'en_bodega') {
+        this.formData.patchValue({ warehouseId: '' }, { emitEvent: false });
+      }
+      if (estado !== 'instalado') {
+        this.formData.patchValue({ merchantSiteId: '' }, { emitEvent: false });
+      }
     });
-    this.setCiudadesForPais('Honduras');
+  }
+
+  get formEstado(): TerminalEstado {
+    return (this.formData.getRawValue().estado as TerminalEstado) || 'en_bodega';
+  }
+
+  get showWarehouseField(): boolean {
+    return this.formEstado === 'en_bodega';
+  }
+
+  get showMerchantSiteField(): boolean {
+    return this.formEstado === 'instalado';
+  }
+
+  get siteOptionsForForm(): { site: MerchantSite; merchant: Merchant; label: string }[] {
+    const currentId = this.formData.getRawValue().merchantSiteId;
+    if (!currentId || this.siteOptions.some(o => o.site.id === currentId)) {
+      return this.siteOptions;
+    }
+    const site = this.merchantSvc.getSiteById(currentId);
+    const merchant = site ? this.merchantSvc.getById(site.merchantId) : undefined;
+    if (!site || !merchant) return this.siteOptions;
+    return [
+      ...this.siteOptions,
+      { site, merchant, label: `${merchant.tradeName} · ${site.name}` },
+    ];
+  }
+
+  get activeWarehouses(): Warehouse[] {
+    return this.warehouses.filter(w => w.status === 'active'
+      || (this.editId !== null && this.formData.getRawValue().warehouseId == w.id));
+  }
+
+  /** Solo nombre de bodega (sin código). */
+  warehouseName(id?: number | null): string {
+    if (id == null) return '—';
+    return this.warehouses.find(x => x.id === id)?.nombre ?? '—';
+  }
+
+  /** Celda Bodega / Comercio del grid. */
+  placeCell(t: Terminal): string {
+    if (t.estado === 'instalado') {
+      const parts = [t.nombre, t.ciudad, t.zona].filter(v => !!v && String(v).trim());
+      return parts.length ? parts.join(' · ') : '—';
+    }
+    if (t.estado === 'en_bodega') {
+      return this.warehouseName(t.warehouseId);
+    }
+    if (t.nombre) {
+      const parts = [t.nombre, t.ciudad, t.zona].filter(v => !!v && String(v).trim());
+      return parts.length ? parts.join(' · ') : t.nombre;
+    }
+    if (t.warehouseId != null) return this.warehouseName(t.warehouseId);
+    return '—';
+  }
+
+  /** Ubicación mostrada: comercio si instalado; si no, bodega. */
+  locationOf(t: Terminal): ResolvedLocation {
+    if (t.estado === 'instalado' || t.merchantSiteId) {
+      const site = t.merchantSiteId ? this.merchantSvc.getSiteById(t.merchantSiteId) : undefined;
+      const merchant = t.merchantId ? this.merchantSvc.getById(t.merchantId) : undefined;
+      return {
+        zona: site?.zona ?? t.zona,
+        ciudad: site?.ciudad ?? t.ciudad,
+        direccion: site?.address ?? t.direccion,
+        pais: merchant?.pais ?? t.pais,
+        source: 'comercio',
+        label: merchant && site
+          ? `${merchant.tradeName} · ${site.name}`
+          : (t.nombre ?? site?.name),
+      };
+    }
+    if (t.warehouseId != null) {
+      const w = this.warehouseSvc.getById(t.warehouseId);
+      if (w) {
+        return {
+          zona: w.zona,
+          ciudad: w.ciudad,
+          direccion: w.direccion,
+          pais: w.pais,
+          source: 'bodega',
+          label: w.nombre,
+        };
+      }
+    }
+    return {
+      zona: t.zona,
+      ciudad: t.ciudad,
+      direccion: t.direccion,
+      pais: t.pais,
+      source: 'terminal',
+      label: t.nombre,
+    };
   }
 
   applyFilters(): void {
     const f = this.filterForm.getRawValue();
     this.filtered = this.all.filter(t => {
+      const loc = this.locationOf(t);
       const q = (f.q ?? '').toLowerCase().trim();
-      if (q && ![t.serie, t.marca, t.modelo, t.nombre, t.inventario, t.zona, t.ciudad]
+      if (q && ![t.serie, t.marca, t.modelo, t.nombre, t.inventario, loc.zona, loc.ciudad, loc.direccion]
         .some(v => (v ?? '').toLowerCase().includes(q))) return false;
       if (f.estado && t.estado !== f.estado) return false;
       if (f.marca && t.marca !== f.marca) return false;
-      if (f.zona && t.zona !== f.zona) return false;
+      if (f.zona && loc.zona !== f.zona) return false;
       if (f.modelo && t.modelo !== f.modelo) return false;
+      if (f.warehouseId && String(t.warehouseId ?? '') !== String(f.warehouseId)) return false;
       return true;
     });
   }
 
   clearFilters(): void {
-    this.filterForm.reset({ q: '', estado: '', marca: '', zona: '', modelo: '' });
+    this.filterForm.reset({ q: '', estado: '', marca: '', zona: '', modelo: '', warehouseId: '' });
   }
 
   get hasFilters(): boolean {
     const f = this.filterForm.getRawValue();
-    return !!(f.q || f.estado || f.marca || f.zona || f.modelo);
+    return !!(f.q || f.estado || f.marca || f.zona || f.modelo || f.warehouseId);
   }
 
   // ── CRUD ─────────────────────────────────────────────────────────────────
@@ -219,33 +314,19 @@ export class PmtInventoryComponent implements OnInit {
     return `${y}-${m}-${day}`;
   }
 
-  private setCiudadesForPais(pais: string, opts?: { clearCiudad?: boolean; keepCiudad?: string }): void {
-    const list = [...(this.ciudadesPorPais[pais] ?? [])];
-    if (opts?.keepCiudad && opts.keepCiudad.trim() && !list.includes(opts.keepCiudad)) {
-      list.unshift(opts.keepCiudad);
-    }
-    this.ciudades = list;
-    if (opts?.clearCiudad) {
-      this.formData.patchValue({ ciudad: '' }, { emitEvent: false });
-    }
-  }
-
   openCreate(): void {
     this.editId = null;
     this.formData.reset({
       estado: 'en_bodega',
-      pais: 'Honduras',
       fecha: this.todayIso(),
-      ciudad: '',
       inventarioPrefijo: 'INV',
       inventarioCodigo: '',
       marca: '',
       modelo: '',
       serie: '',
-      inyectado: '',
-      zona: '',
+      warehouseId: '',
+      merchantSiteId: '',
     });
-    this.setCiudadesForPais('Honduras');
     this.formError = '';
     this.showForm = true;
   }
@@ -260,19 +341,15 @@ export class PmtInventoryComponent implements OnInit {
 
   openEdit(t: Terminal): void {
     this.editId = t.id;
-    const pais = t.pais || 'Honduras';
     const parsed = this.parseInventario(t.inventario);
-    this.setCiudadesForPais(pais, { keepCiudad: t.ciudad });
     this.formData.patchValue({
       marca: t.marca ?? '',
       modelo: t.modelo ?? '',
       serie: t.serie ?? '',
       estado: t.estado ?? 'en_bodega',
-      inyectado: t.inyectado ?? '',
       fecha: t.fecha || this.todayIso(),
-      pais,
-      ciudad: t.ciudad ?? '',
-      zona: t.zona ?? '',
+      warehouseId: t.warehouseId ?? '',
+      merchantSiteId: t.merchantSiteId ?? '',
       inventarioPrefijo: parsed.prefijo,
       inventarioCodigo: parsed.codigo,
     }, { emitEvent: false });
@@ -303,23 +380,68 @@ export class PmtInventoryComponent implements OnInit {
   saveForm(): void {
     const v = this.formData.getRawValue();
     const inventario = this.buildInventario(v.inventarioPrefijo ?? 'INV', v.inventarioCodigo ?? '');
+    const estado = (v.estado as TerminalEstado) ?? 'en_bodega';
     if (!inventario) { this.formError = 'El código de inventario es requerido.'; return; }
     if (!v.marca?.trim()) { this.formError = 'La marca es requerida.'; return; }
     if (!v.modelo?.trim()) { this.formError = 'El modelo es requerido.'; return; }
     if (!v.serie?.trim()) { this.formError = 'El número de serie es requerido.'; return; }
+
+    if (estado === 'en_bodega' && (v.warehouseId === '' || v.warehouseId == null)) {
+      this.formError = 'Seleccione una bodega.';
+      return;
+    }
+    if (estado === 'instalado' && !v.merchantSiteId) {
+      this.formError = 'Seleccione un comercio / sucursal.';
+      return;
+    }
 
     const payload: Partial<Terminal> = {
       inventario,
       marca: v.marca!,
       modelo: v.modelo!,
       serie: v.serie!,
-      estado: (v.estado as TerminalEstado) ?? 'en_bodega',
-      inyectado: v.inyectado || undefined,
+      estado,
       fecha: v.fecha || undefined,
-      pais: v.pais || undefined,
-      ciudad: v.ciudad || undefined,
-      zona: v.zona || undefined,
     };
+
+    if (estado === 'en_bodega') {
+      const warehouseId = Number(v.warehouseId);
+      const w = this.warehouseSvc.getById(warehouseId);
+      payload.warehouseId = warehouseId;
+      payload.merchantId = undefined;
+      payload.merchantSiteId = undefined;
+      payload.nombre = undefined;
+      payload.codigo = undefined;
+      if (w) {
+        payload.pais = w.pais;
+        payload.ciudad = w.ciudad;
+        payload.zona = w.zona;
+        payload.direccion = w.direccion;
+      }
+    } else if (estado === 'instalado') {
+      const opt = this.siteOptions.find(o => o.site.id === v.merchantSiteId)
+        ?? (() => {
+          const site = this.merchantSvc.getSiteById(v.merchantSiteId!);
+          const merchant = site ? this.merchantSvc.getById(site.merchantId) : undefined;
+          return site && merchant ? { site, merchant, label: `${merchant.tradeName} · ${site.name}` } : null;
+        })();
+      if (!opt) {
+        this.formError = 'Comercio / sucursal no válido.';
+        return;
+      }
+      payload.warehouseId = undefined;
+      payload.merchantId = opt.merchant.id;
+      payload.merchantSiteId = opt.site.id;
+      payload.nombre = opt.merchant.tradeName;
+      payload.codigo = opt.merchant.affiliateCode;
+      payload.pais = opt.merchant.pais;
+      payload.ciudad = opt.site.ciudad ?? opt.merchant.ciudad;
+      payload.zona = opt.site.zona ?? opt.merchant.zona;
+      payload.direccion = opt.site.address ?? opt.merchant.address;
+    } else {
+      payload.warehouseId = undefined;
+      payload.merchantSiteId = undefined;
+    }
 
     if (this.editId === null) {
       if (this.svc.isSerieDuplicate(v.serie!, v.marca)) {
@@ -329,7 +451,7 @@ export class PmtInventoryComponent implements OnInit {
       this.svc.create({
         ...payload,
         serie: v.serie!,
-        estado: (v.estado as TerminalEstado) ?? 'en_bodega',
+        estado,
       } as Omit<Terminal, 'id' | 'createdAt' | 'updatedAt'>);
     } else {
       if (this.svc.isSerieDuplicate(v.serie!, v.marca, this.editId)) {

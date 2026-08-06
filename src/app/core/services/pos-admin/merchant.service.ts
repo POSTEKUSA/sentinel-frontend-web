@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Installation, Merchant } from '../../models/pos-admin';
-import { MOCK_INSTALLATIONS, MOCK_MERCHANTS } from '../../mock/pos-admin/mock-merchants';
+import { Installation, Merchant, MerchantSite } from '../../models/pos-admin';
+import { MOCK_INSTALLATIONS, MOCK_MERCHANTS, MOCK_MERCHANT_SITES } from '../../mock/pos-admin/mock-merchants';
 import { PosInventoryService } from './pos-inventory.service';
 import { CurrentUserService } from './current-user.service';
 
@@ -12,9 +12,11 @@ let installationSeq = MOCK_INSTALLATIONS.length + 1;
 @Injectable({ providedIn: 'root' })
 export class MerchantService {
   private readonly merchantsSubject = new BehaviorSubject<Merchant[]>([...MOCK_MERCHANTS]);
+  private readonly sitesSubject = new BehaviorSubject<MerchantSite[]>([...MOCK_MERCHANT_SITES]);
   private readonly installationsSubject = new BehaviorSubject<Installation[]>([...MOCK_INSTALLATIONS]);
 
   readonly merchants$: Observable<Merchant[]> = this.merchantsSubject.asObservable();
+  readonly sites$: Observable<MerchantSite[]> = this.sitesSubject.asObservable();
   readonly installations$: Observable<Installation[]> = this.installationsSubject.asObservable();
 
   constructor(
@@ -26,8 +28,37 @@ export class MerchantService {
     return this.merchantsSubject.value;
   }
 
+  get sites(): MerchantSite[] {
+    return this.sitesSubject.value;
+  }
+
   getById(id: string): Merchant | undefined {
     return this.merchantsSubject.value.find(m => m.id === id);
+  }
+
+  getSiteById(id: string): MerchantSite | undefined {
+    return this.sitesSubject.value.find(s => s.id === id);
+  }
+
+  sitesForMerchant(merchantId: string): MerchantSite[] {
+    return this.sites.filter(s => s.merchantId === merchantId);
+  }
+
+  /** Sitios activos de comercios activos, para asignación de POS. */
+  activeSiteOptions(): { site: MerchantSite; merchant: Merchant; label: string }[] {
+    return this.sites
+      .filter(s => s.status === 'active')
+      .map(site => {
+        const merchant = this.getById(site.merchantId);
+        if (!merchant || merchant.status !== 'active') return null;
+        return {
+          site,
+          merchant,
+          label: `${merchant.tradeName} · ${site.name}`,
+        };
+      })
+      .filter((x): x is { site: MerchantSite; merchant: Merchant; label: string } => !!x)
+      .sort((a, b) => a.label.localeCompare(b.label, 'es'));
   }
 
   createMerchant(merchant: Omit<Merchant, 'id' | 'createdAt'>): Merchant {

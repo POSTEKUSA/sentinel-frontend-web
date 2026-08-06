@@ -7,7 +7,6 @@ import { combineLatest } from 'rxjs';
 import {
   AccessoryCatalogItem,
   ACCESSORY_CATEGORY_LABELS,
-  CATALOG_STATUS_LABELS,
   PosCatalogItem,
   Supplier,
 } from '../../../core/models/pos-admin';
@@ -17,16 +16,23 @@ import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-d
 import { BrandModelDialogComponent } from './dialogs/brand-model-dialog.component';
 import { SupplierDialogComponent } from './dialogs/supplier-dialog.component';
 import { AccessoryDialogComponent } from './dialogs/accessory-dialog.component';
+import {
+  StatusSwitchComponent,
+  STATUS_ACTIVE_INACTIVE,
+  STATUS_CATALOG,
+  StatusOption,
+} from '../../../shared/status-switch/status-switch.component';
 
 @Component({
   selector: 'app-pos-catalog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, StatusSwitchComponent],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.css',
 })
 export class CatalogComponent implements OnInit {
-  statusLabels: Record<string, string> = CATALOG_STATUS_LABELS;
+  readonly catalogStatusOptions: StatusOption[] = STATUS_CATALOG;
+  readonly supplierStatusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
   categoryLabels: Record<string, string> = ACCESSORY_CATEGORY_LABELS;
   activeTab: 'brands' | 'suppliers' | 'accessories' = 'brands';
   openMenuId: string | null = null;
@@ -158,19 +164,5 @@ export class CatalogComponent implements OnInit {
       .subscribe(confirmed => {
         if (confirmed) onConfirm();
       });
-  }
-
-  statusBadgeClass(status: string): string {
-    switch (status) {
-      case 'active':
-        return 'cf-badge-ok';
-      case 'obsolete':
-        return 'cf-badge-warn';
-      case 'discontinued':
-      case 'inactive':
-        return 'cf-badge-off';
-      default:
-        return 'cf-badge-muted';
-    }
   }
 }

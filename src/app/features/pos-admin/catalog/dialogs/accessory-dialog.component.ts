@@ -4,6 +4,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { AccessoryCatalogItem, AccessoryCategory, CatalogStatus } from '../../../../core/models/pos-admin';
 import { PosCatalogService } from '../../../../core/services/pos-admin/pos-catalog.service';
+import {
+  StatusSwitchComponent,
+  STATUS_CATALOG,
+  StatusOption,
+} from '../../../../shared/status-switch/status-switch.component';
 
 export interface AccessoryDialogData {
   item?: AccessoryCatalogItem;
@@ -12,7 +17,7 @@ export interface AccessoryDialogData {
 @Component({
   selector: 'app-accessory-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule],
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, StatusSwitchComponent],
   template: `
     <div class="cf-modal">
       <div class="modal-head">
@@ -33,12 +38,8 @@ export interface AccessoryDialogData {
             </select>
           </div>
           <div class="field">
-            <label for="status">Estado</label>
-            <select id="status" formControlName="status">
-              <option value="active">Activo</option>
-              <option value="obsolete">Obsoleto</option>
-              <option value="discontinued">Descontinuado</option>
-            </select>
+            <label>Estado</label>
+            <app-status-switch formControlName="status" [options]="statusOptions" ariaLabel="Estado del accesorio" />
           </div>
           <div class="field">
             <label for="compatibleBrandModel">Marca/modelo compatible</label>
@@ -68,6 +69,8 @@ export class AccessoryDialogComponent {
   data = inject<AccessoryDialogData>(MAT_DIALOG_DATA);
   private fb = inject(FormBuilder);
   private catalogSvc = inject(PosCatalogService);
+
+  readonly statusOptions: StatusOption[] = STATUS_CATALOG;
 
   form = this.fb.group({
     type: [this.data.item?.type ?? '', Validators.required],

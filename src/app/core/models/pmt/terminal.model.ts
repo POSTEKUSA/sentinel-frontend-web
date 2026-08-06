@@ -58,6 +58,11 @@ export interface Terminal {
   marca?: string;
   modelo?: string;
   estado: TerminalEstado;
+  /** Bodega asignada (ubicación física cuando no está en comercio). */
+  warehouseId?: number;
+  /** Comercio / sitio cuando está instalado. */
+  merchantId?: string;
+  merchantSiteId?: string;
   zona?: string;
   pais?: string;
   caja?: string;

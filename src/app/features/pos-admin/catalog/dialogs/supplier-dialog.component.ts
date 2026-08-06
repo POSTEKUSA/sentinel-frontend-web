@@ -4,6 +4,11 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Supplier, SupplierStatus } from '../../../../core/models/pos-admin';
 import { PosCatalogService } from '../../../../core/services/pos-admin/pos-catalog.service';
+import {
+  StatusSwitchComponent,
+  STATUS_ACTIVE_INACTIVE,
+  StatusOption,
+} from '../../../../shared/status-switch/status-switch.component';
 
 export interface SupplierDialogData {
   item?: Supplier;
@@ -12,7 +17,7 @@ export interface SupplierDialogData {
 @Component({
   selector: 'app-supplier-dialog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule],
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, StatusSwitchComponent],
   template: `
     <div class="cf-modal">
       <div class="modal-head">
@@ -30,11 +35,8 @@ export interface SupplierDialogData {
             <input id="country" formControlName="country" autocomplete="country-name" />
           </div>
           <div class="field">
-            <label for="status">Estado</label>
-            <select id="status" formControlName="status">
-              <option value="active">Activo</option>
-              <option value="inactive">Inactivo</option>
-            </select>
+            <label>Estado</label>
+            <app-status-switch formControlName="status" [options]="statusOptions" ariaLabel="Estado del proveedor" />
           </div>
           <div class="field">
             <label for="contactName">Contacto</label>
@@ -72,6 +74,8 @@ export class SupplierDialogComponent {
   data = inject<SupplierDialogData>(MAT_DIALOG_DATA);
   private fb = inject(FormBuilder);
   private catalogSvc = inject(PosCatalogService);
+
+  readonly statusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
 
   form = this.fb.group({
     name: [this.data.item?.name ?? '', Validators.required],

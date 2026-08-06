@@ -3,23 +3,29 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
-import { Installation, Merchant, MERCHANT_STATUS_LABELS, PosUnit, POS_UNIT_STATUS_LABELS } from '../../../core/models/pos-admin';
+import { Installation, Merchant, PosUnit, POS_UNIT_STATUS_LABELS } from '../../../core/models/pos-admin';
 import { MerchantService } from '../../../core/services/pos-admin/merchant.service';
 import { PosInventoryService } from '../../../core/services/pos-admin/pos-inventory.service';
+import { WarehouseService } from '../../../core/services/pmt/warehouse.service';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { InstallPosDialogComponent } from './dialogs/install-pos-dialog.component';
+import {
+  StatusSwitchComponent,
+  STATUS_ACTIVE_INACTIVE,
+  StatusOption,
+} from '../../../shared/status-switch/status-switch.component';
 
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
 
 @Component({
   selector: 'app-merchant-detail',
   standalone: true,
-  imports: [CopyableCodeComponent, CommonModule, RouterModule, EmptyStateComponent],
+  imports: [CopyableCodeComponent, StatusSwitchComponent, CommonModule, RouterModule, EmptyStateComponent],
   templateUrl: './merchant-detail.component.html',
   styleUrl: './merchant-detail.component.css',
 })
 export class MerchantDetailComponent implements OnInit {
-  statusLabels: Record<string, string> = MERCHANT_STATUS_LABELS;
+  readonly statusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
   posStatusLabels: Record<string, string> = POS_UNIT_STATUS_LABELS;
 
   merchant?: Merchant;
@@ -31,8 +37,15 @@ export class MerchantDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private merchantSvc: MerchantService,
     private inventorySvc: PosInventoryService,
+    private warehouseSvc: WarehouseService,
     private dialog: MatDialog,
   ) {}
+
+  warehouseLabel(id?: number | null): string {
+    if (id == null) return '—';
+    const w = this.warehouseSvc.getById(id);
+    return w ? `${w.codigo} · ${w.nombre}` : '—';
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');

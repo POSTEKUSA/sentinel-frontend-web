@@ -59,7 +59,7 @@
 }
 
 .asset-dialog-foot {
-  background: var(--surface, #fff);
+  background: transparent;
   margin-top: 16px;
   padding: 16px 0 0;
   border-top: 1px solid var(--line-2);

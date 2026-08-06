@@ -1,200 +1,205 @@
 import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { WarehouseService } from '../../../core/services/pmt/warehouse.service';
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
-
 import {
-  Terminal, TerminalEstado,
-  TERMINAL_ESTADO_LABELS, TERMINAL_ESTADO_BADGE
-} from '../../../core/models/pmt/terminal.model';
+  StatusSwitchComponent,
+  STATUS_ACTIVE_INACTIVE,
+  StatusOption,
+} from '../../../shared/status-switch/status-switch.component';
 import {
-  MOTIVOS_REPARACION, MOTIVOS_GARANTIA, buildMotivoComment
-} from '../../../core/models/pmt/terminal-motivos';
-
-type BodegaAction = 'inyeccion' | 'asignar' | 'reparacion' | 'garantia';
+  Warehouse,
+  WarehouseStatus,
+} from '../../../core/models/pmt/warehouse.model';
+import { CIUDADES_POR_PAIS, PAISES, ZONAS_DEFAULT } from '../../../core/constants/geo.constants';
 
 @Component({
   selector: 'app-pmt-bodega',
   standalone: true,
-  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CopyableCodeComponent, StatusSwitchComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './pmt-bodega.component.html',
   styleUrl: './pmt-bodega.component.css',
 })
 export class PmtBodegaComponent implements OnInit {
   private fb = inject(FormBuilder);
-  private svc = inject(PmtTerminalService);
+  private svc = inject(WarehouseService);
 
-  all: Terminal[] = [];
-  filtered: Terminal[] = [];
-
-  readonly estadoLabels = TERMINAL_ESTADO_LABELS;
-  readonly estadoBadge  = TERMINAL_ESTADO_BADGE;
-  readonly motivosReparacion = MOTIVOS_REPARACION;
-  readonly motivosGarantia = MOTIVOS_GARANTIA;
-
-  selectedIds = new Set<number>();
-  actionComment = '';
-  actionMotivo = '';
-  actionError = '';
+  all: Warehouse[] = [];
+  filtered: Warehouse[] = [];
+  ciudades: string[] = [];
   openMenuId: string | null = null;
 
-  filterForm = this.fb.group({ serie: [''], inventario: [''], modelo: [''], caja: [''], inyectado: [''] });
+  readonly paises = PAISES;
+  readonly zonasDefault = ZONAS_DEFAULT;
+  readonly statusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
 
-  // Action dialog
-  actionType: BodegaAction | null = null;
-  actionIds: number[] = [];
-  assignRole: 'supervisor' | 'tecnico' | 'ejecutivo' = 'supervisor';
-  assignTo = '';
+  filterForm = this.fb.group({
+    q: [''],
+    pais: [''],
+    zona: [''],
+    status: [''],
+  });
+
+  showForm = false;
+  editId: number | null = null;
+  formError = '';
+  deleteTarget: Warehouse | null = null;
+
+  formData = this.fb.group({
+    codigo: [''],
+    nombre: ['', Validators.required],
+    pais: ['Honduras', Validators.required],
+    ciudad: ['', Validators.required],
+    zona: ['', Validators.required],
+    direccion: [''],
+    status: ['active' as WarehouseStatus, Validators.required],
+  });
 
   ngOnInit(): void {
-    this.svc.terminals$.subscribe(ts => {
-      this.all = ts.filter(t => t.estado === 'en_bodega');
+    this.svc.warehouses$.subscribe(list => {
+      this.all = list;
       this.applyFilters();
     });
     this.filterForm.valueChanges.subscribe(() => this.applyFilters());
+    this.formData.get('pais')!.valueChanges.subscribe(pais => {
+      this.setCiudadesForPais(pais || '', { clearCiudad: true });
+    });
+    this.setCiudadesForPais('Honduras');
   }
 
   @HostListener('document:click')
-  closeMenus(): void { this.openMenuId = null; }
+  closeMenus(): void {
+    this.openMenuId = null;
+  }
 
   toggleMenu(id: string, event: Event): void {
     event.stopPropagation();
     this.openMenuId = this.openMenuId === id ? null : id;
   }
 
-  canSendToInyeccion(t: Terminal): boolean { return this.svc.canSendToInyeccion(t); }
-  canSendToReparacion(t: Terminal): boolean { return this.svc.canSendToReparacion(t); }
-  canSendToGarantia(t: Terminal): boolean { return this.svc.canSendToGarantia(t); }
-
   applyFilters(): void {
     const f = this.filterForm.getRawValue();
-    this.filtered = this.all.filter(t =>
-      (!f.serie      || (t.serie ?? '').toLowerCase().includes(f.serie!.toLowerCase())) &&
-      (!f.inventario || (t.inventario ?? '').toLowerCase().includes(f.inventario!.toLowerCase())) &&
-      (!f.modelo     || (t.modelo ?? '').toLowerCase().includes(f.modelo!.toLowerCase())) &&
-      (!f.caja       || (t.caja ?? '').toLowerCase().includes(f.caja!.toLowerCase())) &&
-      (!f.inyectado  || (t.inyectado ?? '').toLowerCase() === f.inyectado!.toLowerCase())
-    );
+    const q = (f.q ?? '').toLowerCase().trim();
+    this.filtered = this.all.filter(w => {
+      if (q && ![w.codigo, w.nombre, w.ciudad, w.zona, w.direccion]
+        .some(v => (v ?? '').toLowerCase().includes(q))) return false;
+      if (f.pais && w.pais !== f.pais) return false;
+      if (f.zona && w.zona !== f.zona) return false;
+      if (f.status && w.status !== f.status) return false;
+      return true;
+    });
   }
 
-  clearFilters(): void { this.filterForm.reset(); }
-  get hasFilters(): boolean { return Object.values(this.filterForm.getRawValue()).some(v => !!v); }
-
-  toggleSelect(id: number): void {
-    if (this.selectedIds.has(id)) this.selectedIds.delete(id);
-    else this.selectedIds.add(id);
-    this.selectedIds = new Set(this.selectedIds);
-  }
-  toggleAll(): void {
-    if (this.selectedIds.size === this.filtered.length)
-      this.selectedIds = new Set();
-    else
-      this.selectedIds = new Set(this.filtered.map(t => t.id));
-  }
-  get allSelected(): boolean { return this.filtered.length > 0 && this.selectedIds.size === this.filtered.length; }
-
-  startBulkAction(type: BodegaAction): void {
-    const ids = [...this.selectedIds];
-    if (!ids.length) return;
-    this.startAction(type, ids);
+  clearFilters(): void {
+    this.filterForm.reset({ q: '', pais: '', zona: '', status: '' });
   }
 
-  startRowAction(type: BodegaAction, t: Terminal, event?: Event): void {
-    event?.stopPropagation();
-    this.startAction(type, [t.id]);
+  get hasFilters(): boolean {
+    const f = this.filterForm.getRawValue();
+    return !!(f.q || f.pais || f.zona || f.status);
   }
 
-  private startAction(type: BodegaAction, ids: number[]): void {
-    if (type === 'inyeccion') {
-      ids = ids.filter(id => {
-        const t = this.all.find(x => x.id === id) ?? this.svc.terminals.find(x => x.id === id);
-        return t ? this.canSendToInyeccion(t) : false;
-      });
-      if (!ids.length) {
-        alert('Ningún terminal seleccionado puede enviarse a inyección (ya pasó por ese estado o no está en bodega).');
-        return;
-      }
+  get zonasOpciones(): string[] {
+    const fromData = this.all.map(w => w.zona).filter(Boolean);
+    return [...new Set([...ZONAS_DEFAULT, ...fromData])].sort();
+  }
+
+  private setCiudadesForPais(pais: string, opts?: { clearCiudad?: boolean; keepCiudad?: string }): void {
+    const list = [...(CIUDADES_POR_PAIS[pais] ?? [])];
+    if (opts?.keepCiudad?.trim() && !list.includes(opts.keepCiudad)) {
+      list.unshift(opts.keepCiudad);
     }
-    this.actionType = type;
-    this.actionIds = ids;
-    this.actionComment = '';
-    this.actionMotivo = '';
-    this.actionError = '';
+    this.ciudades = list;
+    if (opts?.clearCiudad) {
+      this.formData.patchValue({ ciudad: '' }, { emitEvent: false });
+    }
+  }
+
+  openCreate(): void {
+    this.editId = null;
+    this.formError = '';
     this.openMenuId = null;
+    this.formData.reset({
+      codigo: this.svc.nextCodigo(),
+      nombre: '',
+      pais: 'Honduras',
+      ciudad: '',
+      zona: '',
+      direccion: '',
+      status: 'active',
+    });
+    this.setCiudadesForPais('Honduras');
+    this.showForm = true;
   }
 
-  cancelAction(): void {
-    this.actionType = null;
-    this.actionIds = [];
-    this.actionComment = '';
-    this.actionMotivo = '';
-    this.actionError = '';
-    this.assignTo = '';
+  openEdit(w: Warehouse, event?: Event): void {
+    event?.stopPropagation();
+    this.openMenuId = null;
+    this.editId = w.id;
+    this.formError = '';
+    this.setCiudadesForPais(w.pais, { keepCiudad: w.ciudad });
+    this.formData.patchValue({
+      codigo: w.codigo,
+      nombre: w.nombre,
+      pais: w.pais,
+      ciudad: w.ciudad,
+      zona: w.zona,
+      direccion: w.direccion ?? '',
+      status: w.status,
+    }, { emitEvent: false });
+    this.showForm = true;
   }
 
-  get motivosList(): string[] {
-    if (this.actionType === 'reparacion') return this.motivosReparacion;
-    if (this.actionType === 'garantia') return this.motivosGarantia;
-    return [];
+  closeForm(): void {
+    this.showForm = false;
+    this.editId = null;
+    this.formError = '';
   }
 
-  get needsMotivo(): boolean {
-    return this.actionType === 'reparacion' || this.actionType === 'garantia';
-  }
-
-  actionTitle(): string {
-    switch (this.actionType) {
-      case 'inyeccion': return 'Enviar a Inyección';
-      case 'reparacion': return 'Enviar a Reparación';
-      case 'garantia': return 'Enviar a Garantía';
-      case 'asignar': return 'Asignar POS';
-      default: return '';
+  saveForm(): void {
+    if (this.formData.invalid) {
+      this.formError = 'Complete los campos requeridos.';
+      this.formData.markAllAsTouched();
+      return;
     }
+    const v = this.formData.getRawValue();
+    const codigo = (v.codigo || '').trim().toUpperCase();
+    if (codigo && this.svc.isCodigoDuplicate(codigo, this.editId ?? undefined)) {
+      this.formError = `El código "${codigo}" ya existe.`;
+      return;
+    }
+
+    const payload = {
+      nombre: v.nombre!.trim(),
+      pais: v.pais || 'Honduras',
+      ciudad: v.ciudad!,
+      zona: v.zona!,
+      direccion: v.direccion?.trim() || undefined,
+      status: (v.status as WarehouseStatus) || 'active',
+    };
+
+    if (this.editId === null) {
+      this.svc.create({ ...payload, codigo: codigo || undefined });
+    } else {
+      this.svc.update(this.editId, { ...payload, codigo: codigo || undefined });
+    }
+    this.closeForm();
   }
 
-  applyAction(): void {
-    const ids = this.actionIds;
-    if (!ids.length || !this.actionType) return;
+  askDelete(w: Warehouse, event?: Event): void {
+    event?.stopPropagation();
+    this.openMenuId = null;
+    this.deleteTarget = w;
+  }
 
-    if (this.needsMotivo) {
-      if (!this.actionMotivo) {
-        this.actionError = 'Seleccione un motivo.';
-        return;
-      }
-      if (this.actionMotivo === 'Otro' && !this.actionComment.trim()) {
-        this.actionError = 'Indique el detalle del motivo (Otro).';
-        return;
-      }
-    }
-    this.actionError = '';
+  cancelDelete(): void {
+    this.deleteTarget = null;
+  }
 
-    const comment = this.needsMotivo
-      ? buildMotivoComment(this.actionMotivo, this.actionComment)
-      : this.actionComment;
-
-    switch (this.actionType) {
-      case 'inyeccion':
-        ids.forEach(id => this.svc.changeEstado(id, 'en_inyeccion', comment || 'Enviado a inyección'));
-        break;
-      case 'asignar': {
-        const roleEstado: Record<typeof this.assignRole, TerminalEstado> = {
-          supervisor: 'asignado_supervisor',
-          tecnico: 'asignado_tecnico',
-          ejecutivo: 'asignado_ejecutivo',
-        };
-        const newEstado = roleEstado[this.assignRole];
-        ids.forEach(id => this.svc.changeEstado(id, newEstado, comment, 'admin', { assignedTo: this.assignTo, assignedAt: new Date().toISOString() }));
-        break;
-      }
-      case 'reparacion':
-        ids.forEach(id => this.svc.changeEstado(id, 'en_reparacion', comment || 'Enviado a reparación'));
-        break;
-      case 'garantia':
-        ids.forEach(id => this.svc.changeEstado(id, 'garantia', comment || 'Enviado a garantía'));
-        break;
-    }
-    this.selectedIds = new Set();
-    this.cancelAction();
+  confirmDelete(): void {
+    if (!this.deleteTarget) return;
+    this.svc.delete(this.deleteTarget.id);
+    this.deleteTarget = null;
   }
 }

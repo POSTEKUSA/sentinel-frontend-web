@@ -1,37 +1,39 @@
 <div class="admin-page">
   <header class="cf-head">
     <div>
-      <h1>POS en Bodega</h1>
-      <p class="count">{{ filtered.length }} terminales en almacén · {{ selectedIds.size }} seleccionados</p>
+      <h1>Bodegas</h1>
+      <p class="count">{{ filtered.length }} bodega(s) · {{ all.length }} totales</p>
     </div>
     <div class="head-actions">
-      @if (selectedIds.size > 0) {
-        <button class="btn-secondary" (click)="startBulkAction('asignar')">
-          <span class="mi">person_add</span> Asignar ({{ selectedIds.size }})
-        </button>
-        <button class="btn-secondary" (click)="startBulkAction('inyeccion')">
-          <span class="mi">vaccines</span> Pasar a Inyección
-        </button>
-        <button class="btn-secondary" (click)="startBulkAction('reparacion')">
-          <span class="mi">build</span> Enviar Reparación
-        </button>
-        <button class="btn-secondary" (click)="startBulkAction('garantia')">
-          <span class="mi">shield</span> Enviar Garantía
-        </button>
-      }
+      <button type="button" class="btn-primary" (click)="openCreate()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Nueva Bodega
+      </button>
     </div>
   </header>
 
   <div class="panel toolbar-panel">
     <form [formGroup]="filterForm" class="toolbar">
-      <input class="cf-input filter-input" formControlName="serie" placeholder="Serie…" />
-      <input class="cf-input filter-input" formControlName="inventario" placeholder="COD INVENTARIO…" />
-      <input class="cf-input filter-input" formControlName="modelo" placeholder="Modelo…" />
-      <input class="cf-input filter-input" formControlName="caja" placeholder="Caja…" />
-      <select class="cf-input filter-input" formControlName="inyectado">
-        <option value="">Inyectado: Todos</option>
-        <option value="Si">Sí</option>
-        <option value="No">No</option>
+      <label class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" formControlName="q" placeholder="Buscar código, nombre, ciudad…" autocomplete="off" />
+      </label>
+      <select class="cf-input filter-input" formControlName="pais">
+        <option value="">Todos los países</option>
+        @for (p of paises; track p) {
+          <option [value]="p">{{ p }}</option>
+        }
+      </select>
+      <select class="cf-input filter-input" formControlName="zona">
+        <option value="">Todas las zonas</option>
+        @for (z of zonasOpciones; track z) {
+          <option [value]="z">{{ z }}</option>
+        }
+      </select>
+      <select class="cf-input filter-input" formControlName="status">
+        <option value="">Todos los estados</option>
+        <option value="active">Activo</option>
+        <option value="inactive">Inactivo</option>
       </select>
       <button type="button" [class]="hasFilters ? 'btn-primary' : 'btn-secondary'" (click)="clearFilters()">
         <span class="mi">filter_alt_off</span> Limpiar
@@ -44,64 +46,53 @@
       <table class="cf-table">
         <thead>
           <tr>
-            <th style="width:40px">
-              <input type="checkbox" [checked]="allSelected" (change)="toggleAll()" />
-            </th>
-            <th>COD INVENTARIO</th>
-            <th>Marca</th>
-            <th>Modelo</th>
-            <th>N° Serie</th>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>País</th>
+            <th>Ciudad</th>
             <th>Zona</th>
-            <th>Caja</th>
-            <th>Inyectado</th>
-            <th>Fecha</th>
+            <th>Dirección</th>
+            <th>Estado</th>
             <th style="text-align:right;width:56px">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @if (filtered.length === 0) {
-            <tr><td colspan="10" class="admin-empty"><span class="mi">inventory</span><span>Sin terminales en bodega</span></td></tr>
-          }
-          @for (t of filtered; track t.id) {
-            <tr [class.row-selected]="selectedIds.has(t.id)">
-              <td><input type="checkbox" [checked]="selectedIds.has(t.id)" (change)="toggleSelect(t.id)" /></td>
-              <td><app-copyable-code [value]="t.inventario" label="inventario" /></td>
-              <td>{{ t.marca ?? '—' }}</td>
-              <td>{{ t.modelo ?? '—' }}</td>
-              <td><app-copyable-code [value]="t.serie" label="serie" /></td>
-              <td>{{ t.zona ?? '—' }}</td>
-              <td>{{ t.caja ?? '—' }}</td>
-              <td>
-                <span class="cf-badge" [ngClass]="t.inyectado === 'Si' ? 'cf-badge-ok' : 'cf-badge-off'">
-                  <span class="dot"></span>{{ t.inyectado ?? '—' }}
-                </span>
+            <tr>
+              <td colspan="8" class="admin-empty">
+                <span class="mi">warehouse</span>
+                <span>Sin bodegas registradas</span>
               </td>
-              <td>{{ t.fecha ?? '—' }}</td>
+            </tr>
+          }
+          @for (w of filtered; track w.id) {
+            <tr>
+              <td><app-copyable-code [value]="w.codigo" label="código bodega" /></td>
+              <td>{{ w.nombre }}</td>
+              <td>{{ w.pais }}</td>
+              <td>{{ w.ciudad }}</td>
+              <td>{{ w.zona }}</td>
+              <td class="td-truncate" [title]="w.direccion ?? ''">{{ w.direccion ?? '—' }}</td>
+              <td>
+                <app-status-switch [value]="w.status" [options]="statusOptions" [readonly]="true" />
+              </td>
               <td style="text-align:right">
                 <div class="row-actions" style="justify-content:flex-end">
-                  <div class="cf-menu" [class.open]="openMenuId === 'row-' + t.id">
-                    <button type="button" class="cf-icon-btn" aria-label="Acciones" (click)="toggleMenu('row-' + t.id, $event)">
+                  <div class="cf-menu" [class.open]="openMenuId === 'wh-' + w.id">
+                    <button
+                      type="button"
+                      class="cf-icon-btn"
+                      aria-label="Acciones"
+                      (click)="toggleMenu('wh-' + w.id, $event)">
                       <span class="mi">more_vert</span>
                     </button>
                     <div class="cf-menu-panel">
-                      <button
-                        type="button"
-                        class="cf-menu-item"
-                        [disabled]="!canSendToInyeccion(t)"
-                        [title]="canSendToInyeccion(t) ? '' : 'Este POS ya pasó por inyección'"
-                        (click)="canSendToInyeccion(t) && startRowAction('inyeccion', t, $event)">
-                        <span class="mi">vaccines</span> Enviar a inyección
+                      <button type="button" class="cf-menu-item" (click)="openEdit(w, $event)">
+                        <span class="mi">edit</span> Editar
                       </button>
-                      @if (canSendToReparacion(t)) {
-                        <button type="button" class="cf-menu-item" (click)="startRowAction('reparacion', t, $event)">
-                          <span class="mi">build</span> Enviar a reparación
-                        </button>
-                      }
-                      @if (canSendToGarantia(t)) {
-                        <button type="button" class="cf-menu-item" (click)="startRowAction('garantia', t, $event)">
-                          <span class="mi">shield</span> Enviar a garantía
-                        </button>
-                      }
+                      <button type="button" class="cf-menu-item danger" (click)="askDelete(w, $event)">
+                        <span class="mi">delete_outline</span> Eliminar
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -113,78 +104,87 @@
     </div>
   </div>
 
-  <!-- Confirm dialog: inyeccion / reparacion / garantia -->
-  @if (actionType === 'inyeccion' || actionType === 'reparacion' || actionType === 'garantia') {
-    <div class="dialog-backdrop" (click)="cancelAction()">
-      <div class="dialog" (click)="$event.stopPropagation()">
+  @if (showForm) {
+    <div class="dialog-backdrop" (click)="closeForm()">
+      <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
         <div class="dialog-head">
-          <h2>{{ actionTitle() }}</h2>
-          <button class="icon-btn" (click)="cancelAction()"><span class="mi">close</span></button>
+          <h2>{{ editId === null ? 'Nueva Bodega' : 'Editar Bodega' }}</h2>
+          <button type="button" class="icon-btn" (click)="closeForm()"><span class="mi">close</span></button>
         </div>
-        <div class="dialog-body">
-          <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
-            Se aplicará la acción a <strong>{{ actionIds.length }}</strong> terminal(es).
-          </p>
-          @if (needsMotivo) {
-            <label class="cf-label">Motivo *</label>
-            <select class="cf-input" [(ngModel)]="actionMotivo" style="margin-bottom:12px">
-              <option value="">Seleccione un motivo…</option>
-              @for (m of motivosList; track m) {
-                <option [value]="m">{{ m }}</option>
-              }
-            </select>
-            <label class="cf-label">{{ actionMotivo === 'Otro' ? 'Detalle *' : 'Comentario (opcional)' }}</label>
-            <textarea class="cf-input" rows="3" [(ngModel)]="actionComment"
-              [placeholder]="actionMotivo === 'Otro' ? 'Describa el motivo…' : 'Detalle adicional…'"></textarea>
-          } @else {
-            <label class="cf-label">Comentario (opcional)</label>
-            <textarea class="cf-input" rows="3" [(ngModel)]="actionComment" placeholder="Motivo…"></textarea>
+        <form [formGroup]="formData" class="dialog-body" (ngSubmit)="saveForm()">
+          <div class="asset-form-grid">
+            <div class="asset-field">
+              <label class="cf-label">Código BOD</label>
+              <input class="cf-input" formControlName="codigo" placeholder="BOD-001" autocomplete="off" />
+            </div>
+            <div class="asset-field asset-field--span-2">
+              <label class="cf-label">Nombre *</label>
+              <input class="cf-input" formControlName="nombre" placeholder="Bodega Central…" autocomplete="off" />
+            </div>
+
+            <div class="asset-field">
+              <label class="cf-label">País *</label>
+              <select class="cf-input" formControlName="pais">
+                @for (p of paises; track p) {
+                  <option [value]="p">{{ p }}</option>
+                }
+              </select>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Ciudad *</label>
+              <select class="cf-input" formControlName="ciudad">
+                <option value="">—</option>
+                @for (c of ciudades; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Zona *</label>
+              <select class="cf-input" formControlName="zona">
+                <option value="">—</option>
+                @for (z of zonasDefault; track z) {
+                  <option [value]="z">{{ z }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="asset-field asset-field--span-2">
+              <label class="cf-label">Dirección</label>
+              <input class="cf-input" formControlName="direccion" placeholder="Calle, colonia…" autocomplete="street-address" />
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Estado *</label>
+              <app-status-switch formControlName="status" [options]="statusOptions" ariaLabel="Estado de bodega" />
+            </div>
+          </div>
+          @if (formError) {
+            <p class="form-error" style="margin-top:12px">{{ formError }}</p>
           }
-          @if (actionError) {
-            <p class="form-error" style="margin-top:10px">{{ actionError }}</p>
-          }
-        </div>
-        <div class="dialog-foot">
-          <button class="btn-secondary" (click)="cancelAction()">Cancelar</button>
-          <button class="btn-primary" (click)="applyAction()">Confirmar</button>
-        </div>
+          <div class="dialog-foot asset-dialog-foot">
+            <button type="button" class="btn-secondary" (click)="closeForm()">Cancelar</button>
+            <button type="submit" class="btn-primary">{{ editId === null ? 'Crear' : 'Guardar' }}</button>
+          </div>
+        </form>
       </div>
     </div>
   }
 
-  @if (actionType === 'asignar') {
-    <div class="dialog-backdrop" (click)="cancelAction()">
+  @if (deleteTarget) {
+    <div class="dialog-backdrop" (click)="cancelDelete()">
       <div class="dialog" (click)="$event.stopPropagation()">
         <div class="dialog-head">
-          <h2>Asignar POS</h2>
-          <button class="icon-btn" (click)="cancelAction()"><span class="mi">close</span></button>
+          <h2>Eliminar bodega</h2>
+          <button type="button" class="icon-btn" (click)="cancelDelete()"><span class="mi">close</span></button>
         </div>
         <div class="dialog-body">
-          <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
-            Asignando <strong>{{ actionIds.length }}</strong> terminal(es).
+          <p style="color:var(--ink-2); font-size:13px">
+            ¿Eliminar <strong>{{ deleteTarget.codigo }}</strong> — {{ deleteTarget.nombre }}?
           </p>
-          <div class="grid-2">
-            <div>
-              <label class="cf-label">Tipo de asignación</label>
-              <select class="cf-input" [(ngModel)]="assignRole">
-                <option value="supervisor">Supervisor</option>
-                <option value="tecnico">Técnico</option>
-                <option value="ejecutivo">Ejecutivo</option>
-              </select>
-            </div>
-            <div>
-              <label class="cf-label">Usuario</label>
-              <input class="cf-input" [(ngModel)]="assignTo" placeholder="username…" />
-            </div>
-          </div>
-          <div style="margin-top:12px">
-            <label class="cf-label">Comentario (opcional)</label>
-            <textarea class="cf-input" rows="2" [(ngModel)]="actionComment" placeholder="Motivo…"></textarea>
-          </div>
         </div>
         <div class="dialog-foot">
-          <button class="btn-secondary" (click)="cancelAction()">Cancelar</button>
-          <button class="btn-primary" (click)="applyAction()">Asignar</button>
+          <button type="button" class="btn-secondary" (click)="cancelDelete()">Cancelar</button>
+          <button type="button" class="btn-primary" (click)="confirmDelete()">Eliminar</button>
         </div>
       </div>
     </div>

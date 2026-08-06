@@ -61,7 +61,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'Vista General', icon: 'dashboard', route: '/pmt/dashboard' },
         { label: 'Inventario', icon: 'inventory_2', route: '/pmt/inventory' },
         { label: 'Recepción', icon: 'receiving', route: '/pos-admin/receiving', hidden: true },
-        { label: 'Bodega', icon: 'inventory', route: '/pmt/bodega' },
+        { label: 'Bodegas', icon: 'warehouse', route: '/pmt/bodega' },
         { label: 'Inyección', icon: 'vaccines', route: '/pmt/pos-inyeccion' },
         { label: 'Asignados', icon: 'manage_accounts', route: '/pmt/asignados' },
         { label: 'Reparación', icon: 'build', route: '/pmt/reparacion' },
@@ -154,7 +154,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     // PMT Routes
     if (path.startsWith('/pmt/dashboard')) return { title: 'Vista General', icon: 'dashboard' };
     if (path.startsWith('/pmt/inventory')) return { title: 'Inventario', icon: 'inventory_2' };
-    if (path.startsWith('/pmt/bodega')) return { title: 'Bodega', icon: 'inventory' };
+    if (path.startsWith('/pmt/bodega')) return { title: 'Bodegas', icon: 'warehouse' };
     if (path.startsWith('/pmt/pos-inyeccion')) return { title: 'POS Inyección', icon: 'vaccines' };
     if (path.startsWith('/pmt/asignados')) return { title: 'Asignados', icon: 'manage_accounts' };
     if (path.startsWith('/pmt/reparacion')) return { title: 'Reparación', icon: 'build' };
