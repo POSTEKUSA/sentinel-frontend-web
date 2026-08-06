@@ -49,58 +49,20 @@
       </div>
     </div>
     <div class="panel">
-      @if (filteredCatalog.length === 0) {
-        <app-empty-state navIcon="catalog" title="Sin registros" subtitle="No hay marcas/modelos que coincidan con la búsqueda."></app-empty-state>
-      } @else {
-        <div class="admin-table-wrap">
-          <table class="cf-table">
-            <thead>
-              <tr>
-                <th>Marca</th>
-                <th>Modelo</th>
-                <th>Tipo de POS</th>
-                <th>Estado</th>
-                <th>Creado</th>
-                <th class="th-actions">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of filteredCatalog; track row.id) {
-                <tr>
-                  <td class="td-name">{{ row.brand }}</td>
-                  <td>{{ row.model }}</td>
-                  <td>{{ row.posType }}</td>
-                  <td>
-                    <app-status-tag [value]="row.status" [options]="catalogStatusOptions" />
-                  </td>
-                  <td>
-                    <div>{{ row.createdAt | date:'short' }}</div>
-                    <div class="td-sub">{{ row.createdBy }}</div>
-                  </td>
-                  <td class="td-actions">
-                    <div class="row-actions">
-                      <button type="button" class="btn-primary btn-sm" (click)="openBrandModelDialog(row)">
-                        <span class="mi">edit</span>
-                        Editar
-                      </button>
-                      <div class="cf-menu" [class.open]="openMenuId === 'brand-' + row.id">
-                        <button type="button" class="cf-icon-btn" aria-label="Más acciones" (click)="toggleMenu('brand-' + row.id, $event)">
-                          <span class="mi">more_vert</span>
-                        </button>
-                        <div class="cf-menu-panel">
-                          <button type="button" class="cf-menu-item danger" (click)="deleteBrandModel(row); closeMenus()">
-                            <span class="mi">delete_outline</span> Eliminar
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
+      <app-data-grid
+        [columns]="brandColumns"
+        [rows]="brandResult.items"
+        [total]="brandResult.total"
+        [page]="brandQuery.page"
+        [pageSize]="brandQuery.pageSize"
+        [sort]="brandQuery.sort ?? null"
+        [columnFilters]="brandQuery.columnFilters ?? {}"
+        [actions]="brandActions"
+        emptyNavIcon="catalog"
+        emptyTitle="Sin registros"
+        emptySubtitle="No hay marcas/modelos que coincidan con la búsqueda."
+        (queryChange)="onBrandQueryChange($event)"
+        (action)="onBrandAction($event)" />
     </div>
   }
 
