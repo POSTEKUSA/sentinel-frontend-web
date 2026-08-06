@@ -9,6 +9,11 @@ import {
   StatusOption,
 } from '../../../shared/status-switch/status-switch.component';
 import {
+  StatusTagComponent,
+  STATUS_TAG_ACTIVE_INACTIVE,
+  StatusTagOption,
+} from '../../../shared/status-tag/status-tag.component';
+import {
   Warehouse,
   WarehouseStatus,
 } from '../../../core/models/pmt/warehouse.model';
@@ -17,7 +22,7 @@ import { CIUDADES_POR_PAIS, PAISES, ZONAS_DEFAULT } from '../../../core/constant
 @Component({
   selector: 'app-pmt-bodega',
   standalone: true,
-  imports: [CopyableCodeComponent, StatusSwitchComponent, CommonModule, ReactiveFormsModule],
+  imports: [CopyableCodeComponent, StatusSwitchComponent, StatusTagComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './pmt-bodega.component.html',
   styleUrl: './pmt-bodega.component.css',
 })
@@ -33,6 +38,7 @@ export class PmtBodegaComponent implements OnInit {
   readonly paises = PAISES;
   readonly zonasDefault = ZONAS_DEFAULT;
   readonly statusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
+  readonly statusTagOptions: StatusTagOption[] = STATUS_TAG_ACTIVE_INACTIVE;
 
   filterForm = this.fb.group({
     q: [''],

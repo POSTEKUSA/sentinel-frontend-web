@@ -10,22 +10,22 @@ import { WarehouseService } from '../../../core/services/pmt/warehouse.service';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { InstallPosDialogComponent } from './dialogs/install-pos-dialog.component';
 import {
-  StatusSwitchComponent,
-  STATUS_ACTIVE_INACTIVE,
-  StatusOption,
-} from '../../../shared/status-switch/status-switch.component';
+  StatusTagComponent,
+  STATUS_TAG_ACTIVE_INACTIVE,
+  StatusTagOption,
+} from '../../../shared/status-tag/status-tag.component';
 
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
 
 @Component({
   selector: 'app-merchant-detail',
   standalone: true,
-  imports: [CopyableCodeComponent, StatusSwitchComponent, CommonModule, RouterModule, EmptyStateComponent],
+  imports: [CopyableCodeComponent, StatusTagComponent, CommonModule, RouterModule, EmptyStateComponent],
   templateUrl: './merchant-detail.component.html',
   styleUrl: './merchant-detail.component.css',
 })
 export class MerchantDetailComponent implements OnInit {
-  readonly statusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
+  readonly statusOptions: StatusTagOption[] = STATUS_TAG_ACTIVE_INACTIVE;
   posStatusLabels: Record<string, string> = POS_UNIT_STATUS_LABELS;
 
   merchant?: Merchant;

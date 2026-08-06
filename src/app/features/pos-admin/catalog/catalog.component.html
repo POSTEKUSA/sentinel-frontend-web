@@ -71,7 +71,7 @@
                   <td>{{ row.model }}</td>
                   <td>{{ row.posType }}</td>
                   <td>
-                    <app-status-switch [value]="row.status" [options]="catalogStatusOptions" [readonly]="true" />
+                    <app-status-tag [value]="row.status" [options]="catalogStatusOptions" />
                   </td>
                   <td>
                     <div>{{ row.createdAt | date:'short' }}</div>
@@ -150,7 +150,7 @@
                     <div class="td-sub">{{ row.suppliedModels.join(', ') }}</div>
                   </td>
                   <td>
-                    <app-status-switch [value]="row.status" [options]="supplierStatusOptions" [readonly]="true" />
+                    <app-status-tag [value]="row.status" [options]="supplierStatusOptions" />
                   </td>
                   <td class="td-actions">
                     <div class="row-actions">
@@ -221,7 +221,7 @@
                   <td>{{ row.unitOfMeasure }}</td>
                   <td class="num">{{ row.minStock }}</td>
                   <td>
-                    <app-status-switch [value]="row.status" [options]="catalogStatusOptions" [readonly]="true" />
+                    <app-status-tag [value]="row.status" [options]="catalogStatusOptions" />
                   </td>
                   <td class="td-actions">
                     <div class="row-actions">

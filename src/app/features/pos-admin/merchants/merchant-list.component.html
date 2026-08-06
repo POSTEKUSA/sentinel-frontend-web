@@ -115,7 +115,7 @@
                   <td class="num">{{ activePosCount(m.id) }}</td>
                   <td>{{ m.ciudad || m.municipality }}{{ m.zona ? ' · ' + m.zona : '' }}{{ m.pais ? ', ' + m.pais : (', ' + m.department) }}</td>
                   <td>
-                    <app-status-switch [value]="m.status" [options]="statusOptions" [readonly]="true" />
+                    <app-status-tag [value]="m.status" [options]="statusOptions" />
                   </td>
                   <td>{{ m.createdAt | date: 'mediumDate' }}</td>
                   <td>

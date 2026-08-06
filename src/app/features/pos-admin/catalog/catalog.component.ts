@@ -17,22 +17,22 @@ import { BrandModelDialogComponent } from './dialogs/brand-model-dialog.componen
 import { SupplierDialogComponent } from './dialogs/supplier-dialog.component';
 import { AccessoryDialogComponent } from './dialogs/accessory-dialog.component';
 import {
-  StatusSwitchComponent,
-  STATUS_ACTIVE_INACTIVE,
-  STATUS_CATALOG,
-  StatusOption,
-} from '../../../shared/status-switch/status-switch.component';
+  StatusTagComponent,
+  STATUS_TAG_ACTIVE_INACTIVE,
+  STATUS_TAG_CATALOG,
+  StatusTagOption,
+} from '../../../shared/status-tag/status-tag.component';
 
 @Component({
   selector: 'app-pos-catalog',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, StatusSwitchComponent],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, StatusTagComponent],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.css',
 })
 export class CatalogComponent implements OnInit {
-  readonly catalogStatusOptions: StatusOption[] = STATUS_CATALOG;
-  readonly supplierStatusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
+  readonly catalogStatusOptions: StatusTagOption[] = STATUS_TAG_CATALOG;
+  readonly supplierStatusOptions: StatusTagOption[] = STATUS_TAG_ACTIVE_INACTIVE;
   categoryLabels: Record<string, string> = ACCESSORY_CATEGORY_LABELS;
   activeTab: 'brands' | 'suppliers' | 'accessories' = 'brands';
   openMenuId: string | null = null;

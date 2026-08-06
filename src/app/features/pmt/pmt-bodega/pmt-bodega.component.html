@@ -74,7 +74,7 @@
               <td>{{ w.zona }}</td>
               <td class="td-truncate" [title]="w.direccion ?? ''">{{ w.direccion ?? '—' }}</td>
               <td>
-                <app-status-switch [value]="w.status" [options]="statusOptions" [readonly]="true" />
+                <app-status-tag [value]="w.status" [options]="statusTagOptions" />
               </td>
               <td style="text-align:right">
                 <div class="row-actions" style="justify-content:flex-end">

@@ -9,10 +9,10 @@ import { MerchantService } from '../../../core/services/pos-admin/merchant.servi
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { MerchantDialogComponent } from './dialogs/merchant-dialog.component';
 import {
-  StatusSwitchComponent,
-  STATUS_ACTIVE_INACTIVE,
-  StatusOption,
-} from '../../../shared/status-switch/status-switch.component';
+  StatusTagComponent,
+  STATUS_TAG_ACTIVE_INACTIVE,
+  StatusTagOption,
+} from '../../../shared/status-tag/status-tag.component';
 
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
 
@@ -21,7 +21,7 @@ import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-co
   standalone: true,
   imports: [
     CopyableCodeComponent,
-    StatusSwitchComponent,
+    StatusTagComponent,
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
@@ -31,7 +31,7 @@ import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-co
   styleUrl: './merchant-list.component.css',
 })
 export class MerchantListComponent implements OnInit {
-  readonly statusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
+  readonly statusOptions: StatusTagOption[] = STATUS_TAG_ACTIVE_INACTIVE;
   activeTab: 'comercios' | 'mcc' = 'comercios';
 
   all: Merchant[] = [];
