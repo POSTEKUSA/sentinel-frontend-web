@@ -35,10 +35,10 @@
           }
           @for (t of filtered; track t.id) {
             <tr>
-              <td><span class="code">{{ t.inventario ?? '—' }}</span></td>
+              <td><app-copyable-code [value]="t.inventario" label="inventario" /></td>
               <td>{{ t.marca ?? '—' }}</td>
               <td>{{ t.modelo ?? '—' }}</td>
-              <td><span class="code">{{ t.serie }}</span></td>
+              <td><app-copyable-code [value]="t.serie" label="serie" /></td>
               <td>{{ t.zona ?? '—' }}</td>
               <td>{{ t.updatedAt | date:'dd/MM/yyyy' }}</td>
               <td style="text-align:right">
@@ -57,7 +57,7 @@
     <div class="dialog-backdrop" (click)="showResolve = false">
       <div class="dialog" (click)="$event.stopPropagation()">
         <div class="dialog-head">
-          <h2>Resolver Reparación — <span class="code">{{ selected.serie }}</span></h2>
+          <h2>Resolver Reparación — <app-copyable-code [value]="selected.serie" label="serie" /></h2>
           <button class="icon-btn" (click)="showResolve = false"><span class="mi">close</span></button>
         </div>
         <div class="dialog-body">

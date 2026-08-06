@@ -8,10 +8,12 @@ import { PosInventoryService } from '../../../core/services/pos-admin/pos-invent
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { CustodyAssignDialogComponent } from './dialogs/custody-assign-dialog.component';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-custody-tab',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, EmptyStateComponent],
   templateUrl: './custody-tab.component.html',
   styleUrl: './custody-tab.component.css',
 })

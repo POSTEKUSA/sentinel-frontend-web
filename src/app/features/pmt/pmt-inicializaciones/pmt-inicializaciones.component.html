@@ -42,7 +42,7 @@
           @for (i of filtered; track i.id) {
             <tr>
               <td>{{ i.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td><span class="code">{{ i.serie }}</span></td>
+              <td><app-copyable-code [value]="i.serie" label="serie" /></td>
               <td>{{ i.terminal ?? '—' }}</td>
               <td>{{ i.version ?? '—' }}</td>
               <td>{{ i.apn ?? '—' }}</td>

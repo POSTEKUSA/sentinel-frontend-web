@@ -52,7 +52,7 @@
               <td class="td-sub">{{ s.id }}</td>
               <td><span class="cf-badge cf-badge-muted"><span class="dot"></span>{{ s.tipo | titlecase }}</span></td>
               <td class="td-truncate" [title]="s.descripcion">{{ s.descripcion }}</td>
-              <td><span class="code">{{ s.serie ?? '—' }}</span></td>
+              <td><app-copyable-code [value]="s.serie" label="serie" /></td>
               <td>
                 <span class="cf-badge" [ngClass]="estadoBadge[s.estado]">
                   <span class="dot"></span>{{ estadoLabels[s.estado] }}
@@ -81,7 +81,7 @@
         <div class="dialog-body">
           <div class="grid-2" style="margin-bottom:12px">
             <div><span class="cf-label">Tipo:</span> <span>{{ detail.tipo | titlecase }}</span></div>
-            <div><span class="cf-label">Serie:</span> <span class="code">{{ detail.serie ?? '—' }}</span></div>
+            <div><span class="cf-label">Serie:</span> <app-copyable-code [value]="detail.serie" label="serie" /></div>
             <div><span class="cf-label">Creado por:</span> <span>{{ detail.createdBy ?? '—' }}</span></div>
             <div><span class="cf-label">Creado:</span> <span>{{ detail.createdAt | date:'dd/MM/yyyy HH:mm' }}</span></div>
           </div>

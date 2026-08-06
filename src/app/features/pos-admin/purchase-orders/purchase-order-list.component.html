@@ -61,7 +61,7 @@
               <tr>
                 <td>
                   <a class="breakdown-link" [routerLink]="['/pos-admin/purchase-orders', po.id]">
-                    <span class="code">{{ po.orderNumber }}</span>
+                    <app-copyable-code [value]="po.orderNumber" label="código" />
                   </a>
                 </td>
                 <td class="td-name">{{ po.supplierName }}</td>

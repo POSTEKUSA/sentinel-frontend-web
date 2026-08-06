@@ -48,7 +48,7 @@
           }
           @for (s of filtered; track s.id) {
             <tr>
-              <td><span class="code">{{ s.iccid }}</span></td>
+              <td><app-copyable-code [value]="s.iccid" label="ICCID" /></td>
               <td>{{ s.numero ?? '—' }}</td>
               <td>{{ s.compania }}</td>
               <td>

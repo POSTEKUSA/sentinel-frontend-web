@@ -51,10 +51,10 @@
           }
           @for (t of filtered; track t.id) {
             <tr>
-              <td><span class="code">{{ t.inventario ?? '—' }}</span></td>
+              <td><app-copyable-code [value]="t.inventario" label="inventario" /></td>
               <td>{{ t.marca ?? '—' }}</td>
               <td>{{ t.modelo ?? '—' }}</td>
-              <td><span class="code">{{ t.serie }}</span></td>
+              <td><app-copyable-code [value]="t.serie" label="serie" /></td>
               <td>{{ t.zona ?? '—' }}</td>
               <td class="td-truncate" [title]="t.nombre ?? ''">{{ t.nombre ?? '—' }}</td>
               <td>{{ t.ciudad ?? '—' }}</td>
@@ -83,7 +83,7 @@
     <div class="dialog-backdrop" (click)="historyTerminal = null">
       <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
         <div class="dialog-head">
-          <h2>Historial de Asignaciones — <span class="code">{{ historyTerminal.serie }}</span></h2>
+          <h2>Historial de Asignaciones — <app-copyable-code [value]="historyTerminal.serie" label="serie" /></h2>
           <button type="button" class="icon-btn" (click)="historyTerminal = null"><span class="mi">close</span></button>
         </div>
         <div class="dialog-body">

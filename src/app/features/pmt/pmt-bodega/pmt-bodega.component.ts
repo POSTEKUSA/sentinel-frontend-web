@@ -2,6 +2,8 @@ import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 import {
   Terminal, TerminalEstado,
   TERMINAL_ESTADO_LABELS, TERMINAL_ESTADO_BADGE
@@ -15,7 +17,7 @@ type BodegaAction = 'inyeccion' | 'asignar' | 'reparacion' | 'garantia';
 @Component({
   selector: 'app-pmt-bodega',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './pmt-bodega.component.html',
   styleUrl: './pmt-bodega.component.css',
 })

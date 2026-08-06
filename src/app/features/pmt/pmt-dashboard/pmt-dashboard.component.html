@@ -188,7 +188,7 @@
                 <div class="activity-body">
                   <p class="activity-text">
                     <strong>{{ ev.createdBy ?? 'Sistema' }}</strong> cambió
-                    <span class="code">{{ ev.serie }}</span>
+                    <app-copyable-code [value]="ev.serie" label="serie" />
                   </p>
                   @if (ev.previousStatus && ev.newStatus) {
                     <p class="activity-sub">

@@ -4,10 +4,12 @@ import { ReactiveFormsModule, FormBuilder, FormsModule } from '@angular/forms';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
 import { Terminal, TERMINAL_ESTADO_LABELS } from '../../../core/models/pmt/terminal.model';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-pmt-garantia',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './pmt-garantia.component.html',
   styleUrl: './pmt-garantia.component.css',
 })

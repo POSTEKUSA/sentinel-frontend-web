@@ -62,7 +62,7 @@
               <tr>
                 <td>{{ t.brand }}</td>
                 <td>{{ t.model }}</td>
-                <td class="td-name"><span class="code">{{ t.serial }}</span></td>
+                <td class="td-name"><app-copyable-code [value]="t.serial" label="serie" /></td>
                 <td><app-status-badge [status]="t.status"></app-status-badge></td>
                 <td>{{ formatDate(t.lastConnectionAt) }}</td>
                 <td class="td-actions">

@@ -92,7 +92,7 @@
                   <td>{{ r.row }}</td>
                   <td>{{ r.brand }}</td>
                   <td>{{ r.model }}</td>
-                  <td><span class="code">{{ r.serialNumber }}</span></td>
+                  <td><app-copyable-code [value]="r.serialNumber" label="serie" /></td>
                   <td>
                     @if (r.status === 'valid') {
                       <span class="cf-badge cf-badge-ok"><span class="dot"></span>Válido</span>

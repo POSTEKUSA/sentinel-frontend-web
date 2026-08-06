@@ -9,10 +9,12 @@ import { MerchantService } from '../../../core/services/pos-admin/merchant.servi
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { MerchantDialogComponent } from './dialogs/merchant-dialog.component';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-merchant-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, EmptyStateComponent],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, RouterModule, EmptyStateComponent],
   templateUrl: './merchant-list.component.html',
   styleUrl: './merchant-list.component.css',
 })

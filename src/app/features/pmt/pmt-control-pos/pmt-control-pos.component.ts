@@ -4,10 +4,12 @@ import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { PmtTransaccionService } from '../../../core/services/pmt/pmt-transaccion.service';
 import { Transaccion } from '../../../core/models/pmt/transaccion.model';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-pmt-control-pos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './pmt-control-pos.component.html',
   styleUrl: './pmt-control-pos.component.css',
 })

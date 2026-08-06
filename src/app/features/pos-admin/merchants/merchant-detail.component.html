@@ -9,7 +9,7 @@
       <div>
         <p class="entity-name">{{ merchant.tradeName }}</p>
         <p class="count">
-          Código <span class="code">{{ merchant.affiliateCode }}</span>
+          Código <app-copyable-code [value]="merchant.affiliateCode" label="código" />
           · MCC {{ merchant.mcc }} ({{ merchant.mccDescription }})
         </p>
       </div>
@@ -75,7 +75,7 @@
                   <tr>
                     <td class="td-name">{{ u.brand }}</td>
                     <td>{{ u.model }}</td>
-                    <td><span class="code">{{ u.serialNumber }}</span></td>
+                    <td><app-copyable-code [value]="u.serialNumber" label="serie" /></td>
                     <td>
                       <span class="cf-badge cf-badge-ok"><span class="dot"></span>{{ posStatusLabels[u.status] }}</span>
                     </td>
@@ -109,7 +109,7 @@
                     <td>{{ i.installedAt | date: 'medium' }}</td>
                     <td>
                       <div class="td-sub">{{ i.brand }} {{ i.model }}</div>
-                      <div class="code">{{ i.serialNumber }}</div>
+                      <app-copyable-code [value]="i.serialNumber" label="serie" />
                     </td>
                     <td>{{ i.responsibleName }}</td>
                     <td>{{ i.initialStatus }}</td>

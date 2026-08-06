@@ -4,6 +4,8 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
 import { Terminal, TerminalEstado, TERMINAL_ESTADO_LABELS, AssignedPosHistory } from '../../../core/models/pmt/terminal.model';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 type AsignadosTab = 'supervisor' | 'tecnico' | 'ejecutivo';
 
 const TAB_ESTADO: Record<AsignadosTab, TerminalEstado> = {
@@ -21,7 +23,7 @@ const ROLE_LABEL: Record<AssignedPosHistory['role'], string> = {
 @Component({
   selector: 'app-pmt-asignados',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './pmt-asignados.component.html',
   styleUrl: './pmt-asignados.component.css',
 })

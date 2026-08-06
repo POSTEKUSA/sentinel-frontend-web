@@ -35,10 +35,10 @@
           }
           @for (t of filtered; track t.id) {
             <tr>
-              <td><span class="code">{{ t.inventario ?? '—' }}</span></td>
+              <td><app-copyable-code [value]="t.inventario" label="inventario" /></td>
               <td>{{ t.marca ?? '—' }}</td>
               <td>{{ t.modelo ?? '—' }}</td>
-              <td><span class="code">{{ t.serie }}</span></td>
+              <td><app-copyable-code [value]="t.serie" label="serie" /></td>
               <td>{{ t.zona ?? '—' }}</td>
               <td>{{ t.updatedAt | date:'dd/MM/yyyy' }}</td>
               <td style="text-align:right">

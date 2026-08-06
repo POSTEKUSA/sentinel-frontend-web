@@ -5,10 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { PmtSimCardService } from '../../../core/services/pmt/pmt-sim-card.service';
 import { SimCard, SimCardEstado, SIM_CARD_ESTADO_LABELS, SIM_CARD_ESTADO_BADGE } from '../../../core/models/pmt/sim-card.model';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-pmt-sim-cards',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './pmt-sim-cards.component.html',
   styleUrl: './pmt-sim-cards.component.css',
 })

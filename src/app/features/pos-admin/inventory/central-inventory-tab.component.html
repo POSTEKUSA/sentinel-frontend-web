@@ -55,7 +55,7 @@
             <tr>
               <td class="td-name">{{ u.brand }}</td>
               <td>{{ u.model }}</td>
-              <td><span class="code">{{ u.serialNumber }}</span></td>
+              <td><app-copyable-code [value]="u.serialNumber" label="serie" /></td>
               <td>{{ u.posType }}</td>
               <td>
                 <span class="cf-badge" [ngClass]="statusBadgeClass(u.status)">

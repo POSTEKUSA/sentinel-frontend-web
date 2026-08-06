@@ -9,6 +9,8 @@ import { BulkReceiveResultRow, PosInventoryService } from '../../../core/service
 import { PurchaseOrderService } from '../../../core/services/pos-admin/purchase-order.service';
 import { CurrentUserService } from '../../../core/services/pos-admin/current-user.service';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 interface BulkRow {
   serialNumber: string;
   brand: string;
@@ -19,7 +21,7 @@ interface BulkRow {
 @Component({
   selector: 'app-receiving',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatSnackBarModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, RouterModule, MatSnackBarModule],
   templateUrl: './receiving.component.html',
   styleUrl: './receiving.component.css',
 })

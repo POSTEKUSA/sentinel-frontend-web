@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { PmtSolicitudService } from '../../../core/services/pmt/pmt-solicitud.service';
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 import {
   SolicitudSoporte, SolicitudSoporteEstado,
   SOLICITUD_SOPORTE_ESTADO_LABELS, SOLICITUD_SOPORTE_ESTADO_BADGE
@@ -11,7 +13,7 @@ import {
 @Component({
   selector: 'app-pmt-solicitudes-soporte',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './pmt-solicitudes-soporte.component.html',
   styleUrl: './pmt-solicitudes-soporte.component.css',
 })

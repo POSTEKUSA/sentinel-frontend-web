@@ -46,13 +46,13 @@
           @for (t of filtered; track t.id) {
             <tr>
               <td>{{ t.createdAt | date:'dd/MM/yy HH:mm' }}</td>
-              <td><span class="code">{{ t.serie ?? '—' }}</span></td>
+              <td><app-copyable-code [value]="t.serie" label="serie" /></td>
               <td>{{ t.terminal ?? '—' }}</td>
-              <td><span class="code">{{ t.mti ?? '—' }}</span></td>
+              <td><app-copyable-code [value]="t.mti" label="MTI" /></td>
               <td>{{ t.apn ?? '—' }}</td>
-              <td><span class="code">{{ t.aplicacion ?? '—' }}</span></td>
-              <td><span class="code">{{ t.emv ?? '—' }}</span></td>
-              <td><span class="code">{{ t.so ?? '—' }}</span></td>
+              <td><app-copyable-code [value]="t.aplicacion" label="aplicación" /></td>
+              <td><app-copyable-code [value]="t.emv" label="EMV" /></td>
+              <td><app-copyable-code [value]="t.so" label="SO" /></td>
               <td class="td-truncate" [title]="t.comercio ?? ''">{{ t.comercio ?? '—' }}</td>
               <td>
                 <span class="cf-badge" [ngClass]="respuestaBadge(t.respuesta)">

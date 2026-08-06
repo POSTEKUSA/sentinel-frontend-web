@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { PosLocationType, PosUnit, POS_LOCATION_LABELS } from '../../../core/models/pos-admin';
 import { PosInventoryService } from '../../../core/services/pos-admin/pos-inventory.service';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 const LOCATION_ICONS: Record<PosLocationType, string> = {
   central_warehouse: 'warehouse',
   regional_warehouse: 'store',
@@ -19,7 +21,7 @@ const LOCATION_ICONS: Record<PosLocationType, string> = {
 @Component({
   selector: 'app-by-location-tab',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CopyableCodeComponent, CommonModule],
   templateUrl: './by-location-tab.component.html',
   styleUrl: './by-location-tab.component.css',
 })

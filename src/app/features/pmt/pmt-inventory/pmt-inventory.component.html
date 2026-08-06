@@ -82,10 +82,10 @@
           }
           @for (t of paged; track t.id) {
             <tr>
-              <td><span class="code">{{ t.inventario ?? '—' }}</span></td>
+              <td><app-copyable-code [value]="t.inventario" label="inventario" /></td>
               <td>{{ t.marca ?? '—' }}</td>
               <td>{{ t.modelo ?? '—' }}</td>
-              <td><span class="code">{{ t.serie }}</span></td>
+              <td><app-copyable-code [value]="t.serie" label="serie" /></td>
               <td>
                 <span class="cf-badge" [ngClass]="estadoBadge[t.estado]">
                   <span class="dot"></span>{{ estadoLabels[t.estado] }}
@@ -142,7 +142,7 @@
           <div class="asset-form-grid">
             <div class="asset-field asset-field--span-2">
               <label class="cf-label">COD INVENTARIO</label>
-              <div class="asset-view-value"><span class="code">{{ viewTarget.inventario ?? '—' }}</span></div>
+              <div class="asset-view-value"><app-copyable-code [value]="viewTarget.inventario" label="inventario" /></div>
             </div>
             <div class="asset-field">
               <label class="cf-label">Fecha de ingreso</label>
@@ -165,7 +165,7 @@
             </div>
             <div class="asset-field">
               <label class="cf-label">N° Serie</label>
-              <div class="asset-view-value"><span class="code">{{ viewTarget.serie ?? '—' }}</span></div>
+              <div class="asset-view-value"><app-copyable-code [value]="viewTarget.serie" label="serie" /></div>
             </div>
 
             <div class="asset-field">
@@ -333,9 +333,9 @@
       <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
         <div class="dialog-head">
           <div class="history-head-meta">
-            <h2>Historial de <span class="code">{{ historyTerminal.inventario || historyTerminal.serie }}</span></h2>
+            <h2>Historial de <app-copyable-code [value]="historyTerminal.inventario || historyTerminal.serie" label="inventario" /></h2>
             <p class="history-sub">
-              Serie: <span class="code">{{ historyTerminal.serie }}</span>
+              Serie: <app-copyable-code [value]="historyTerminal.serie" label="serie" />
               @if (historyTerminal.marca || historyTerminal.modelo) {
                 <span class="history-sep">·</span>
                 {{ historyTerminal.marca }}{{ historyTerminal.marca && historyTerminal.modelo ? ' ' : '' }}{{ historyTerminal.modelo }}
@@ -449,7 +449,7 @@
         </div>
         <div class="dialog-body">
           <p style="color:var(--ink-2); font-size:13px; margin:0; line-height:1.5">
-            ¿Eliminar el terminal <span class="code">{{ deleteTarget.serie }}</span>?
+            ¿Eliminar el terminal <app-copyable-code [value]="deleteTarget.serie" label="serie" />?
             Esta acción no se puede deshacer.
           </p>
         </div>
@@ -471,7 +471,7 @@
         </div>
         <div class="dialog-body">
           <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
-            Terminal <span class="code">{{ workflowTarget.serie }}</span>
+            Terminal <app-copyable-code [value]="workflowTarget.serie" label="serie" />
             · estado actual: <strong>{{ estadoLabels[workflowTarget.estado] }}</strong>
           </p>
           @if (workflowNeedsMotivo) {

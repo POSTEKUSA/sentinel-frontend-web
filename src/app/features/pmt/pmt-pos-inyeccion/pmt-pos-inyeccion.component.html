@@ -47,10 +47,10 @@
           @for (t of filtered; track t.id) {
             <tr [class.row-selected]="selectedIds.has(t.id)">
               <td><input type="checkbox" [checked]="selectedIds.has(t.id)" (change)="toggleSelect(t.id)" /></td>
-              <td><span class="code">{{ t.inventario ?? '—' }}</span></td>
+              <td><app-copyable-code [value]="t.inventario" label="inventario" /></td>
               <td>{{ t.marca ?? '—' }}</td>
               <td>{{ t.modelo ?? '—' }}</td>
-              <td><span class="code">{{ t.serie }}</span></td>
+              <td><app-copyable-code [value]="t.serie" label="serie" /></td>
               <td>{{ t.zona ?? '—' }}</td>
               <td>{{ t.caja ?? '—' }}</td>
               <td>
@@ -103,7 +103,7 @@
         </div>
         <div class="dialog-body">
           <p class="upload-hint">
-            Inyecta el POS <strong class="code">{{ uploadTarget.serie }}</strong> con la configuración de un merchant,
+            Inyecta el POS <app-copyable-code [value]="uploadTarget.serie" label="serie" /> con la configuración de un merchant,
             uno a uno. Puedes elegir el merchant, descargar el JSON de ejemplo o subir un archivo.
           </p>
 

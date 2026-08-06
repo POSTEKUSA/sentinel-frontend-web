@@ -14,12 +14,14 @@ import { BatteryIndicatorComponent } from '../../shared/battery-indicator/batter
 import { EmptyStateComponent } from '../../shared/empty-state/empty-state.component';
 import { BusyLoaderComponent } from '../../shared/busy-loader/busy-loader.component';
 
+import { CopyableCodeComponent } from '../../shared/copyable-code/copyable-code.component';
+
 type StatusFilter = DeviceStatus | 'all';
 
 @Component({
   selector: 'app-device-list',
   standalone: true,
-  imports: [
+  imports: [CopyableCodeComponent, 
     CommonModule,
     ReactiveFormsModule,
     RouterModule,

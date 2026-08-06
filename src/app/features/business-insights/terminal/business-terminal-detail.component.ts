@@ -8,11 +8,12 @@ import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.com
 import { KpiCardComponent, KpiCardColor } from '../../../shared/kpi-card/kpi-card.component';
 import { LineChartComponent } from '../../../shared/charts/line-chart/line-chart.component';
 import { StatusBadgeComponent } from '../../../shared/status-badge/status-badge.component';
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
 
 @Component({
   selector: 'app-business-terminal-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, EmptyStateComponent, KpiCardComponent, LineChartComponent, StatusBadgeComponent],
+  imports: [CommonModule, RouterModule, EmptyStateComponent, KpiCardComponent, LineChartComponent, StatusBadgeComponent, CopyableCodeComponent],
   templateUrl: './business-terminal-detail.component.html',
   styleUrl: './business-terminal-detail.component.css',
 })

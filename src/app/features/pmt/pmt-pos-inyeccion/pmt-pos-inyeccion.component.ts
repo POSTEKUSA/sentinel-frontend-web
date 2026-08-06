@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 import {
   Terminal, QueryRecord,
   TERMINAL_ESTADO_LABELS, TERMINAL_ESTADO_BADGE,
@@ -10,7 +12,7 @@ import {
 @Component({
   selector: 'app-pmt-pos-inyeccion',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './pmt-pos-inyeccion.component.html',
   styleUrl: './pmt-pos-inyeccion.component.css',
 })

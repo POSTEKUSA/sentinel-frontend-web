@@ -5,10 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { PmtTransaccionService } from '../../../core/services/pmt/pmt-transaccion.service';
 import { PmtUser, PmtUserRole, PMT_USER_ROLE_LABELS } from '../../../core/models/pmt/pmt-user.model';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-pmt-users',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './pmt-users.component.html',
   styleUrl: './pmt-users.component.css',
 })

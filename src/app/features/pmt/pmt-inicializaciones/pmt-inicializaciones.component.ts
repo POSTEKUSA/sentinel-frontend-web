@@ -4,10 +4,12 @@ import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
 import { Initialization } from '../../../core/models/pmt/terminal.model';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-pmt-inicializaciones',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './pmt-inicializaciones.component.html',
   styleUrl: './pmt-inicializaciones.component.css',
 })

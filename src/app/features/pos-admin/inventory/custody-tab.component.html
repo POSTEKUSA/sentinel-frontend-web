@@ -50,7 +50,7 @@
               <td>{{ roleLabels[a.role] }}</td>
               <td>{{ a.brand }}</td>
               <td>{{ a.model }}</td>
-              <td><span class="code">{{ a.serialNumber }}</span></td>
+              <td><app-copyable-code [value]="a.serialNumber" label="serie" /></td>
               <td>
                 <div>{{ a.assignedAt | date:'mediumDate' }}</div>
                 @if (a.returnedAt) {

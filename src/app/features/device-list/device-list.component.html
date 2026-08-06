@@ -119,8 +119,8 @@
                       </div>
                     </div>
                   </td>
-                  <td><span class="code">{{ d.metadata.tenantId }}</span></td>
-                  <td><span class="code">{{ d.metadata.merchantId }}</span></td>
+                  <td><app-copyable-code [value]="d.metadata.tenantId" label="tenant" /></td>
+                  <td><app-copyable-code [value]="d.metadata.merchantId" label="merchant" /></td>
                   <td>
                     <app-battery-indicator
                       [level]="d.health.batteryLevel"

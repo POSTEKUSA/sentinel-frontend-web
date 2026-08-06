@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 import {
   Terminal, TerminalEstado,
   TERMINAL_ESTADO_LABELS, TERMINAL_ESTADO_BADGE
@@ -56,7 +58,7 @@ const WORKFLOW_STEPS: { statuses: TerminalEstado[]; label: string }[] = [
 @Component({
   selector: 'app-pmt-inventory',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule, RouterLink],
   templateUrl: './pmt-inventory.component.html',
   styleUrl: './pmt-inventory.component.css',
 })

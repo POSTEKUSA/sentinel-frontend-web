@@ -17,10 +17,12 @@ import { KpiCardComponent } from '../../../shared/kpi-card/kpi-card.component';
 import { LineChartComponent } from '../../../shared/charts/line-chart/line-chart.component';
 import { StatusBadgeComponent } from '../../../shared/status-badge/status-badge.component';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-business-branch-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, EmptyStateComponent, KpiCardComponent, LineChartComponent, StatusBadgeComponent],
+  imports: [CopyableCodeComponent, CommonModule, RouterModule, EmptyStateComponent, KpiCardComponent, LineChartComponent, StatusBadgeComponent],
   templateUrl: './business-branch-detail.component.html',
   styleUrl: './business-branch-detail.component.css',
 })

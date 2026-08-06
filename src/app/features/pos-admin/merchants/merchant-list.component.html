@@ -107,7 +107,7 @@
             <tbody>
               @for (m of filtered; track m.id) {
                 <tr>
-                  <td><span class="code">{{ m.affiliateCode }}</span></td>
+                  <td><app-copyable-code [value]="m.affiliateCode" label="código" /></td>
                   <td>
                     <div class="td-name">{{ m.tradeName }}</div>
                     <div class="td-sub">MCC {{ m.mcc }} · {{ m.mccDescription }}</div>

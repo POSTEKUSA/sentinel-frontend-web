@@ -6,7 +6,7 @@
   } @else {
     <header class="cf-head">
       <div>
-        <p class="entity-name">{{ terminal.serial }}</p>
+        <p class="entity-name"><app-copyable-code [value]="terminal.serial" label="serie" /></p>
         <p class="count">
           {{ terminal.brand }} {{ terminal.model }} · {{ mccLabels[terminal.mccCategory] }}
           @if (merchant) {
@@ -39,7 +39,7 @@
         </div>
         <div>
           <span class="info-label">N° Serie</span>
-          <span class="info-value">{{ terminal.serial }}</span>
+          <span class="info-value"><app-copyable-code [value]="terminal.serial" label="serie" /></span>
         </div>
         <div>
           <span class="info-label">Comercio</span>

@@ -9,10 +9,12 @@ import { PosInventoryService } from '../../../core/services/pos-admin/pos-invent
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { InstallPosDialogComponent } from './dialogs/install-pos-dialog.component';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-merchant-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, EmptyStateComponent],
+  imports: [CopyableCodeComponent, CommonModule, RouterModule, EmptyStateComponent],
   templateUrl: './merchant-detail.component.html',
   styleUrl: './merchant-detail.component.css',
 })

@@ -7,10 +7,12 @@ import { PurchaseOrder, PURCHASE_ORDER_STATUS_LABELS } from '../../../core/model
 import { PurchaseOrderService } from '../../../core/services/pos-admin/purchase-order.service';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-purchase-order-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, EmptyStateComponent],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, RouterModule, EmptyStateComponent],
   templateUrl: './purchase-order-list.component.html',
   styleUrl: './purchase-order-list.component.css',
 })

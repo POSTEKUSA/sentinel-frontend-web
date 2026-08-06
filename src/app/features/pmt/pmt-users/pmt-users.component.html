@@ -42,7 +42,7 @@
           }
           @for (u of filtered; track u.id) {
             <tr>
-              <td><span class="code">{{ u.username }}</span></td>
+              <td><app-copyable-code [value]="u.username" label="usuario" /></td>
               <td>{{ u.nombre ?? '—' }}</td>
               <td class="td-sub">{{ u.email ?? '—' }}</td>
               <td><span class="cf-badge cf-badge-muted"><span class="dot"></span>{{ roleLabels[u.role] }}</span></td>

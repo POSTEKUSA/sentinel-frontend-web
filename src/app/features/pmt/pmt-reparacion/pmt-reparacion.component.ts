@@ -4,10 +4,12 @@ import { ReactiveFormsModule, FormBuilder, FormsModule } from '@angular/forms';
 import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.service';
 import { Terminal, TERMINAL_ESTADO_LABELS, TERMINAL_ESTADO_BADGE } from '../../../core/models/pmt/terminal.model';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-pmt-reparacion',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './pmt-reparacion.component.html',
   styleUrl: './pmt-reparacion.component.css',
 })

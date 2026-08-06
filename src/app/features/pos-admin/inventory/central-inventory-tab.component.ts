@@ -7,10 +7,12 @@ import { PosUnit, POS_LOCATION_LABELS, POS_UNIT_STATUS_LABELS } from '../../../c
 import { PosInventoryService } from '../../../core/services/pos-admin/pos-inventory.service';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+
 @Component({
   selector: 'app-central-inventory-tab',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, EmptyStateComponent],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, RouterModule, EmptyStateComponent],
   templateUrl: './central-inventory-tab.component.html',
   styleUrl: './central-inventory-tab.component.css',
 })
