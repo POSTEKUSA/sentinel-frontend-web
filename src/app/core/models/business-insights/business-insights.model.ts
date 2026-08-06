@@ -84,6 +84,7 @@ export interface BizBranch {
 export interface BizTerminal {
   id: string;
   serial: string;
+  brand: string;
   model: string;
   branchId: string;
   branchName: string;

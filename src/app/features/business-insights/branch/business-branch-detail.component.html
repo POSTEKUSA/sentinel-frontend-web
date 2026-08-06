@@ -49,8 +49,9 @@
         <table class="cf-table">
           <thead>
             <tr>
-              <th>Serial</th>
+              <th>Marca</th>
               <th>Modelo</th>
+              <th>N° Serie</th>
               <th>Estado</th>
               <th>Última conexión</th>
               <th class="th-actions"></th>
@@ -59,8 +60,9 @@
           <tbody>
             @for (t of terminals; track t.id) {
               <tr>
-                <td class="td-name">{{ t.serial }}</td>
+                <td>{{ t.brand }}</td>
                 <td>{{ t.model }}</td>
+                <td class="td-name"><span class="code">{{ t.serial }}</span></td>
                 <td><app-status-badge [status]="t.status"></app-status-badge></td>
                 <td>{{ formatDate(t.lastConnectionAt) }}</td>
                 <td class="td-actions">
@@ -71,7 +73,7 @@
               </tr>
             } @empty {
               <tr>
-                <td colspan="5">
+                <td colspan="6">
                   <app-empty-state icon="point_of_sale" title="Sin terminales" subtitle="Esta sucursal no tiene terminales POS registradas."></app-empty-state>
                 </td>
               </tr>

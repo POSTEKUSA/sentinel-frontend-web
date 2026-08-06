@@ -1,7 +1,7 @@
 <div class="admin-page">
   <header class="cf-head">
     <div>
-      <h1>Garantía</h1>
+      <h1>En Garantía</h1>
       <p class="count">{{ filtered.length }} terminales en proceso de garantía</p>
     </div>
   </header>
@@ -20,9 +20,10 @@
       <table class="cf-table">
         <thead>
           <tr>
-            <th>Serie</th>
-            <th>Inventario</th>
+            <th>COD INVENTARIO</th>
+            <th>Marca</th>
             <th>Modelo</th>
+            <th>N° Serie</th>
             <th>Zona</th>
             <th>Envío a Garantía</th>
             <th style="text-align:right">Acciones</th>
@@ -30,13 +31,14 @@
         </thead>
         <tbody>
           @if (filtered.length === 0) {
-            <tr><td colspan="6" class="admin-empty"><span class="mi">shield</span><span>Sin terminales en garantía</span></td></tr>
+            <tr><td colspan="7" class="admin-empty"><span class="mi">shield</span><span>Sin terminales en garantía</span></td></tr>
           }
           @for (t of filtered; track t.id) {
             <tr>
-              <td><span class="code">{{ t.serie }}</span></td>
-              <td>{{ t.inventario ?? '—' }}</td>
+              <td><span class="code">{{ t.inventario ?? '—' }}</span></td>
+              <td>{{ t.marca ?? '—' }}</td>
               <td>{{ t.modelo ?? '—' }}</td>
+              <td><span class="code">{{ t.serie }}</span></td>
               <td>{{ t.zona ?? '—' }}</td>
               <td>{{ t.updatedAt | date:'dd/MM/yyyy' }}</td>
               <td style="text-align:right">

@@ -18,7 +18,7 @@ import {
   INDEPENDENT_COUNT_BY_CATEGORY,
   INDEPENDENT_NAME_BANK,
   MCC_BY_CATEGORY,
-  TERMINAL_MODELS,
+  TERMINAL_CATALOG,
 } from './business-reference-data';
 import {
   createRng,
@@ -305,10 +305,12 @@ function generateTerminals(rng: Rng, branches: BizBranch[]): BizTerminal[] {
     for (let i = 0; i < count; i++) {
       const isOnline = rng() < 0.92;
       const installedDaysAgo = randInt(rng, 30, 1100);
+      const catalog = randChoice(rng, TERMINAL_CATALOG);
       terminals.push({
         id: `biz-pos-${seq}`,
         serial: `BIZ${String(seq).padStart(6, '0')}`,
-        model: randChoice(rng, TERMINAL_MODELS),
+        brand: catalog.brand,
+        model: catalog.model,
         branchId: branch.id,
         branchName: branch.name,
         merchantId: branch.merchantId,

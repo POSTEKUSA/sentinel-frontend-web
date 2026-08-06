@@ -137,7 +137,16 @@ export const INDEPENDENT_COUNT_BY_CATEGORY: Record<MccCategory, number> = {
   convenience: 10,
 };
 
-export const TERMINAL_MODELS = [
-  'Verifone VX520', 'Verifone VX820', 'Ingenico Move5000', 'Ingenico Lane3000',
-  'Sunmi P2', 'Sunmi V2 Pro', 'PAX A920', 'PAX S920',
+export const TERMINAL_CATALOG = [
+  { brand: 'Verifone', model: 'VX520' },
+  { brand: 'Verifone', model: 'VX820' },
+  { brand: 'Ingenico', model: 'Move5000' },
+  { brand: 'Ingenico', model: 'Lane3000' },
+  { brand: 'Sunmi', model: 'P2' },
+  { brand: 'Sunmi', model: 'V2 Pro' },
+  { brand: 'PAX', model: 'A920' },
+  { brand: 'PAX', model: 'S920' },
 ];
+
+/** @deprecated Prefer TERMINAL_CATALOG with separate brand/model */
+export const TERMINAL_MODELS = TERMINAL_CATALOG.map(t => `${t.brand} ${t.model}`);

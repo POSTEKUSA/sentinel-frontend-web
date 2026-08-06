@@ -73,16 +73,20 @@ export class PosInventoryService {
     };
   }
 
-  isSerialDuplicate(serialNumber: string): boolean {
+  isSerialDuplicate(serialNumber: string, brand?: string | null): boolean {
     const s = serialNumber.trim().toLowerCase();
-    return this.unitsSubject.value.some(u => u.serialNumber.trim().toLowerCase() === s);
+    const b = (brand ?? '').trim().toLowerCase();
+    return this.unitsSubject.value.some(u =>
+      u.serialNumber.trim().toLowerCase() === s &&
+      u.brand.trim().toLowerCase() === b
+    );
   }
 
   // ── HU-006 — Recepción individual ──────────────────────────
 
   receiveUnit(input: ReceiveUnitInput): PosUnit {
-    if (this.isSerialDuplicate(input.serialNumber)) {
-      throw new Error(`El número de serie "${input.serialNumber}" ya existe en el inventario.`);
+    if (this.isSerialDuplicate(input.serialNumber, input.brand)) {
+      throw new Error(`El número de serie "${input.serialNumber}" ya existe para la marca "${input.brand}".`);
     }
 
     const order = input.purchaseOrderId ? this.purchaseOrderSvc.getById(input.purchaseOrderId) : undefined;
@@ -122,7 +126,9 @@ export class PosInventoryService {
     const seenInFile = new Set<string>();
     return rows.map((row, index) => {
       const serial = row.serialNumber?.trim() ?? '';
+      const brand = row.brand?.trim() ?? '';
       const rowNumber = index + 1;
+      const key = `${brand.toLowerCase()}|${serial.toLowerCase()}`;
 
       if (!serial) {
         return { row: rowNumber, serialNumber: serial, brand: row.brand, model: row.model, posType: row.posType, status: 'error', error: 'Número de serie vacío' };
@@ -130,13 +136,13 @@ export class PosInventoryService {
       if (!row.brand || !row.model) {
         return { row: rowNumber, serialNumber: serial, brand: row.brand, model: row.model, posType: row.posType, status: 'error', error: 'Marca/modelo requeridos' };
       }
-      if (this.isSerialDuplicate(serial)) {
-        return { row: rowNumber, serialNumber: serial, brand: row.brand, model: row.model, posType: row.posType, status: 'error', error: 'Serie ya existe en inventario' };
+      if (this.isSerialDuplicate(serial, brand)) {
+        return { row: rowNumber, serialNumber: serial, brand: row.brand, model: row.model, posType: row.posType, status: 'error', error: 'Serie ya existe para esta marca' };
       }
-      if (seenInFile.has(serial.toLowerCase())) {
-        return { row: rowNumber, serialNumber: serial, brand: row.brand, model: row.model, posType: row.posType, status: 'error', error: 'Serie duplicada dentro del archivo' };
+      if (seenInFile.has(key)) {
+        return { row: rowNumber, serialNumber: serial, brand: row.brand, model: row.model, posType: row.posType, status: 'error', error: 'Serie duplicada dentro del archivo para esta marca' };
       }
-      seenInFile.add(serial.toLowerCase());
+      seenInFile.add(key);
       return { row: rowNumber, serialNumber: serial, brand: row.brand, model: row.model, posType: row.posType, status: 'valid' };
     });
   }

@@ -63,9 +63,9 @@
             <table class="cf-table">
               <thead>
                 <tr>
-                  <th>N° Serie</th>
                   <th>Marca</th>
                   <th>Modelo</th>
+                  <th>N° Serie</th>
                   <th>Estado</th>
                   <th>Instalado</th>
                 </tr>
@@ -73,9 +73,9 @@
               <tbody>
                 @for (u of activeUnits; track u.id) {
                   <tr>
-                    <td><span class="code">{{ u.serialNumber }}</span></td>
                     <td class="td-name">{{ u.brand }}</td>
                     <td>{{ u.model }}</td>
+                    <td><span class="code">{{ u.serialNumber }}</span></td>
                     <td>
                       <span class="cf-badge cf-badge-ok"><span class="dot"></span>{{ posStatusLabels[u.status] }}</span>
                     </td>
@@ -108,8 +108,8 @@
                   <tr>
                     <td>{{ i.installedAt | date: 'medium' }}</td>
                     <td>
-                      <div class="code">{{ i.serialNumber }}</div>
                       <div class="td-sub">{{ i.brand }} {{ i.model }}</div>
+                      <div class="code">{{ i.serialNumber }}</div>
                     </td>
                     <td>{{ i.responsibleName }}</td>
                     <td>{{ i.initialStatus }}</td>

@@ -8,7 +8,7 @@
       <div>
         <p class="entity-name">{{ terminal.serial }}</p>
         <p class="count">
-          {{ terminal.model }} · {{ mccLabels[terminal.mccCategory] }}
+          {{ terminal.brand }} {{ terminal.model }} · {{ mccLabels[terminal.mccCategory] }}
           @if (merchant) {
             · <a [routerLink]="['/business-insights/comercio', merchant.id]">{{ merchant.name }}</a>
           }
@@ -30,11 +30,15 @@
     <div class="panel info-panel">
       <div class="info-grid">
         <div>
+          <span class="info-label">Marca</span>
+          <span class="info-value">{{ terminal.brand }}</span>
+        </div>
+        <div>
           <span class="info-label">Modelo</span>
           <span class="info-value">{{ terminal.model }}</span>
         </div>
         <div>
-          <span class="info-label">Serial</span>
+          <span class="info-label">N° Serie</span>
           <span class="info-value">{{ terminal.serial }}</span>
         </div>
         <div>

@@ -7,11 +7,11 @@
     <div class="head-actions">
       <a routerLink="/pmt/bulk-upload" class="btn-secondary">
         <span class="mi">cloud_upload</span>
-        Subir Inventario
+        Importar inventario
       </a>
       <button type="button" class="btn-primary" (click)="openCreate()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        Nueva Terminal
+        Nuevo Activo
       </button>
     </div>
   </header>
@@ -23,6 +23,18 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input type="search" formControlName="q" placeholder="Buscar serie, modelo, comercio…" autocomplete="off" />
       </label>
+      <select class="cf-input filter-input" formControlName="marca">
+        <option value="">Todas las marcas</option>
+        @for (m of marcas; track m) {
+          <option [value]="m">{{ m }}</option>
+        }
+      </select>
+      <select class="cf-input filter-input" formControlName="modelo">
+        <option value="">Todos los modelos</option>
+        @for (m of modelos; track m) {
+          <option [value]="m">{{ m }}</option>
+        }
+      </select>
       <select class="cf-input filter-input" formControlName="estado">
         <option value="">Todos los estados</option>
         @for (k of estadoKeys; track k) {
@@ -35,12 +47,6 @@
           <option [value]="z">{{ z }}</option>
         }
       </select>
-      <select class="cf-input filter-input" formControlName="modelo">
-        <option value="">Todos los modelos</option>
-        @for (m of modelos; track m) {
-          <option [value]="m">{{ m }}</option>
-        }
-      </select>
       <button type="button" [class]="hasFilters ? 'btn-primary' : 'btn-secondary'" (click)="clearFilters()">
         <span class="mi">filter_alt_off</span> Limpiar
       </button>
@@ -49,25 +55,26 @@
 
   <!-- Table -->
   <div class="panel">
-    <div class="admin-table-wrap">
+    <div class="admin-table-wrap" (scroll)="closeMenus()">
       <table class="cf-table">
         <thead>
           <tr>
-            <th>Serie</th>
-            <th>Inventario</th>
+            <th>COD INVENTARIO</th>
+            <th>Marca</th>
             <th>Modelo</th>
+            <th>N° Serie</th>
             <th>Estado</th>
             <th>Zona</th>
             <th>Comercio</th>
             <th>Ciudad</th>
             <th>Actualizado</th>
-            <th style="text-align:right">Acciones</th>
+            <th class="th-actions" style="text-align:right">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @if (paged.length === 0) {
             <tr>
-              <td colspan="9" class="admin-empty">
+              <td colspan="10" class="admin-empty">
                 <span class="mi">search_off</span>
                 <span>Sin resultados</span>
               </td>
@@ -75,9 +82,10 @@
           }
           @for (t of paged; track t.id) {
             <tr>
-              <td><span class="code">{{ t.serie }}</span></td>
-              <td>{{ t.inventario ?? '—' }}</td>
+              <td><span class="code">{{ t.inventario ?? '—' }}</span></td>
+              <td>{{ t.marca ?? '—' }}</td>
               <td>{{ t.modelo ?? '—' }}</td>
+              <td><span class="code">{{ t.serie }}</span></td>
               <td>
                 <span class="cf-badge" [ngClass]="estadoBadge[t.estado]">
                   <span class="dot"></span>{{ estadoLabels[t.estado] }}
@@ -87,44 +95,19 @@
               <td class="td-truncate" [title]="t.nombre ?? ''">{{ t.nombre ?? '—' }}</td>
               <td>{{ t.ciudad ?? '—' }}</td>
               <td class="td-sub">{{ t.updatedAt | date:'dd/MM/yy' }}</td>
-              <td style="text-align:right">
+              <td class="td-actions">
                 <div class="row-actions" style="justify-content:flex-end">
-                  <button type="button" class="icon-btn" title="Editar" (click)="openEdit(t)">
-                    <span class="mi">edit</span>
+                  <button type="button" class="icon-btn" title="Historial" (click)="openHistory(t)">
+                    <span class="mi">history</span>
                   </button>
-                  <div class="cf-menu" [class.open]="openMenuId === 'inv-' + t.id">
-                    <button type="button" class="cf-icon-btn" aria-label="Acciones" (click)="toggleMenu('inv-' + t.id, $event)">
-                      <span class="mi">more_vert</span>
-                    </button>
-                    <div class="cf-menu-panel">
-                      @if (hasHistory(t)) {
-                        <button type="button" class="cf-menu-item" (click)="openHistory(t); closeMenus()">
-                          <span class="mi">history</span> Historial
-                        </button>
-                      }
-                      <button
-                        type="button"
-                        class="cf-menu-item"
-                        [disabled]="!canSendToInyeccion(t)"
-                        [title]="canSendToInyeccion(t) ? '' : 'Solo desde bodega y si aún no pasó por inyección'"
-                        (click)="canSendToInyeccion(t) && startWorkflow('inyeccion', t, $event)">
-                        <span class="mi">vaccines</span> Enviar a inyección
-                      </button>
-                      @if (canSendToReparacion(t)) {
-                        <button type="button" class="cf-menu-item" (click)="startWorkflow('reparacion', t, $event)">
-                          <span class="mi">build</span> Enviar a reparación
-                        </button>
-                      }
-                      @if (canSendToGarantia(t)) {
-                        <button type="button" class="cf-menu-item" (click)="startWorkflow('garantia', t, $event)">
-                          <span class="mi">shield</span> Enviar a garantía
-                        </button>
-                      }
-                      <button type="button" class="cf-menu-item danger" (click)="delete(t.id); closeMenus()">
-                        <span class="mi">delete_outline</span> Eliminar
-                      </button>
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    class="cf-icon-btn"
+                    aria-label="Acciones"
+                    [class.active]="menuTarget?.id === t.id"
+                    (click)="toggleMenu(t, $event)">
+                    <span class="mi">more_vert</span>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -147,26 +130,130 @@
     }
   </div>
 
+  <!-- View (read-only) dialog -->
+  @if (viewTarget) {
+    <div class="dialog-backdrop" (click)="closeView()">
+      <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Ver Activo</h2>
+          <button type="button" class="icon-btn" (click)="closeView()"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <div class="asset-form-grid">
+            <div class="asset-field asset-field--span-2">
+              <label class="cf-label">COD INVENTARIO</label>
+              <div class="asset-view-value"><span class="code">{{ viewTarget.inventario ?? '—' }}</span></div>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Fecha de ingreso</label>
+              <div class="asset-view-value">
+                @if (viewTarget.fecha) {
+                  {{ viewTarget.fecha | date:'dd/MM/yyyy' }}
+                } @else {
+                  —
+                }
+              </div>
+            </div>
+
+            <div class="asset-field">
+              <label class="cf-label">Marca</label>
+              <div class="asset-view-value">{{ viewTarget.marca ?? '—' }}</div>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Modelo</label>
+              <div class="asset-view-value">{{ viewTarget.modelo ?? '—' }}</div>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">N° Serie</label>
+              <div class="asset-view-value"><span class="code">{{ viewTarget.serie ?? '—' }}</span></div>
+            </div>
+
+            <div class="asset-field">
+              <label class="cf-label">Estado</label>
+              <div class="asset-view-value">
+                <span class="cf-badge" [ngClass]="estadoBadge[viewTarget.estado]">
+                  {{ estadoLabels[viewTarget.estado] }}
+                </span>
+              </div>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Inyectado</label>
+              <div class="asset-view-value">
+                @if (viewTarget.inyectado === 'Si' || viewTarget.inyectado === 'No') {
+                  <span
+                    class="cf-badge"
+                    [ngClass]="viewTarget.inyectado === 'Si' ? 'cf-badge-ok' : 'cf-badge-off'">
+                    {{ viewTarget.inyectado === 'Si' ? 'Sí' : 'No' }}
+                  </span>
+                } @else {
+                  —
+                }
+              </div>
+            </div>
+            <div class="asset-field" aria-hidden="true"></div>
+
+            <div class="asset-field">
+              <label class="cf-label">País</label>
+              <div class="asset-view-value">{{ viewTarget.pais ?? '—' }}</div>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Ciudad</label>
+              <div class="asset-view-value">{{ viewTarget.ciudad ?? '—' }}</div>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Zona</label>
+              <div class="asset-view-value">{{ viewTarget.zona ?? '—' }}</div>
+            </div>
+          </div>
+          <div class="dialog-foot asset-dialog-foot">
+            <button type="button" class="btn-secondary" (click)="closeView()">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- Create / Edit dialog -->
   @if (showForm) {
     <div class="dialog-backdrop" (click)="showForm = false">
-      <div class="dialog" (click)="$event.stopPropagation()">
+      <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
         <div class="dialog-head">
-          <h2>{{ editId === null ? 'Nuevo Terminal' : 'Editar Terminal' }}</h2>
+          <h2>{{ editId === null ? 'Nuevo Activo' : 'Editar Activo' }}</h2>
           <button type="button" class="icon-btn" (click)="showForm = false"><span class="mi">close</span></button>
         </div>
         <form [formGroup]="formData" class="dialog-body" (ngSubmit)="saveForm()">
-          <div class="grid-2">
-            <div>
-              <label class="cf-label">Serie *</label>
-              <input class="cf-input" formControlName="serie" placeholder="SN123456" />
+          <div class="asset-form-grid">
+            <div class="asset-field asset-field--span-2">
+              <label class="cf-label">COD INVENTARIO *</label>
+              <div class="inventario-combo">
+                <select class="cf-input inventario-prefijo" formControlName="inventarioPrefijo" aria-label="Prefijo de inventario">
+                  @for (p of inventarioPrefijos; track p) {
+                    <option [value]="p">{{ p }}</option>
+                  }
+                </select>
+                <input
+                  class="cf-input inventario-codigo"
+                  formControlName="inventarioCodigo"
+                  placeholder="001"
+                  autocomplete="off" />
+              </div>
             </div>
-            <div>
-              <label class="cf-label">Inventario</label>
-              <input class="cf-input" formControlName="inventario" placeholder="INV-001" />
+            <div class="asset-field">
+              <label class="cf-label">Fecha de ingreso</label>
+              <input class="cf-input" type="date" formControlName="fecha" />
             </div>
-            <div>
-              <label class="cf-label">Modelo</label>
+
+            <div class="asset-field">
+              <label class="cf-label">Marca *</label>
+              <select class="cf-input" formControlName="marca">
+                <option value="">—</option>
+                @for (m of marcas; track m) {
+                  <option [value]="m">{{ m }}</option>
+                }
+              </select>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Modelo *</label>
               <select class="cf-input" formControlName="modelo">
                 <option value="">—</option>
                 @for (m of modelos; track m) {
@@ -174,7 +261,12 @@
                 }
               </select>
             </div>
-            <div>
+            <div class="asset-field">
+              <label class="cf-label">N° Serie *</label>
+              <input class="cf-input" formControlName="serie" placeholder="SN123456" />
+            </div>
+
+            <div class="asset-field">
               <label class="cf-label">Estado</label>
               <select class="cf-input" formControlName="estado">
                 @for (k of estadoKeys; track k) {
@@ -182,7 +274,35 @@
                 }
               </select>
             </div>
-            <div>
+            <div class="asset-field">
+              <label class="cf-label">Inyectado</label>
+              <select class="cf-input" formControlName="inyectado">
+                <option value="">—</option>
+                <option value="Si">Sí</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="asset-field" aria-hidden="true"></div>
+
+            <div class="asset-field">
+              <label class="cf-label">País</label>
+              <select class="cf-input" formControlName="pais">
+                <option value="">—</option>
+                @for (p of paises; track p) {
+                  <option [value]="p">{{ p }}</option>
+                }
+              </select>
+            </div>
+            <div class="asset-field">
+              <label class="cf-label">Ciudad</label>
+              <select class="cf-input" formControlName="ciudad">
+                <option value="">—</option>
+                @for (c of ciudades; track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </div>
+            <div class="asset-field">
               <label class="cf-label">Zona</label>
               <select class="cf-input" formControlName="zona">
                 <option value="">—</option>
@@ -191,39 +311,14 @@
                 }
               </select>
             </div>
-            <div>
-              <label class="cf-label">Caja</label>
-              <input class="cf-input" formControlName="caja" placeholder="CAJA-01" />
-            </div>
-            <div>
-              <label class="cf-label">Inyectado</label>
-              <select class="cf-input" formControlName="inyectado">
-                <option value="">—</option>
-                <option value="Si">Sí</option>
-                <option value="No">No</option>
-              </select>
-            </div>
-            <div>
-              <label class="cf-label">Fecha</label>
-              <input class="cf-input" type="date" formControlName="fecha" />
-            </div>
-            <div>
-              <label class="cf-label">Nombre Comercio</label>
-              <input class="cf-input" formControlName="nombre" placeholder="Supermercado…" />
-            </div>
-            <div>
-              <label class="cf-label">Ciudad</label>
-              <input class="cf-input" formControlName="ciudad" placeholder="Tegucigalpa" />
-            </div>
-          </div>
-          <div>
-            <label class="cf-label">Dirección</label>
-            <input class="cf-input" formControlName="direccion" placeholder="Av. Principal 123" style="margin-top:0" />
           </div>
           @if (formError) {
-            <p class="form-error">{{ formError }}</p>
+            <div class="asset-alert asset-alert--danger" role="alert">
+              <span class="mi">error</span>
+              <span>{{ formError }}</span>
+            </div>
           }
-          <div class="dialog-foot">
+          <div class="dialog-foot asset-dialog-foot">
             <button type="button" class="btn-secondary" (click)="showForm = false">Cancelar</button>
             <button type="submit" class="btn-primary">{{ editId === null ? 'Crear' : 'Guardar' }}</button>
           </div>
@@ -238,11 +333,12 @@
       <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
         <div class="dialog-head">
           <div class="history-head-meta">
-            <h2>Historial de Tracking</h2>
+            <h2>Historial de <span class="code">{{ historyTerminal.inventario || historyTerminal.serie }}</span></h2>
             <p class="history-sub">
               Serie: <span class="code">{{ historyTerminal.serie }}</span>
-              @if (historyTerminal.modelo) {
-                <span class="history-sep">·</span> {{ historyTerminal.modelo }}
+              @if (historyTerminal.marca || historyTerminal.modelo) {
+                <span class="history-sep">·</span>
+                {{ historyTerminal.marca }}{{ historyTerminal.marca && historyTerminal.modelo ? ' ' : '' }}{{ historyTerminal.modelo }}
               }
               <span class="history-sep">·</span>
               <span class="cf-badge" [ngClass]="estadoBadge[historyTerminal.estado]">
@@ -343,6 +439,28 @@
     </div>
   }
 
+  <!-- Delete confirm dialog -->
+  @if (deleteTarget) {
+    <div class="dialog-backdrop" (click)="cancelDelete()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Eliminar terminal</h2>
+          <button type="button" class="icon-btn" (click)="cancelDelete()"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2); font-size:13px; margin:0; line-height:1.5">
+            ¿Eliminar el terminal <span class="code">{{ deleteTarget.serie }}</span>?
+            Esta acción no se puede deshacer.
+          </p>
+        </div>
+        <div class="dialog-foot">
+          <button type="button" class="btn-secondary" (click)="cancelDelete()">Cancelar</button>
+          <button type="button" class="btn-primary" (click)="confirmDelete()">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- Workflow action dialog -->
   @if (workflowAction && workflowTarget) {
     <div class="dialog-backdrop" (click)="cancelWorkflow()">
@@ -380,6 +498,43 @@
           <button type="button" class="btn-primary" (click)="applyWorkflow()">Confirmar</button>
         </div>
       </div>
+    </div>
+  }
+
+  <!-- Floating row actions menu (outside table so it stacks above history icon) -->
+  @if (menuTarget && menuPos) {
+    <div
+      class="inv-actions-menu"
+      [style.top.px]="menuPos.top"
+      [style.left.px]="menuPos.left"
+      (click)="$event.stopPropagation()">
+      <button type="button" class="cf-menu-item" (click)="openView(menuTarget!); closeMenus()">
+        <span class="mi">visibility</span> Ver
+      </button>
+      <button
+        type="button"
+        class="cf-menu-item"
+        [disabled]="!canSendToInyeccion(menuTarget)"
+        [title]="canSendToInyeccion(menuTarget) ? '' : 'Solo desde bodega y si aún no pasó por inyección'"
+        (click)="canSendToInyeccion(menuTarget!) && startWorkflow('inyeccion', menuTarget!, $event)">
+        <span class="mi">vaccines</span> Enviar a inyección
+      </button>
+      @if (canSendToReparacion(menuTarget)) {
+        <button type="button" class="cf-menu-item" (click)="startWorkflow('reparacion', menuTarget!, $event)">
+          <span class="mi">build</span> Enviar a reparación
+        </button>
+      }
+      @if (canSendToGarantia(menuTarget)) {
+        <button type="button" class="cf-menu-item" (click)="startWorkflow('garantia', menuTarget!, $event)">
+          <span class="mi">shield</span> Enviar a garantía
+        </button>
+      }
+      <button type="button" class="cf-menu-item" (click)="openEdit(menuTarget!); closeMenus()">
+        <span class="mi">edit</span> Editar
+      </button>
+      <button type="button" class="cf-menu-item danger" (click)="askDelete(menuTarget!); closeMenus()">
+        <span class="mi">delete_outline</span> Eliminar
+      </button>
     </div>
   }
 </div>

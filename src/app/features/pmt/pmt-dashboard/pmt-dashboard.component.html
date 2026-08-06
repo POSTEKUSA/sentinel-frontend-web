@@ -13,20 +13,18 @@
   </header>
 
   @if (summary) {
-    <!-- Total hero card -->
-    <div class="kpi-hero">
-      <div class="kpi-hero-card">
-        <div class="kpi-hero-inner">
-          <span class="kpi-hero-label">Total Terminales</span>
-          <span class="kpi-hero-value">{{ summary.total.toLocaleString() }}</span>
-          <span class="kpi-hero-sub">Todos los estados</span>
+    <!-- Primary row: total + estados principales -->
+    <div class="kpi-grid kpi-grid-4">
+      <div class="kpi-card kpi-card--total">
+        <div class="kpi-card-body">
+          <div>
+            <p class="kpi-label">Total Terminales</p>
+            <p class="kpi-value">{{ summary.total.toLocaleString() }}</p>
+            <p class="kpi-pct">Todos los estados</p>
+          </div>
+          <span class="mi kpi-icon">devices</span>
         </div>
-        <span class="mi kpi-hero-icon">devices</span>
       </div>
-    </div>
-
-    <!-- Primary stats -->
-    <div class="kpi-grid kpi-grid-3">
       @for (stat of primaryStats; track stat.key) {
         <div class="kpi-card kpi-card--{{ stat.color }}">
           <div class="kpi-card-body">
@@ -38,14 +36,13 @@
             <span class="mi kpi-icon">{{ stat.icon }}</span>
           </div>
           <div class="kpi-bar-track">
-            <div class="kpi-bar kpi-bar--{{ stat.color }}"
-                 [style.width]="pct(getValue(stat.key))"></div>
+            <div class="kpi-bar" [style.width]="pct(getValue(stat.key))"></div>
           </div>
         </div>
       }
     </div>
 
-    <!-- Secondary stats -->
+    <!-- Secondary + tertiary (misma densidad) -->
     <div class="kpi-grid kpi-grid-4">
       @for (stat of secondaryStats; track stat.key) {
         <div class="kpi-card kpi-card--{{ stat.color }}">
@@ -58,14 +55,12 @@
             <span class="mi kpi-icon">{{ stat.icon }}</span>
           </div>
           <div class="kpi-bar-track">
-            <div class="kpi-bar kpi-bar--{{ stat.color }}"
-                 [style.width]="pct(getValue(stat.key))"></div>
+            <div class="kpi-bar" [style.width]="pct(getValue(stat.key))"></div>
           </div>
         </div>
       }
     </div>
 
-    <!-- Tertiary stats -->
     <div class="kpi-grid kpi-grid-4">
       @for (stat of tertiaryStats; track stat.key) {
         <div class="kpi-card kpi-card--{{ stat.color }}">
@@ -78,8 +73,25 @@
             <span class="mi kpi-icon">{{ stat.icon }}</span>
           </div>
           <div class="kpi-bar-track">
-            <div class="kpi-bar kpi-bar--{{ stat.color }}"
-                 [style.width]="pct(getValue(stat.key))"></div>
+            <div class="kpi-bar" [style.width]="pct(getValue(stat.key))"></div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="kpi-grid kpi-grid-4">
+      @for (stat of quaternaryStats; track stat.key) {
+        <div class="kpi-card kpi-card--{{ stat.color }}">
+          <div class="kpi-card-body">
+            <div>
+              <p class="kpi-label">{{ stat.label }}</p>
+              <p class="kpi-value">{{ getValue(stat.key).toLocaleString() }}</p>
+              <p class="kpi-pct">{{ pct(getValue(stat.key)) }} del total</p>
+            </div>
+            <span class="mi kpi-icon">{{ stat.icon }}</span>
+          </div>
+          <div class="kpi-bar-track">
+            <div class="kpi-bar" [style.width]="pct(getValue(stat.key))"></div>
           </div>
         </div>
       }

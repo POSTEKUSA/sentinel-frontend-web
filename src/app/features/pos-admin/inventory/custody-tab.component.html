@@ -35,7 +35,9 @@
           <tr>
             <th>Usuario responsable</th>
             <th>Rol</th>
-            <th>Equipo</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>N° Serie</th>
             <th>Fecha asignación</th>
             <th>Estado</th>
             <th class="th-actions">Acciones</th>
@@ -46,10 +48,9 @@
             <tr>
               <td class="td-name">{{ a.userName }}</td>
               <td>{{ roleLabels[a.role] }}</td>
-              <td>
-                <div class="code">{{ a.serialNumber }}</div>
-                <div class="td-sub">{{ a.brand }} {{ a.model }}</div>
-              </td>
+              <td>{{ a.brand }}</td>
+              <td>{{ a.model }}</td>
+              <td><span class="code">{{ a.serialNumber }}</span></td>
               <td>
                 <div>{{ a.assignedAt | date:'mediumDate' }}</div>
                 @if (a.returnedAt) {

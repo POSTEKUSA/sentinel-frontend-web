@@ -40,9 +40,9 @@
       <table class="cf-table">
         <thead>
           <tr>
-            <th>N° Serie</th>
             <th>Marca</th>
             <th>Modelo</th>
+            <th>N° Serie</th>
             <th>Tipo</th>
             <th>Estado</th>
             <th>Ubicación</th>
@@ -53,9 +53,9 @@
         <tbody>
           @for (u of filtered; track u.id) {
             <tr>
-              <td><span class="code">{{ u.serialNumber }}</span></td>
               <td class="td-name">{{ u.brand }}</td>
               <td>{{ u.model }}</td>
+              <td><span class="code">{{ u.serialNumber }}</span></td>
               <td>{{ u.posType }}</td>
               <td>
                 <span class="cf-badge" [ngClass]="statusBadgeClass(u.status)">

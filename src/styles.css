@@ -1111,7 +1111,7 @@ a.mat-mdc-raised-button.mat-primary:hover {
 .cf-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 0;
   padding: 3px 10px;
   border-radius: 999px;
   font-size: 0.75rem;
@@ -1122,11 +1122,7 @@ a.mat-mdc-raised-button.mat-primary:hover {
 }
 
 .cf-badge .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: currentColor;
-  flex: none;
+  display: none;
 }
 
 .cf-badge-ok {

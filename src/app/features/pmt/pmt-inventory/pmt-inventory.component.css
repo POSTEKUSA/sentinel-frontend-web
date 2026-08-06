@@ -1,8 +1,131 @@
 .td-truncate { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Allow kebab menus to overflow the table scroll container */
-.admin-table-wrap { overflow: visible; }
-.cf-table td { overflow: visible; }
+/* Nuevo / Editar Activo — 3 columnas */
+.asset-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.asset-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.asset-field--span-2 {
+  grid-column: span 2;
+}
+.inventario-combo {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px;
+  align-items: stretch;
+}
+.inventario-prefijo {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.asset-field--full {
+  grid-column: 1 / -1;
+}
+@media (max-width: 720px) {
+  .asset-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .asset-field--span-2,
+  .asset-field--full {
+    grid-column: auto;
+  }
+}
+
+.asset-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.asset-alert .mi {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.asset-alert--danger {
+  color: #9b1c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.asset-dialog-foot {
+  background: var(--surface, #fff);
+  margin-top: 16px;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--line-2);
+}
+
+.asset-view-value {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 2px;
+  font-size: 0.9rem;
+  color: var(--ink-1, #1a1a1a);
+}
+
+/* Wide grid: keep horizontal scroll so Acciones is not clipped */
+.admin-table-wrap {
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cf-table {
+  min-width: 1100px;
+}
+
+.cf-table th.th-actions,
+.cf-table td.td-actions {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  min-width: 104px;
+  width: 104px;
+  text-align: right;
+  white-space: nowrap;
+  background: var(--surface, #fff);
+  box-shadow: -8px 0 10px -8px rgba(20, 23, 28, 0.18);
+}
+
+.cf-table thead th.th-actions {
+  background: #fbfcfd;
+  z-index: 3;
+}
+
+.cf-table tbody tr:hover td.td-actions {
+  background: #fbfbfc;
+}
+
+/* Floating kebab panel — rendered outside the table, above all row icons */
+.inv-actions-menu {
+  position: fixed;
+  z-index: 5000;
+  min-width: 220px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(20, 23, 28, 0.16);
+  display: flex;
+  flex-direction: column;
+}
+
+.cf-icon-btn.active {
+  background: var(--brand-soft, #e8f1f8);
+  color: var(--brand);
+}
 
 /* ── History dialog header ─────────────────────────────────────────────── */
 .history-head-meta { min-width: 0; }

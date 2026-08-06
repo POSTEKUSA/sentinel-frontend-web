@@ -47,6 +47,7 @@ const FIELD_ACCION_ICONS: Record<string, string> = {
 const WORKFLOW_STEPS: { statuses: TerminalEstado[]; label: string }[] = [
   { statuses: ['en_bodega'], label: 'Bodega' },
   { statuses: ['en_inyeccion'], label: 'Inyección' },
+  { statuses: ['inyectado'], label: 'Inyectado' },
   { statuses: ['asignado_supervisor'], label: 'Asig. Supervisor' },
   { statuses: ['asignado_tecnico', 'asignado_ejecutivo'], label: 'Asig. Técnico / Ejecutivo' },
   { statuses: ['instalado'], label: 'Instalado' },
@@ -66,13 +67,47 @@ export class PmtInventoryComponent implements OnInit {
   all: Terminal[] = [];
   filtered: Terminal[] = [];
   zonas: string[] = [];
+  marcas: string[] = [];
   modelos: string[] = [];
+  ciudades: string[] = [];
+  readonly paises = ['Honduras', 'Guatemala', 'El Salvador', 'Nicaragua', 'Costa Rica', 'Panamá'];
+  private readonly ciudadesPorPais: Record<string, string[]> = {
+    Honduras: [
+      'Tegucigalpa', 'Comayagüela', 'San Pedro Sula', 'Choloma', 'La Ceiba',
+      'El Progreso', 'Choluteca', 'Comayagua', 'Puerto Cortés', 'Danlí',
+      'Juticalpa', 'Catacamas', 'Tela', 'Siguatepeque', 'La Lima',
+      'Villanueva', 'Olanchito', 'Santa Rosa de Copán', 'Tocoa', 'Roatán',
+    ],
+    Guatemala: [
+      'Ciudad de Guatemala', 'Mixco', 'Villa Nueva', 'Quetzaltenango', 'Escuintla',
+      'San Juan Sacatepéquez', 'Villa Canales', 'Chinautla', 'Chimaltenango', 'Huehuetenango',
+      'Amatitlán', 'Totonicapán', 'Puerto Barrios', 'Cobán', 'Antigua Guatemala',
+    ],
+    'El Salvador': [
+      'San Salvador', 'Santa Ana', 'San Miguel', 'Soyapango', 'Santa Tecla',
+      'Mejicanos', 'Apopa', 'Delgado', 'Ahuachapán', 'La Unión',
+    ],
+    Nicaragua: [
+      'Managua', 'León', 'Masaya', 'Matagalpa', 'Chinandega',
+      'Granada', 'Estelí', 'Tipitapa', 'Jinotega', 'Bluefields',
+    ],
+    'Costa Rica': [
+      'San José', 'Alajuela', 'Cartago', 'Heredia', 'Puntarenas',
+      'Limón', 'Liberia', 'Desamparados', 'San Carlos', 'Pérez Zeledón',
+    ],
+    Panamá: [
+      'Ciudad de Panamá', 'San Miguelito', 'Colón', 'David', 'La Chorrera',
+      'Arraiján', 'Santiago', 'Chitré', 'Penonomé', 'Las Tablas',
+    ],
+  };
 
   readonly estadoLabels: Record<TerminalEstado, string> = TERMINAL_ESTADO_LABELS;
   readonly estadoBadge: Record<TerminalEstado, string> = TERMINAL_ESTADO_BADGE;
   readonly estadoKeys = Object.keys(TERMINAL_ESTADO_LABELS) as TerminalEstado[];
 
   openMenuId: string | null = null;
+  menuTarget: Terminal | null = null;
+  menuPos: { top: number; left: number } | null = null;
 
   // Row workflow action dialog
   workflowAction: 'inyeccion' | 'reparacion' | 'garantia' | null = null;
@@ -96,6 +131,7 @@ export class PmtInventoryComponent implements OnInit {
   filterForm = this.fb.group({
     q: [''],
     estado: [''],
+    marca: [''],
     zona: [''],
     modelo: [''],
   });
@@ -103,18 +139,19 @@ export class PmtInventoryComponent implements OnInit {
   // Dialog
   showForm = false;
   editId: number | null = null;
+  readonly inventarioPrefijos = ['ACT', 'INV', 'POS'] as const;
   formData = this.fb.group({
-    serie: [''],
-    inventario: [''],
+    inventarioPrefijo: ['INV' as string],
+    inventarioCodigo: [''],
+    marca: [''],
     modelo: [''],
+    serie: [''],
     estado: ['en_bodega'],
-    zona: [''],
-    caja: [''],
     inyectado: [''],
     fecha: [''],
-    nombre: [''],
-    direccion: [''],
+    pais: ['Honduras'],
     ciudad: [''],
+    zona: [''],
   });
   formError = '';
 
@@ -123,10 +160,17 @@ export class PmtInventoryComponent implements OnInit {
   timeline: TimelineEntry[] = [];
   workflowSteps: { key: string; label: string; state: 'done' | 'active' | 'todo' }[] = [];
 
+  // Delete confirm dialog
+  deleteTarget: Terminal | null = null;
+
+  // Read-only view dialog
+  viewTarget: Terminal | null = null;
+
   ngOnInit(): void {
     this.svc.terminals$.subscribe(ts => {
       this.all = ts;
       this.zonas = [...new Set(ts.map(t => t.zona).filter((z): z is string => !!z))].sort();
+      this.marcas = [...new Set(ts.map(t => t.marca).filter((m): m is string => !!m))].sort();
       this.modelos = [...new Set(ts.map(t => t.modelo).filter((m): m is string => !!m))].sort();
       this.applyFilters();
     });
@@ -134,15 +178,20 @@ export class PmtInventoryComponent implements OnInit {
       this.page = 1;
       this.applyFilters();
     });
+    this.formData.get('pais')!.valueChanges.subscribe(pais => {
+      this.setCiudadesForPais(pais || '', { clearCiudad: true });
+    });
+    this.setCiudadesForPais('Honduras');
   }
 
   applyFilters(): void {
     const f = this.filterForm.getRawValue();
     this.filtered = this.all.filter(t => {
       const q = (f.q ?? '').toLowerCase().trim();
-      if (q && ![t.serie, t.modelo, t.nombre, t.inventario, t.zona, t.ciudad]
+      if (q && ![t.serie, t.marca, t.modelo, t.nombre, t.inventario, t.zona, t.ciudad]
         .some(v => (v ?? '').toLowerCase().includes(q))) return false;
       if (f.estado && t.estado !== f.estado) return false;
+      if (f.marca && t.marca !== f.marca) return false;
       if (f.zona && t.zona !== f.zona) return false;
       if (f.modelo && t.modelo !== f.modelo) return false;
       return true;
@@ -150,55 +199,193 @@ export class PmtInventoryComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.filterForm.reset({ q: '', estado: '', zona: '', modelo: '' });
+    this.filterForm.reset({ q: '', estado: '', marca: '', zona: '', modelo: '' });
   }
 
   get hasFilters(): boolean {
     const f = this.filterForm.getRawValue();
-    return !!(f.q || f.estado || f.zona || f.modelo);
+    return !!(f.q || f.estado || f.marca || f.zona || f.modelo);
   }
 
   // ── CRUD ─────────────────────────────────────────────────────────────────
 
+  private todayIso(): string {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  private setCiudadesForPais(pais: string, opts?: { clearCiudad?: boolean; keepCiudad?: string }): void {
+    const list = [...(this.ciudadesPorPais[pais] ?? [])];
+    if (opts?.keepCiudad && opts.keepCiudad.trim() && !list.includes(opts.keepCiudad)) {
+      list.unshift(opts.keepCiudad);
+    }
+    this.ciudades = list;
+    if (opts?.clearCiudad) {
+      this.formData.patchValue({ ciudad: '' }, { emitEvent: false });
+    }
+  }
+
   openCreate(): void {
     this.editId = null;
-    this.formData.reset({ estado: 'en_bodega' });
+    this.formData.reset({
+      estado: 'en_bodega',
+      pais: 'Honduras',
+      fecha: this.todayIso(),
+      ciudad: '',
+      inventarioPrefijo: 'INV',
+      inventarioCodigo: '',
+      marca: '',
+      modelo: '',
+      serie: '',
+      inyectado: '',
+      zona: '',
+    });
+    this.setCiudadesForPais('Honduras');
     this.formError = '';
     this.showForm = true;
+  }
+
+  openView(t: Terminal): void {
+    this.viewTarget = t;
+  }
+
+  closeView(): void {
+    this.viewTarget = null;
   }
 
   openEdit(t: Terminal): void {
     this.editId = t.id;
-    this.formData.patchValue(t);
+    const pais = t.pais || 'Honduras';
+    const parsed = this.parseInventario(t.inventario);
+    this.setCiudadesForPais(pais, { keepCiudad: t.ciudad });
+    this.formData.patchValue({
+      marca: t.marca ?? '',
+      modelo: t.modelo ?? '',
+      serie: t.serie ?? '',
+      estado: t.estado ?? 'en_bodega',
+      inyectado: t.inyectado ?? '',
+      fecha: t.fecha || this.todayIso(),
+      pais,
+      ciudad: t.ciudad ?? '',
+      zona: t.zona ?? '',
+      inventarioPrefijo: parsed.prefijo,
+      inventarioCodigo: parsed.codigo,
+    }, { emitEvent: false });
     this.formError = '';
     this.showForm = true;
   }
 
+  private parseInventario(value?: string): { prefijo: string; codigo: string } {
+    const raw = (value ?? '').trim();
+    const match = raw.match(/^([A-Za-z]+)\s*[-_]?\s*(.*)$/);
+    if (match) {
+      const prefijo = match[1].toUpperCase();
+      const known = (this.inventarioPrefijos as readonly string[]).includes(prefijo);
+      return {
+        prefijo: known ? prefijo : 'INV',
+        codigo: known ? match[2] : raw,
+      };
+    }
+    return { prefijo: 'INV', codigo: raw };
+  }
+
+  private buildInventario(prefijo: string, codigo: string): string {
+    const p = (prefijo || 'INV').trim().toUpperCase();
+    const c = (codigo || '').trim();
+    return c ? `${p}-${c}` : '';
+  }
+
   saveForm(): void {
     const v = this.formData.getRawValue();
+    const inventario = this.buildInventario(v.inventarioPrefijo ?? 'INV', v.inventarioCodigo ?? '');
+    if (!inventario) { this.formError = 'El código de inventario es requerido.'; return; }
+    if (!v.marca?.trim()) { this.formError = 'La marca es requerida.'; return; }
+    if (!v.modelo?.trim()) { this.formError = 'El modelo es requerido.'; return; }
     if (!v.serie?.trim()) { this.formError = 'El número de serie es requerido.'; return; }
+
+    const payload: Partial<Terminal> = {
+      inventario,
+      marca: v.marca!,
+      modelo: v.modelo!,
+      serie: v.serie!,
+      estado: (v.estado as TerminalEstado) ?? 'en_bodega',
+      inyectado: v.inyectado || undefined,
+      fecha: v.fecha || undefined,
+      pais: v.pais || undefined,
+      ciudad: v.ciudad || undefined,
+      zona: v.zona || undefined,
+    };
+
     if (this.editId === null) {
-      const exists = this.all.find(t => t.serie.toLowerCase() === v.serie!.toLowerCase());
-      if (exists) { this.formError = `La serie "${v.serie}" ya existe.`; return; }
-      this.svc.create({ ...(v as any), serie: v.serie!, estado: (v.estado as TerminalEstado) ?? 'en_bodega' });
+      if (this.svc.isSerieDuplicate(v.serie!, v.marca)) {
+        this.formError = `La serie "${v.serie}" ya existe para la marca "${v.marca || '—'}".`;
+        return;
+      }
+      this.svc.create({
+        ...payload,
+        serie: v.serie!,
+        estado: (v.estado as TerminalEstado) ?? 'en_bodega',
+      } as Omit<Terminal, 'id' | 'createdAt' | 'updatedAt'>);
     } else {
-      this.svc.update(this.editId, v as Partial<Terminal>);
+      if (this.svc.isSerieDuplicate(v.serie!, v.marca, this.editId)) {
+        this.formError = `La serie "${v.serie}" ya existe para la marca "${v.marca || '—'}".`;
+        return;
+      }
+      this.svc.update(this.editId, payload);
     }
     this.showForm = false;
   }
 
-  delete(id: number): void {
-    if (confirm('¿Eliminar este terminal?')) this.svc.delete(id);
+  askDelete(t: Terminal): void {
+    this.deleteTarget = t;
+  }
+
+  cancelDelete(): void {
+    this.deleteTarget = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.deleteTarget) return;
+    this.svc.delete(this.deleteTarget.id);
+    this.deleteTarget = null;
   }
 
   // ── Row workflow actions ──────────────────────────────────────────────────
 
   @HostListener('document:click')
-  closeMenus(): void { this.openMenuId = null; }
+  closeMenus(): void {
+    this.openMenuId = null;
+    this.menuTarget = null;
+    this.menuPos = null;
+  }
 
-  toggleMenu(id: string, event: Event): void {
+  @HostListener('window:resize')
+  onViewportChange(): void {
+    if (this.menuTarget) this.closeMenus();
+  }
+
+  toggleMenu(t: Terminal, event: Event): void {
     event.stopPropagation();
-    this.openMenuId = this.openMenuId === id ? null : id;
+    const id = `inv-${t.id}`;
+    if (this.openMenuId === id) {
+      this.closeMenus();
+      return;
+    }
+    const btn = event.currentTarget as HTMLElement;
+    const rect = btn.getBoundingClientRect();
+    const panelWidth = 220;
+    const panelHeight = 240;
+    const left = Math.min(Math.max(8, rect.right - panelWidth), window.innerWidth - panelWidth - 8);
+    const openUp = window.innerHeight - rect.bottom < panelHeight && rect.top > panelHeight;
+    const top = openUp
+      ? Math.max(8, rect.top - panelHeight - 4)
+      : Math.min(rect.bottom + 4, window.innerHeight - panelHeight - 8);
+    this.menuPos = { top, left };
+    this.menuTarget = t;
+    this.openMenuId = id;
   }
 
   canSendToInyeccion(t: Terminal): boolean { return this.svc.canSendToInyeccion(t); }
@@ -212,7 +399,7 @@ export class PmtInventoryComponent implements OnInit {
     this.workflowComment = '';
     this.workflowMotivo = '';
     this.workflowError = '';
-    this.openMenuId = null;
+    this.closeMenus();
   }
 
   cancelWorkflow(): void {
@@ -278,11 +465,6 @@ export class PmtInventoryComponent implements OnInit {
 
   // ── History ───────────────────────────────────────────────────────────────
 
-  hasHistory(t: Terminal): boolean {
-    return this.svc.tracking.some(e => e.terminalId === t.id) ||
-           this.svc.historical.some(h => h.serie === t.serie);
-  }
-
   openHistory(t: Terminal): void {
     this.historyTerminal = t;
     this.timeline = this.buildTimeline(t);
@@ -326,17 +508,20 @@ export class PmtInventoryComponent implements OnInit {
   }
 
   private buildWorkflowSteps(estado: TerminalEstado) {
-    const repairFlow: TerminalEstado[] = ['en_reparacion', 'garantia', 'irreparable', 'obsoleto'];
+    const repairFlow: TerminalEstado[] = ['en_reparacion', 'reparado', 'garantia', 'irreparable', 'obsoleto', 'retirado', 'destruido'];
     let steps = WORKFLOW_STEPS.map(s => ({ ...s }));
 
     if (repairFlow.includes(estado)) {
       steps = [
         { statuses: ['instalado'], label: 'Instalado' },
-        { statuses: ['en_reparacion'], label: 'Reparación' },
+        { statuses: ['en_reparacion'], label: 'En Reparación' },
       ];
-      if (estado === 'garantia') steps.push({ statuses: ['garantia'], label: 'Garantía' });
+      if (estado === 'reparado') steps.push({ statuses: ['reparado'], label: 'Reparado' });
+      if (estado === 'garantia') steps.push({ statuses: ['garantia'], label: 'En Garantía' });
       if (estado === 'irreparable') steps.push({ statuses: ['irreparable'], label: 'Irreparable' });
       if (estado === 'obsoleto') steps.push({ statuses: ['obsoleto'], label: 'Obsoleto' });
+      if (estado === 'retirado') steps.push({ statuses: ['retirado'], label: 'Retirado' });
+      if (estado === 'destruido') steps.push({ statuses: ['destruido'], label: 'Destruido' });
     }
 
     const idx = steps.findIndex(s => s.statuses.includes(estado));

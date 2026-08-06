@@ -20,7 +20,7 @@ export class PmtReparacionComponent implements OnInit {
   readonly estadoBadge  = TERMINAL_ESTADO_BADGE;
 
   selected: Terminal | null = null;
-  resolution: 'instalado' | 'garantia' | 'irreparable' | 'obsoleto' = 'instalado';
+  resolution: 'reparado' | 'instalado' | 'garantia' | 'irreparable' | 'obsoleto' = 'reparado';
   comment = '';
   showResolve = false;
 
@@ -41,7 +41,7 @@ export class PmtReparacionComponent implements OnInit {
 
   openResolve(t: Terminal): void {
     this.selected = t;
-    this.resolution = 'instalado';
+    this.resolution = 'reparado';
     this.comment = '';
     this.showResolve = true;
   }

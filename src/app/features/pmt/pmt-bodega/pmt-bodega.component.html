@@ -25,7 +25,7 @@
   <div class="panel toolbar-panel">
     <form [formGroup]="filterForm" class="toolbar">
       <input class="cf-input filter-input" formControlName="serie" placeholder="Serie…" />
-      <input class="cf-input filter-input" formControlName="inventario" placeholder="Código…" />
+      <input class="cf-input filter-input" formControlName="inventario" placeholder="COD INVENTARIO…" />
       <input class="cf-input filter-input" formControlName="modelo" placeholder="Modelo…" />
       <input class="cf-input filter-input" formControlName="caja" placeholder="Caja…" />
       <select class="cf-input filter-input" formControlName="inyectado">
@@ -47,9 +47,10 @@
             <th style="width:40px">
               <input type="checkbox" [checked]="allSelected" (change)="toggleAll()" />
             </th>
-            <th>Serie</th>
-            <th>Código</th>
+            <th>COD INVENTARIO</th>
+            <th>Marca</th>
             <th>Modelo</th>
+            <th>N° Serie</th>
             <th>Zona</th>
             <th>Caja</th>
             <th>Inyectado</th>
@@ -59,14 +60,15 @@
         </thead>
         <tbody>
           @if (filtered.length === 0) {
-            <tr><td colspan="9" class="admin-empty"><span class="mi">inventory</span><span>Sin terminales en bodega</span></td></tr>
+            <tr><td colspan="10" class="admin-empty"><span class="mi">inventory</span><span>Sin terminales en bodega</span></td></tr>
           }
           @for (t of filtered; track t.id) {
             <tr [class.row-selected]="selectedIds.has(t.id)">
               <td><input type="checkbox" [checked]="selectedIds.has(t.id)" (change)="toggleSelect(t.id)" /></td>
-              <td><span class="code">{{ t.serie }}</span></td>
-              <td>{{ t.inventario ?? '—' }}</td>
+              <td><span class="code">{{ t.inventario ?? '—' }}</span></td>
+              <td>{{ t.marca ?? '—' }}</td>
               <td>{{ t.modelo ?? '—' }}</td>
+              <td><span class="code">{{ t.serie }}</span></td>
               <td>{{ t.zona ?? '—' }}</td>
               <td>{{ t.caja ?? '—' }}</td>
               <td>

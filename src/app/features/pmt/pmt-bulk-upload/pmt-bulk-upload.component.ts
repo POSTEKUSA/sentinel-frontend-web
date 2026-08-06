@@ -7,9 +7,11 @@ import { Terminal, TerminalEstado } from '../../../core/models/pmt/terminal.mode
 /* ─── Field mapping for bulk terminal upload ── */
 const COL_MAP: Record<string, string> = {
   serie: 'serie', 'n° serie': 'serie', serial: 'serie', numero_serie: 'serie',
+  marca: 'marca', brand: 'marca',
   modelo: 'modelo', model: 'modelo',
   estado: 'estado', status: 'estado',
   inventario: 'inventario', inventory: 'inventario', 'n° inventario': 'inventario',
+  'cod interno': 'inventario', 'cod. interno': 'inventario', 'codigo interno': 'inventario', asset_code: 'inventario',
   zona: 'zona', zone: 'zona',
   caja: 'caja', box: 'caja',
   inyectado: 'inyectado', injected: 'inyectado',
@@ -26,11 +28,15 @@ const COL_MAP: Record<string, string> = {
 const STATUS_MAP: Record<string, TerminalEstado> = {
   bodega: 'en_bodega', 'en bodega': 'en_bodega', en_bodega: 'en_bodega',
   inyeccion: 'en_inyeccion', 'en inyeccion': 'en_inyeccion', en_inyeccion: 'en_inyeccion',
+  inyectado: 'inyectado',
   instalado: 'instalado', activo: 'instalado', active: 'instalado',
   reparacion: 'en_reparacion', 'en reparacion': 'en_reparacion', en_reparacion: 'en_reparacion',
-  garantia: 'garantia',
+  reparado: 'reparado',
+  garantia: 'garantia', 'en garantia': 'garantia',
+  irreparable: 'irreparable',
   obsoleto: 'obsoleto',
   retirado: 'retirado',
+  destruido: 'destruido',
 };
 
 function norm(k: string): string { return k.toLowerCase().trim().replace(/\s+/g, ' '); }
@@ -62,7 +68,7 @@ export class PmtBulkUploadComponent {
   parseError: string | null = null;
   uploadResult: { created: number; errors: any[] } | null = null;
 
-  readonly previewCols = ['serie','modelo','estado','nombre','ciudad'];
+  readonly previewCols = ['inventario', 'marca', 'modelo', 'serie', 'estado', 'nombre', 'ciudad'];
 
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -106,9 +112,9 @@ export class PmtBulkUploadComponent {
   }
 
   downloadTemplate(): void {
-    const headers = 'serie,modelo,estado,inventario,zona,caja,inyectado,fecha,nombre,ciudad,comunicacion,version\n';
-    const example1 = 'SN123456,VX520,en_bodega,INV-001,Norte,1,,2023-10-01,Comercio A,Santiago,GPRS,v1.0\n';
-    const example2 = 'SN789012,PAX A920,instalado,INV-002,Sur,2,,2023-10-05,Comercio B,Valparaíso,WIFI,v2.1\n';
+    const headers = 'serie,marca,modelo,estado,inventario,zona,caja,inyectado,fecha,nombre,ciudad,comunicacion,version\n';
+    const example1 = 'SN123456,Verifone,VX520,en_bodega,INV-001,Norte,1,,2023-10-01,Comercio A,Santiago,GPRS,v1.0\n';
+    const example2 = 'SN789012,PAX,A920,instalado,INV-002,Sur,2,,2023-10-05,Comercio B,Valparaíso,WIFI,v2.1\n';
     const blob = new Blob([headers + example1 + example2], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -119,6 +125,17 @@ export class PmtBulkUploadComponent {
   }
 
   reset(): void { this.parsedData = null; this.parseError = null; this.uploadResult = null; this.fileName = null; }
-  colLabel(c: string): string { const m: Record<string,string> = {serie:'Serie',modelo:'Modelo',estado:'Estado',nombre:'Comercio',ciudad:'Ciudad'}; return m[c] ?? c; }
+  colLabel(c: string): string {
+    const m: Record<string, string> = {
+      serie: 'N° Serie',
+      marca: 'Marca',
+      modelo: 'Modelo',
+      inventario: 'COD INVENTARIO',
+      estado: 'Estado',
+      nombre: 'Comercio',
+      ciudad: 'Ciudad',
+    };
+    return m[c] ?? c;
+  }
   colValue(r: any, c: string): string { return r[c] ?? '—'; }
 }

@@ -33,8 +33,10 @@
       <table class="cf-table">
         <thead>
           <tr>
-            <th>Serie</th>
+            <th>COD INVENTARIO</th>
+            <th>Marca</th>
             <th>Modelo</th>
+            <th>N° Serie</th>
             <th>Zona</th>
             <th>Comercio</th>
             <th>Ciudad</th>
@@ -45,12 +47,14 @@
         </thead>
         <tbody>
           @if (filtered.length === 0) {
-            <tr><td colspan="8" class="admin-empty"><span class="mi">manage_accounts</span><span>Sin terminales asignados</span></td></tr>
+            <tr><td colspan="10" class="admin-empty"><span class="mi">manage_accounts</span><span>Sin terminales asignados</span></td></tr>
           }
           @for (t of filtered; track t.id) {
             <tr>
-              <td><span class="code">{{ t.serie }}</span></td>
+              <td><span class="code">{{ t.inventario ?? '—' }}</span></td>
+              <td>{{ t.marca ?? '—' }}</td>
               <td>{{ t.modelo ?? '—' }}</td>
+              <td><span class="code">{{ t.serie }}</span></td>
               <td>{{ t.zona ?? '—' }}</td>
               <td class="td-truncate" [title]="t.nombre ?? ''">{{ t.nombre ?? '—' }}</td>
               <td>{{ t.ciudad ?? '—' }}</td>

@@ -24,18 +24,23 @@ export class PmtDashboardComponent implements OnInit {
   readonly primaryStats = [
     { key: 'enBodega', label: 'En Bodega', icon: 'inventory_2', color: 'blue' },
     { key: 'enInyeccion', label: 'En Inyección', icon: 'vaccines', color: 'purple' },
-    { key: 'instalado', label: 'Instalados', icon: 'check_circle', color: 'green' },
+    { key: 'inyectado', label: 'Inyectado', icon: 'verified', color: 'green' },
   ];
   readonly secondaryStats = [
     { key: 'asignadoSupervisor', label: 'Asig. Supervisor', icon: 'manage_accounts', color: 'cyan' },
     { key: 'asignadoTecnico', label: 'Asig. Técnico / Ejecutivo', icon: 'engineering', color: 'indigo' },
+    { key: 'instalado', label: 'Instalados', icon: 'check_circle', color: 'green' },
     { key: 'enReparacion', label: 'En Reparación', icon: 'build', color: 'amber' },
-    { key: 'garantia', label: 'Garantía', icon: 'shield', color: 'teal' },
   ];
   readonly tertiaryStats = [
-    { key: 'retirado', label: 'Retirado', icon: 'undo', color: 'orange' },
+    { key: 'reparado', label: 'Reparado', icon: 'handyman', color: 'teal' },
+    { key: 'garantia', label: 'En Garantía', icon: 'shield', color: 'teal' },
     { key: 'irreparable', label: 'Irreparable', icon: 'warning', color: 'red' },
     { key: 'obsoleto', label: 'Obsoleto', icon: 'delete', color: 'slate' },
+  ];
+  readonly quaternaryStats = [
+    { key: 'retirado', label: 'Retirado', icon: 'undo', color: 'orange' },
+    { key: 'destruido', label: 'Destruido', icon: 'delete_forever', color: 'red' },
     { key: 'serieSustituida', label: 'Serie Sustituida', icon: 'swap_horiz', color: 'teal' },
   ];
 

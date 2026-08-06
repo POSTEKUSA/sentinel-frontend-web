@@ -39,6 +39,17 @@ export class PmtTerminalService {
 
   // ── CRUD ─────────────────────────────────────────────────────────────────
 
+  /** Serie is unique within the same marca (brand), not globally. */
+  isSerieDuplicate(serie: string, marca?: string | null, excludeId?: number): boolean {
+    const s = serie.trim().toLowerCase();
+    const m = (marca ?? '').trim().toLowerCase();
+    return this.terminals.some(t =>
+      t.id !== excludeId &&
+      t.serie.trim().toLowerCase() === s &&
+      (t.marca ?? '').trim().toLowerCase() === m
+    );
+  }
+
   create(data: Omit<Terminal, 'id' | 'createdAt' | 'updatedAt'>): Terminal {
     const now = new Date().toISOString();
     const t: Terminal = { ...data, id: terminalSeq++, createdAt: now, updatedAt: now };
@@ -79,12 +90,14 @@ export class PmtTerminalService {
     this.update(id, { estado: newEstado, ...extraUpdate });
   }
 
-  /** True if terminal already went through inyección (flag or tracking history). */
+  /** True if terminal already went through inyección (flag, estado, or tracking history). */
   hasPassedInyeccion(t: Terminal): boolean {
+    if (t.estado === 'inyectado') return true;
     if ((t.inyectado ?? '').toLowerCase() === 'si') return true;
     return this.tracking.some(e =>
       e.terminalId === t.id &&
-      (e.newStatus === 'en_inyeccion' || e.previousStatus === 'en_inyeccion')
+      (e.newStatus === 'en_inyeccion' || e.previousStatus === 'en_inyeccion' ||
+       e.newStatus === 'inyectado' || e.previousStatus === 'inyectado')
     );
   }
 
@@ -93,11 +106,11 @@ export class PmtTerminalService {
   }
 
   canSendToReparacion(t: Terminal): boolean {
-    return !['en_reparacion', 'irreparable', 'obsoleto', 'retirado', 'serie_sustituida'].includes(t.estado);
+    return !['en_reparacion', 'reparado', 'irreparable', 'obsoleto', 'retirado', 'destruido', 'serie_sustituida'].includes(t.estado);
   }
 
   canSendToGarantia(t: Terminal): boolean {
-    return !['garantia', 'irreparable', 'obsoleto', 'retirado', 'serie_sustituida'].includes(t.estado);
+    return !['garantia', 'irreparable', 'obsoleto', 'retirado', 'destruido', 'serie_sustituida'].includes(t.estado);
   }
 
   /** Builds injection payload from a Merchant Config (query) record + terminal serie. */
@@ -136,7 +149,7 @@ export class PmtTerminalService {
 
     const fileName = opts?.fileName ?? 'inyeccion.json';
     const createdBy = opts?.createdBy ?? 'inyector';
-    this.update(terminalId, {
+    this.changeEstado(terminalId, 'inyectado', `Inyección aplicada (${fileName})`, createdBy, {
       inyectado: 'Si',
       nombre: payload['comercio'] || t.nombre,
       codigo: payload['codigo'] || t.codigo,
@@ -160,18 +173,6 @@ export class PmtTerminalService {
       createdAt: now,
     };
     this.initSubject.next([init, ...this.initializations]);
-
-    const event: TrackingEvent = {
-      id: trackingSeq++,
-      terminalId,
-      serie: t.serie,
-      previousStatus: t.estado,
-      newStatus: t.estado,
-      comment: `Archivo de inyección cargado: ${fileName} → ${payload['comercio'] || 'sin comercio'}`,
-      createdBy,
-      createdAt: now,
-    };
-    this.trackingSubject.next([event, ...this.tracking]);
     return { ok: true };
   }
 
@@ -185,14 +186,17 @@ export class PmtTerminalService {
       total,
       enBodega: byEstado('en_bodega'),
       enInyeccion: byEstado('en_inyeccion'),
+      inyectado: byEstado('inyectado'),
       asignadoSupervisor: byEstado('asignado_supervisor'),
       asignadoTecnico: byEstado('asignado_tecnico') + byEstado('asignado_ejecutivo'),
       instalado: byEstado('instalado'),
       enReparacion: byEstado('en_reparacion'),
+      reparado: byEstado('reparado'),
       garantia: byEstado('garantia'),
       irreparable: byEstado('irreparable'),
       obsoleto: byEstado('obsoleto'),
       retirado: byEstado('retirado'),
+      destruido: byEstado('destruido'),
       serieSustituida: byEstado('serie_sustituida'),
     };
   }
@@ -220,16 +224,31 @@ export class PmtTerminalService {
   bulkImport(rows: Partial<Terminal>[]): { created: number; errors: { row: number; serie: string; message: string }[] } {
     const errors: { row: number; serie: string; message: string }[] = [];
     let created = 0;
+    const seenInFile = new Set<string>();
     rows.forEach((row, i) => {
       if (!row.serie) {
         errors.push({ row: i + 1, serie: '', message: 'Campo "serie" requerido' });
         return;
       }
-      const exists = this.terminals.find(t => t.serie.toLowerCase() === row.serie!.toLowerCase());
-      if (exists) {
-        errors.push({ row: i + 1, serie: row.serie, message: `Serie "${row.serie}" ya existe` });
+      const marca = row.marca ?? '';
+      const key = `${marca.trim().toLowerCase()}|${row.serie.trim().toLowerCase()}`;
+      if (seenInFile.has(key)) {
+        errors.push({
+          row: i + 1,
+          serie: row.serie,
+          message: `Serie "${row.serie}" duplicada en el archivo para la marca "${marca || '—'}"`,
+        });
         return;
       }
+      if (this.isSerieDuplicate(row.serie, marca)) {
+        errors.push({
+          row: i + 1,
+          serie: row.serie,
+          message: `Serie "${row.serie}" ya existe para la marca "${marca || '—'}"`,
+        });
+        return;
+      }
+      seenInFile.add(key);
       this.create({ serie: row.serie, estado: (row.estado as TerminalEstado) ?? 'en_bodega', ...row });
       created++;
     });

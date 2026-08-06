@@ -24,9 +24,9 @@
       <table class="cf-table">
         <thead>
           <tr>
-            <th>N° Serie</th>
             <th>Marca</th>
             <th>Modelo</th>
+            <th>N° Serie</th>
             <th>Detalle</th>
             <th>Fecha ingreso</th>
           </tr>
@@ -34,9 +34,9 @@
         <tbody>
           @for (u of unitsFor(expanded); track u.id) {
             <tr>
-              <td><span class="code">{{ u.serialNumber }}</span></td>
               <td class="td-name">{{ u.brand }}</td>
               <td>{{ u.model }}</td>
+              <td><span class="code">{{ u.serialNumber }}</span></td>
               <td>{{ u.locationLabel }}</td>
               <td>{{ u.receivedAt | date:'mediumDate' }}</td>
             </tr>

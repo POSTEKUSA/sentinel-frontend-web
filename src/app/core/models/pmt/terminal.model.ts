@@ -1,44 +1,53 @@
 export type TerminalEstado =
   | 'en_bodega'
   | 'en_inyeccion'
+  | 'inyectado'
   | 'asignado_supervisor'
   | 'asignado_tecnico'
   | 'asignado_ejecutivo'
   | 'instalado'
   | 'en_reparacion'
+  | 'reparado'
   | 'garantia'
   | 'irreparable'
   | 'obsoleto'
   | 'retirado'
+  | 'destruido'
   | 'serie_sustituida';
 
 export const TERMINAL_ESTADO_LABELS: Record<TerminalEstado, string> = {
   en_bodega: 'En Bodega',
   en_inyeccion: 'En Inyección',
+  inyectado: 'Inyectado',
   asignado_supervisor: 'Asignado Supervisor',
   asignado_tecnico: 'Asignado Técnico',
   asignado_ejecutivo: 'Asignado Ejecutivo',
   instalado: 'Instalado',
   en_reparacion: 'En Reparación',
-  garantia: 'Garantía',
+  reparado: 'Reparado',
+  garantia: 'En Garantía',
   irreparable: 'Irreparable',
   obsoleto: 'Obsoleto',
   retirado: 'Retirado',
+  destruido: 'Destruido',
   serie_sustituida: 'Serie Sustituida',
 };
 
 export const TERMINAL_ESTADO_BADGE: Record<TerminalEstado, string> = {
   en_bodega: 'cf-badge-info',
   en_inyeccion: 'cf-badge-warn',
+  inyectado: 'cf-badge-ok',
   asignado_supervisor: 'cf-badge-info',
   asignado_tecnico: 'cf-badge-info',
   asignado_ejecutivo: 'cf-badge-info',
   instalado: 'cf-badge-ok',
   en_reparacion: 'cf-badge-warn',
+  reparado: 'cf-badge-ok',
   garantia: 'cf-badge-warn',
   irreparable: 'cf-badge-off',
   obsoleto: 'cf-badge-off',
   retirado: 'cf-badge-off',
+  destruido: 'cf-badge-off',
   serie_sustituida: 'cf-badge-muted',
 };
 
@@ -46,9 +55,11 @@ export interface Terminal {
   id: number;
   serie: string;
   inventario?: string;
+  marca?: string;
   modelo?: string;
   estado: TerminalEstado;
   zona?: string;
+  pais?: string;
   caja?: string;
   inyectado?: string;
   fecha?: string;

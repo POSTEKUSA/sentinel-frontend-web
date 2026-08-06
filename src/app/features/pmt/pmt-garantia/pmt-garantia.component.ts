@@ -64,10 +64,19 @@ export class PmtGarantiaComponent implements OnInit {
       ?? this.svc.terminals.find(t => t.serie === this.serieRegistro.trim());
     if (!vieja) { this.sustitucionError = `Serie "${this.serieRegistro}" no encontrada.`; return; }
     const nueva = this.codigoSerie.trim();
-    const dup = this.svc.terminals.find(t => t.serie.toLowerCase() === nueva.toLowerCase());
-    if (dup) { this.sustitucionError = `El código de serie "${nueva}" ya existe.`; return; }
+    if (this.svc.isSerieDuplicate(nueva, vieja.marca)) {
+      this.sustitucionError = `El código de serie "${nueva}" ya existe para la marca "${vieja.marca || '—'}".`;
+      return;
+    }
     this.svc.changeEstado(vieja.id, 'serie_sustituida', `Sustituida por ${nueva}`);
-    this.svc.create({ serie: nueva, estado: 'en_bodega', modelo: vieja.modelo, zona: vieja.zona, inventario: vieja.inventario });
+    this.svc.create({
+      serie: nueva,
+      estado: 'en_bodega',
+      marca: vieja.marca,
+      modelo: vieja.modelo,
+      zona: vieja.zona,
+      inventario: vieja.inventario,
+    });
     this.cerrarSustitucion();
   }
 

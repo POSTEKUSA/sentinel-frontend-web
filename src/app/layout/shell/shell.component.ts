@@ -65,14 +65,14 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'Inyección', icon: 'vaccines', route: '/pmt/pos-inyeccion' },
         { label: 'Asignados', icon: 'manage_accounts', route: '/pmt/asignados' },
         { label: 'Reparación', icon: 'build', route: '/pmt/reparacion' },
-        { label: 'Garantía', icon: 'shield', route: '/pmt/garantia' },
+        { label: 'En Garantía', icon: 'shield', route: '/pmt/garantia' },
         { label: 'SIM Cards', icon: 'sim_card', route: '/pmt/sim-cards' },
         { label: 'Comercios', icon: 'merchants', route: '/pos-admin/merchants' },
         { label: 'Merchant Config', icon: 'storefront', route: '/pmt/query' },
         { label: 'Requisiciones', icon: 'shopping_cart', route: '/pmt/solicitudes-equipo', tooltip: 'Solicitudes de Producto o Compras a activo fijo' },
         { label: 'Compras', icon: 'orders', route: '/pos-admin/purchase-orders' },
         { label: 'Soporte', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
-        { label: 'Marcas', icon: 'catalog', route: '/pos-admin/catalog' },
+        { label: 'Marcas / Modelos', icon: 'catalog', route: '/pos-admin/catalog' },
         { label: 'Usuarios', icon: 'group', route: '/pmt/users' },
       ],
     },
@@ -141,7 +141,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/device-info')) return { title: 'Detalle de dispositivo', icon: 'devices' };
     if (path.startsWith('/device-list')) return { title: 'Dispositivos', icon: 'devices' };
     if (path.startsWith('/device-map')) return { title: 'Mapa', icon: 'map' };
-    if (path.startsWith('/pos-admin/catalog')) return { title: 'Marcas', icon: 'catalog' };
+    if (path.startsWith('/pos-admin/catalog')) return { title: 'Marcas / Modelos', icon: 'catalog' };
     if (path.startsWith('/pos-admin/purchase-orders/new')) return { title: 'Nueva orden de compra', icon: 'orders' };
     if (/^\/pos-admin\/purchase-orders\/[^/]+/.test(path)) return { title: 'Orden de compra', icon: 'orders' };
     if (path.startsWith('/pos-admin/purchase-orders')) return { title: 'Compras', icon: 'orders' };
@@ -158,7 +158,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/pmt/pos-inyeccion')) return { title: 'POS Inyección', icon: 'vaccines' };
     if (path.startsWith('/pmt/asignados')) return { title: 'Asignados', icon: 'manage_accounts' };
     if (path.startsWith('/pmt/reparacion')) return { title: 'Reparación', icon: 'build' };
-    if (path.startsWith('/pmt/garantia')) return { title: 'Garantía', icon: 'shield' };
+    if (path.startsWith('/pmt/garantia')) return { title: 'En Garantía', icon: 'shield' };
     if (path.startsWith('/pmt/inicializaciones')) return { title: 'Inicializaciones', icon: 'settings_power' };
     if (path.startsWith('/pmt/sim-cards')) return { title: 'SIM Cards', icon: 'sim_card' };
     if (path.startsWith('/pmt/solicitudes-soporte')) return { title: 'Soporte', icon: 'support_agent' };

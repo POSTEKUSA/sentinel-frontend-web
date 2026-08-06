@@ -80,9 +80,9 @@
             <thead>
               <tr>
                 <th>Fila</th>
-                <th>Número de serie</th>
                 <th>Marca</th>
                 <th>Modelo</th>
+                <th>Número de serie</th>
                 <th>Estado</th>
               </tr>
             </thead>
@@ -90,9 +90,9 @@
               @for (r of bulkValidation(); track r.row) {
                 <tr>
                   <td>{{ r.row }}</td>
-                  <td><span class="code">{{ r.serialNumber }}</span></td>
                   <td>{{ r.brand }}</td>
                   <td>{{ r.model }}</td>
+                  <td><span class="code">{{ r.serialNumber }}</span></td>
                   <td>
                     @if (r.status === 'valid') {
                       <span class="cf-badge cf-badge-ok"><span class="dot"></span>Válido</span>
@@ -191,7 +191,7 @@
         <p class="receiver-note">Usuario receptor: <strong>{{ currentUser.displayName }}</strong></p>
 
         @if (duplicateError) {
-          <p class="form-error">Ya existe un equipo registrado con ese número de serie en el inventario.</p>
+          <p class="form-error">Ya existe un equipo con ese número de serie para la misma marca.</p>
         }
         @if (lastReceived) {
           <p class="form-success">Equipo {{ lastReceived }} recibido correctamente e ingresado al inventario.</p>
