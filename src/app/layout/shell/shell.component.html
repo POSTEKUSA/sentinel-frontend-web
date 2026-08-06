@@ -37,8 +37,12 @@
           <div class="section-items-inner">
             @for (item of section.items; track item.route) {
               @if (!item.hidden) {
+              @if (item.dividerBefore) {
+                <div class="nav-divider" role="separator" aria-label="Catálogos"></div>
+              }
               <a
                 class="nav-item"
+                [class.nav-catalog]="item.catalog"
                 [routerLink]="item.route"
                 routerLinkActive="active"
                 [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"

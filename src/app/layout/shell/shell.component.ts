@@ -21,6 +21,10 @@ interface NavItem {
   route: string;
   tooltip?: string;
   hidden?: boolean;
+  /** Separador antes del ítem (inicio grupo catálogos) */
+  dividerBefore?: boolean;
+  /** Ítem del grupo catálogos (línea vertical) */
+  catalog?: boolean;
 }
 
 interface NavSection {
@@ -61,19 +65,19 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'Vista General', icon: 'dashboard', route: '/pmt/dashboard' },
         { label: 'Inventario', icon: 'inventory_2', route: '/pmt/inventory' },
         { label: 'Recepción', icon: 'receiving', route: '/pos-admin/receiving', hidden: true },
-        { label: 'Bodegas', icon: 'warehouse', route: '/pmt/bodega' },
         { label: 'Inyección', icon: 'vaccines', route: '/pmt/pos-inyeccion' },
         { label: 'Asignados', icon: 'manage_accounts', route: '/pmt/asignados' },
         { label: 'Reparación', icon: 'build', route: '/pmt/reparacion' },
         { label: 'En Garantía', icon: 'shield', route: '/pmt/garantia' },
         { label: 'SIM Cards', icon: 'sim_card', route: '/pmt/sim-cards' },
-        { label: 'Comercios', icon: 'merchants', route: '/pos-admin/merchants' },
         { label: 'Merchant Config', icon: 'storefront', route: '/pmt/query' },
         { label: 'Requisiciones', icon: 'shopping_cart', route: '/pmt/solicitudes-equipo', tooltip: 'Solicitudes de Producto o Compras a activo fijo' },
         { label: 'Compras', icon: 'orders', route: '/pos-admin/purchase-orders' },
         { label: 'Soporte', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
-        { label: 'Marcas / Modelos', icon: 'catalog', route: '/pos-admin/catalog' },
-        { label: 'Usuarios', icon: 'group', route: '/pmt/users' },
+        { label: 'Comercios', icon: 'merchants', route: '/pos-admin/merchants', dividerBefore: true, catalog: true },
+        { label: 'Bodegas', icon: 'warehouse', route: '/pmt/bodega', catalog: true },
+        { label: 'Marcas / Modelos', icon: 'catalog', route: '/pos-admin/catalog', catalog: true },
+        { label: 'Usuarios', icon: 'group', route: '/pmt/users', catalog: true },
       ],
     },
     {

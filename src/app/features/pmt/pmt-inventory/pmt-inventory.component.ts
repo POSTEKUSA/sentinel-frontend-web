@@ -129,9 +129,9 @@ export class PmtInventoryComponent implements OnInit {
   // Dialog
   showForm = false;
   editId: number | null = null;
-  readonly inventarioPrefijos = ['ACT', 'INV', 'POS'] as const;
+  readonly inventarioPrefijos = ['POS', 'SIM', 'ACT', 'INV'] as const;
   formData = this.fb.group({
-    inventarioPrefijo: ['INV' as string],
+    inventarioPrefijo: ['POS' as string],
     inventarioCodigo: [''],
     marca: [''],
     modelo: [''],
@@ -319,7 +319,7 @@ export class PmtInventoryComponent implements OnInit {
     this.formData.reset({
       estado: 'en_bodega',
       fecha: this.todayIso(),
-      inventarioPrefijo: 'INV',
+      inventarioPrefijo: 'POS',
       inventarioCodigo: '',
       marca: '',
       modelo: '',
@@ -364,22 +364,22 @@ export class PmtInventoryComponent implements OnInit {
       const prefijo = match[1].toUpperCase();
       const known = (this.inventarioPrefijos as readonly string[]).includes(prefijo);
       return {
-        prefijo: known ? prefijo : 'INV',
+        prefijo: known ? prefijo : 'POS',
         codigo: known ? match[2] : raw,
       };
     }
-    return { prefijo: 'INV', codigo: raw };
+    return { prefijo: 'POS', codigo: raw };
   }
 
   private buildInventario(prefijo: string, codigo: string): string {
-    const p = (prefijo || 'INV').trim().toUpperCase();
+    const p = (prefijo || 'POS').trim().toUpperCase();
     const c = (codigo || '').trim();
     return c ? `${p}-${c}` : '';
   }
 
   saveForm(): void {
     const v = this.formData.getRawValue();
-    const inventario = this.buildInventario(v.inventarioPrefijo ?? 'INV', v.inventarioCodigo ?? '');
+    const inventario = this.buildInventario(v.inventarioPrefijo ?? 'POS', v.inventarioCodigo ?? '');
     const estado = (v.estado as TerminalEstado) ?? 'en_bodega';
     if (!inventario) { this.formError = 'El código de inventario es requerido.'; return; }
     if (!v.marca?.trim()) { this.formError = 'La marca es requerida.'; return; }

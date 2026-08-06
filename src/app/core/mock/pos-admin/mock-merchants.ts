@@ -6,37 +6,37 @@ function daysAgoIso(days: number): string {
 
 export const MOCK_MERCHANTS: Merchant[] = [
   {
-    id: 'mer-1', affiliateCode: 'AF-00101', tradeName: 'Farmacia San Judas', mcc: '5912', mccDescription: 'Farmacias',
+    id: 'mer-1', affiliateCode: 'COM-00101', tradeName: 'Farmacia San Judas', mcc: '5912', mccDescription: 'Farmacias',
     department: 'Francisco Morazán', municipality: 'Tegucigalpa', address: 'Frente al Mercado Los Dolores, Tegucigalpa',
     pais: 'Honduras', ciudad: 'Tegucigalpa', zona: 'Centro', warehouseId: 1,
     status: 'active', createdAt: daysAgoIso(65), responsibleName: 'Roberto Mendoza',
   },
   {
-    id: 'mer-2', affiliateCode: 'AF-00102', tradeName: 'Supermercado La Colonia', mcc: '5411', mccDescription: 'Supermercados',
+    id: 'mer-2', affiliateCode: 'COM-00102', tradeName: 'Supermercado La Colonia', mcc: '5411', mccDescription: 'Supermercados',
     department: 'Cortés', municipality: 'San Pedro Sula', address: 'Blvd. del Norte Km 2, San Pedro Sula',
     pais: 'Honduras', ciudad: 'San Pedro Sula', zona: 'Norte', warehouseId: 2,
     status: 'active', createdAt: daysAgoIso(30), responsibleName: 'Patricia Morales',
   },
   {
-    id: 'mer-3', affiliateCode: 'AF-00103', tradeName: 'Restaurante La Finca', mcc: '5812', mccDescription: 'Restaurantes',
+    id: 'mer-3', affiliateCode: 'COM-00103', tradeName: 'Restaurante La Finca', mcc: '5812', mccDescription: 'Restaurantes',
     department: 'Francisco Morazán', municipality: 'Tegucigalpa', address: 'Blvd. Suyapa, Tegucigalpa',
     pais: 'Honduras', ciudad: 'Tegucigalpa', zona: 'Centro', warehouseId: 1,
     status: 'active', createdAt: daysAgoIso(35), responsibleName: 'Roberto Mendoza',
   },
   {
-    id: 'mer-4', affiliateCode: 'AF-00104', tradeName: 'Ferretería Central', mcc: '5251', mccDescription: 'Ferreterías',
+    id: 'mer-4', affiliateCode: 'COM-00104', tradeName: 'Ferretería Central', mcc: '5251', mccDescription: 'Ferreterías',
     department: 'Cortés', municipality: 'Choloma', address: 'Col. Satélite, Choloma',
     pais: 'Honduras', ciudad: 'Choloma', zona: 'Norte', warehouseId: 2,
     status: 'active', createdAt: daysAgoIso(95), responsibleName: 'Patricia Morales',
   },
   {
-    id: 'mer-5', affiliateCode: 'AF-00105', tradeName: 'Panadería Doña Elsa', mcc: '5462', mccDescription: 'Panaderías',
+    id: 'mer-5', affiliateCode: 'COM-00105', tradeName: 'Panadería Doña Elsa', mcc: '5462', mccDescription: 'Panaderías',
     department: 'Atlántida', municipality: 'La Ceiba', address: 'Barrio El Centro, La Ceiba',
     pais: 'Honduras', ciudad: 'La Ceiba', zona: 'Este', warehouseId: 4,
     status: 'inactive', createdAt: daysAgoIso(400),
   },
   {
-    id: 'mer-6', affiliateCode: 'AF-00106', tradeName: 'Clínica Vida Sana', mcc: '8011', mccDescription: 'Servicios médicos',
+    id: 'mer-6', affiliateCode: 'COM-00106', tradeName: 'Clínica Vida Sana', mcc: '8011', mccDescription: 'Servicios médicos',
     department: 'Choluteca', municipality: 'Choluteca', address: 'Barrio El Centro, Choluteca',
     pais: 'Honduras', ciudad: 'Choluteca', zona: 'Sur', warehouseId: 3,
     status: 'inactive', createdAt: daysAgoIso(200),

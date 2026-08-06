@@ -113,8 +113,8 @@ export class PmtBulkUploadComponent {
 
   downloadTemplate(): void {
     const headers = 'serie,marca,modelo,estado,inventario,zona,caja,inyectado,fecha,nombre,ciudad,comunicacion,version\n';
-    const example1 = 'SN123456,Verifone,VX520,en_bodega,INV-001,Norte,1,,2023-10-01,Comercio A,Santiago,GPRS,v1.0\n';
-    const example2 = 'SN789012,PAX,A920,instalado,INV-002,Sur,2,,2023-10-05,Comercio B,Valparaíso,WIFI,v2.1\n';
+    const example1 = 'SN123456,Verifone,VX520,en_bodega,POS-001,Norte,1,,2023-10-01,Comercio A,Santiago,GPRS,v1.0\n';
+    const example2 = 'SN789012,PAX,A920,instalado,POS-002,Sur,2,,2023-10-05,Comercio B,Valparaíso,WIFI,v2.1\n';
     const blob = new Blob([headers + example1 + example2], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
