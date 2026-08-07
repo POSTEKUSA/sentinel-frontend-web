@@ -70,12 +70,12 @@
                       <span class="mi">more_vert</span>
                     </button>
                     <div class="cf-menu-panel">
+                      <button type="button" class="cf-menu-item" (click)="openEdit(u); closeMenus()">
+                        <span class="mi">edit</span> Editar
+                      </button>
                       <button type="button" class="cf-menu-item" (click)="toggleActive(u); closeMenus()">
                         <span class="mi">{{ u.active ? 'person_off' : 'person' }}</span>
                         {{ u.active ? 'Desactivar' : 'Activar' }}
-                      </button>
-                      <button type="button" class="cf-menu-item" (click)="openEdit(u); closeMenus()">
-                        <span class="mi">edit</span> Editar
                       </button>
                       <button type="button" class="cf-menu-item danger" (click)="delete(u.id); closeMenus()">
                         <span class="mi">delete_outline</span> Eliminar

@@ -1,22 +1,23 @@
 export type PmtUserRole =
-  | 'admin'
+  | 'consulta'
   | 'inventario'
   | 'supervisor'
   | 'tecnico'
-  | 'consulta'
   | 'ejecutivo'
   | 'inyector'
-  | 'programacion';
+  | 'programacion'
+  | 'admin';
 
+/** Display order for selects / filters (insertion order of keys). */
 export const PMT_USER_ROLE_LABELS: Record<PmtUserRole, string> = {
-  admin: 'Administrador',
+  consulta: 'Consulta (solo lectura)',
   inventario: 'Inventario',
   supervisor: 'Supervisor',
   tecnico: 'Técnico',
-  consulta: 'Consulta',
   ejecutivo: 'Ejecutivo',
   inyector: 'Inyector',
   programacion: 'Programación',
+  admin: 'Administrador',
 };
 
 export interface PmtUser {

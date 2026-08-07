@@ -12,9 +12,9 @@ export const MOCK_PMT_TRANSACCIONES: Transaccion[] = [
 ];
 
 export const MOCK_PMT_SOPORTE_PMT: SoportePmt[] = [
-  { id: 1, serie: 'VX001242', terminal: 'T00001', tipo: 'Fallo de comunicación', descripcion: 'El POS no puede conectarse al servidor de autorización. Error 998.', estado: 'pendiente', createdBy: 'inyector1', createdAt: '2025-04-15T08:00:00Z', updatedAt: '2025-04-15T08:00:00Z' },
-  { id: 2, serie: 'VX001243', terminal: 'T00002', tipo: 'Error de aplicación', descripcion: 'La app cierra al intentar procesar transacción. Código de error: APP_ERR_001', estado: 'en_proceso', createdBy: 'inyector2', createdAt: '2025-04-12T09:00:00Z', updatedAt: '2025-04-13T14:00:00Z' },
-  { id: 3, serie: 'VX001244', terminal: 'T00003', tipo: 'Configuración APN', descripcion: 'APN no configurado correctamente. Solicitud de reconfiguración remota.', estado: 'resuelto', createdBy: 'inyector1', createdAt: '2025-04-01T08:00:00Z', updatedAt: '2025-04-02T10:00:00Z' },
-  { id: 4, tipo: 'Consulta', descripcion: '¿Cuál es el procedimiento para actualizar la versión de firmware a 4.12.5?', estado: 'resuelto', createdBy: 'inyector2', createdAt: '2025-03-25T11:00:00Z', updatedAt: '2025-03-26T09:00:00Z' },
-  { id: 5, serie: 'VX001253', terminal: 'T00005', tipo: 'Error de inicialización', descripcion: 'Terminal no completa el proceso de inicialización. Se detiene en paso 3/7.', estado: 'pendiente', createdBy: 'inyector1', createdAt: '2025-04-16T07:00:00Z', updatedAt: '2025-04-16T07:00:00Z' },
+  { id: 1, serie: 'VX001242', terminal: 'T00001', tipo: 'Fallo de comunicación', descripcion: 'El POS no puede conectarse al servidor de autorización. Error 998.', estado: 'pendiente', createdBy: 'dcastro', createdAt: '2025-04-15T08:00:00Z', updatedAt: '2025-04-15T08:00:00Z' },
+  { id: 2, serie: 'VX001243', terminal: 'T00002', tipo: 'Error de aplicación', descripcion: 'La app cierra al intentar procesar transacción. Código de error: APP_ERR_001', estado: 'en_proceso', createdBy: 'fmora', createdAt: '2025-04-12T09:00:00Z', updatedAt: '2025-04-13T14:00:00Z' },
+  { id: 3, serie: 'VX001244', terminal: 'T00003', tipo: 'Configuración APN', descripcion: 'APN no configurado correctamente. Solicitud de reconfiguración remota.', estado: 'resuelto', createdBy: 'dcastro', createdAt: '2025-04-01T08:00:00Z', updatedAt: '2025-04-02T10:00:00Z' },
+  { id: 4, tipo: 'Consulta', descripcion: '¿Cuál es el procedimiento para actualizar la versión de firmware a 4.12.5?', estado: 'resuelto', createdBy: 'fmora', createdAt: '2025-03-25T11:00:00Z', updatedAt: '2025-03-26T09:00:00Z' },
+  { id: 5, serie: 'VX001253', terminal: 'T00005', tipo: 'Error de inicialización', descripcion: 'Terminal no completa el proceso de inicialización. Se detiene en paso 3/7.', estado: 'pendiente', createdBy: 'dcastro', createdAt: '2025-04-16T07:00:00Z', updatedAt: '2025-04-16T07:00:00Z' },
 ];
