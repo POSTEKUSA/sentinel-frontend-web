@@ -7,6 +7,9 @@ import { WarehouseService } from '../../../core/services/pmt/warehouse.service';
 import { MerchantService } from '../../../core/services/pos-admin/merchant.service';
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
 import { UserNamePipe } from '../../../shared/pipes/user-name.pipe';
+import { MOCK_PMT_USERS } from '../../../core/mock/pmt/mock-pmt-users';
+import { PmtUser } from '../../../core/models/pmt/pmt-user.model';
+import { resolveUsernamesInText } from '../../../core/utils/user-display.util';
 
 import {
   Terminal, TerminalEstado,
@@ -19,7 +22,8 @@ import {
 } from '../../../core/models/pmt/terminal-motivos';
 import { ZONAS_DEFAULT } from '../../../core/constants/geo.constants';
 
-export type TimelineKind = 'status' | 'field';
+export type TimelineKind = 'status' | 'field' | 'assign';
+export type AssignRole = 'supervisor' | 'tecnico' | 'ejecutivo';
 
 export interface TimelineEntry {
   id: string;
@@ -32,6 +36,9 @@ export interface TimelineEntry {
   // status
   previousStatus?: TerminalEstado;
   newStatus?: TerminalEstado;
+  // assignment
+  assignedTo?: string;
+  assignedRole?: AssignRole;
   // field / logistics
   accion?: string;
   comercio?: string;
@@ -50,9 +57,9 @@ export interface ResolvedLocation {
 }
 
 const FIELD_ACCION_LABELS: Record<string, string> = {
-  instalacion: 'Instalación',
-  retiro: 'Retiro',
-  reparacion: 'Reparación',
+  instalacion: 'Instalación en comercio',
+  retiro: 'Retiro de comercio',
+  reparacion: 'Movimiento a reparación',
 };
 
 const FIELD_ACCION_ICONS: Record<string, string> = {
@@ -61,14 +68,47 @@ const FIELD_ACCION_ICONS: Record<string, string> = {
   reparacion: 'build',
 };
 
-const WORKFLOW_STEPS: { statuses: TerminalEstado[]; label: string }[] = [
-  { statuses: ['en_bodega'], label: 'Bodega' },
-  { statuses: ['en_inyeccion'], label: 'Inyección' },
-  { statuses: ['inyectado'], label: 'Inyectado' },
-  { statuses: ['asignado_supervisor'], label: 'Asig. Supervisor' },
-  { statuses: ['asignado_tecnico', 'asignado_ejecutivo'], label: 'Asig. Técnico / Ejecutivo' },
-  { statuses: ['instalado'], label: 'Instalado' },
-];
+const STATUS_TIMELINE_TITLE: Partial<Record<TerminalEstado, string>> = {
+  en_bodega: 'Ingreso / bodega',
+  en_inyeccion: 'Enviado a inyección',
+  inyectado: 'Inyectado',
+  asignado_supervisor: 'Asignado a supervisor',
+  asignado_tecnico: 'Asignado a técnico',
+  asignado_ejecutivo: 'Asignado a ejecutivo',
+  instalado: 'Instalado en comercio',
+  en_reparacion: 'Enviado a reparación',
+  reparado: 'Reparación completada',
+  garantia: 'Enviado a garantía',
+  irreparable: 'Marcado irreparable',
+  obsoleto: 'Marcado obsoleto',
+  retirado: 'Retirado',
+  destruido: 'Destruido / baja',
+  serie_sustituida: 'Serie sustituida',
+};
+
+const STATUS_TIMELINE_ICON: Partial<Record<TerminalEstado, string>> = {
+  en_bodega: 'warehouse',
+  en_inyeccion: 'vaccines',
+  inyectado: 'check_circle',
+  asignado_supervisor: 'supervisor_account',
+  asignado_tecnico: 'engineering',
+  asignado_ejecutivo: 'badge',
+  instalado: 'storefront',
+  en_reparacion: 'build',
+  reparado: 'handyman',
+  garantia: 'shield',
+  irreparable: 'dangerous',
+  obsoleto: 'inventory_2',
+  retirado: 'logout',
+  destruido: 'delete_forever',
+  serie_sustituida: 'swap_horiz',
+};
+
+const ASSIGN_ROLE_LABELS: Record<AssignRole, string> = {
+  supervisor: 'Supervisor',
+  tecnico: 'Técnico',
+  ejecutivo: 'Ejecutivo',
+};
 
 @Component({
   selector: 'app-pmt-inventory',
@@ -109,6 +149,15 @@ export class PmtInventoryComponent implements OnInit {
   readonly motivosReparacion = MOTIVOS_REPARACION;
   readonly motivosGarantia = MOTIVOS_GARANTIA;
 
+  // Assign dialog
+  assignTarget: Terminal | null = null;
+  assignRole: AssignRole = 'tecnico';
+  assignUsername = '';
+  assignComment = '';
+  assignError = '';
+  readonly assignRoleLabels = ASSIGN_ROLE_LABELS;
+  readonly assignRoles: AssignRole[] = ['supervisor', 'tecnico', 'ejecutivo'];
+
   // Pagination
   page = 1;
   readonly pageSize = 50;
@@ -141,13 +190,17 @@ export class PmtInventoryComponent implements OnInit {
     fecha: [''],
     warehouseId: ['' as string | number],
     merchantSiteId: [''],
+    caja: [''],
   });
   formError = '';
+  /** Known box codes for datalist suggestions (packs de 10 / 12, etc.). */
+  cajasKnown: string[] = [];
 
   // History dialog
   historyTerminal: Terminal | null = null;
   timeline: TimelineEntry[] = [];
-  workflowSteps: { key: string; label: string; state: 'done' | 'active' | 'todo' }[] = [];
+  /** Default: newest first. Toggle to oldest → newest. */
+  timelineOldestFirst = false;
 
   // Delete confirm dialog
   deleteTarget: Terminal | null = null;
@@ -171,6 +224,7 @@ export class PmtInventoryComponent implements OnInit {
       ])].sort();
       this.marcas = [...new Set(ts.map(t => t.marca).filter((m): m is string => !!m))].sort();
       this.modelos = [...new Set(ts.map(t => t.modelo).filter((m): m is string => !!m))].sort();
+      this.cajasKnown = [...new Set(ts.map(t => t.caja).filter((c): c is string => !!c?.trim()))].sort();
       this.applyFilters();
     });
     this.filterForm.valueChanges.subscribe(() => {
@@ -179,7 +233,7 @@ export class PmtInventoryComponent implements OnInit {
     });
     this.formData.get('estado')!.valueChanges.subscribe(estado => {
       if (estado !== 'en_bodega') {
-        this.formData.patchValue({ warehouseId: '' }, { emitEvent: false });
+        this.formData.patchValue({ warehouseId: '', caja: '' }, { emitEvent: false });
       }
       if (estado !== 'instalado') {
         this.formData.patchValue({ merchantSiteId: '' }, { emitEvent: false });
@@ -193,6 +247,15 @@ export class PmtInventoryComponent implements OnInit {
 
   get showWarehouseField(): boolean {
     return this.formEstado === 'en_bodega';
+  }
+
+  /** Column Caja visible if any filtered row is in bodega. */
+  get showCajaColumn(): boolean {
+    return this.filtered.some(t => t.estado === 'en_bodega');
+  }
+
+  get tableColspan(): number {
+    return this.showCajaColumn ? 9 : 8;
   }
 
   get showMerchantSiteField(): boolean {
@@ -327,6 +390,7 @@ export class PmtInventoryComponent implements OnInit {
       serie: '',
       warehouseId: '',
       merchantSiteId: '',
+      caja: '',
     });
     this.formError = '';
     this.showForm = true;
@@ -353,6 +417,7 @@ export class PmtInventoryComponent implements OnInit {
       merchantSiteId: t.merchantSiteId ?? '',
       inventarioPrefijo: parsed.prefijo,
       inventarioCodigo: parsed.codigo,
+      caja: t.caja ?? '',
     }, { emitEvent: false });
     this.formError = '';
     this.showForm = true;
@@ -409,6 +474,7 @@ export class PmtInventoryComponent implements OnInit {
       const warehouseId = Number(v.warehouseId);
       const w = this.warehouseSvc.getById(warehouseId);
       payload.warehouseId = warehouseId;
+      payload.caja = (v.caja ?? '').trim() || undefined;
       payload.merchantId = undefined;
       payload.merchantSiteId = undefined;
       payload.nombre = undefined;
@@ -431,6 +497,7 @@ export class PmtInventoryComponent implements OnInit {
         return;
       }
       payload.warehouseId = undefined;
+      payload.caja = undefined;
       payload.merchantId = opt.merchant.id;
       payload.merchantSiteId = opt.site.id;
       payload.nombre = opt.merchant.tradeName;
@@ -442,6 +509,7 @@ export class PmtInventoryComponent implements OnInit {
     } else {
       payload.warehouseId = undefined;
       payload.merchantSiteId = undefined;
+      payload.caja = undefined;
     }
 
     if (this.editId === null) {
@@ -502,7 +570,7 @@ export class PmtInventoryComponent implements OnInit {
     const btn = event.currentTarget as HTMLElement;
     const rect = btn.getBoundingClientRect();
     const panelWidth = 220;
-    const panelHeight = 240;
+    const panelHeight = 280;
     const left = Math.min(Math.max(8, rect.right - panelWidth), window.innerWidth - panelWidth - 8);
     const openUp = window.innerHeight - rect.bottom < panelHeight && rect.top > panelHeight;
     const top = openUp
@@ -516,6 +584,48 @@ export class PmtInventoryComponent implements OnInit {
   canSendToInyeccion(t: Terminal): boolean { return this.svc.canSendToInyeccion(t); }
   canSendToReparacion(t: Terminal): boolean { return this.svc.canSendToReparacion(t); }
   canSendToGarantia(t: Terminal): boolean { return this.svc.canSendToGarantia(t); }
+  canAssign(t: Terminal): boolean { return this.svc.canAssign(t); }
+
+  get assignUsers(): PmtUser[] {
+    return MOCK_PMT_USERS.filter(u => u.active && u.role === this.assignRole);
+  }
+
+  openAssign(t: Terminal, event?: Event): void {
+    event?.stopPropagation();
+    this.assignTarget = t;
+    this.assignRole = 'tecnico';
+    this.assignUsername = '';
+    this.assignComment = '';
+    this.assignError = '';
+    this.closeMenus();
+  }
+
+  cancelAssign(): void {
+    this.assignTarget = null;
+    this.assignUsername = '';
+    this.assignComment = '';
+    this.assignError = '';
+  }
+
+  onAssignRoleChange(): void {
+    this.assignUsername = '';
+    this.assignError = '';
+  }
+
+  applyAssign(): void {
+    if (!this.assignTarget) return;
+    if (!this.assignUsername) {
+      this.assignError = 'Seleccione un usuario.';
+      return;
+    }
+    this.assignError = '';
+    this.svc.assignToUser(this.assignTarget.id, {
+      username: this.assignUsername,
+      role: this.assignRole,
+      comment: this.assignComment,
+    });
+    this.cancelAssign();
+  }
 
   startWorkflow(type: 'inyeccion' | 'reparacion' | 'garantia', t: Terminal, event?: Event): void {
     event?.stopPropagation();
@@ -592,8 +702,26 @@ export class PmtInventoryComponent implements OnInit {
 
   openHistory(t: Terminal): void {
     this.historyTerminal = t;
+    this.timelineOldestFirst = false;
     this.timeline = this.buildTimeline(t);
-    this.workflowSteps = this.buildWorkflowSteps(t.estado);
+  }
+
+  toggleTimelineOrder(): void {
+    this.timelineOldestFirst = !this.timelineOldestFirst;
+    this.timeline = this.sortTimeline(this.timeline);
+  }
+
+  get timelineOrderLabel(): string {
+    return this.timelineOldestFirst
+      ? 'Del más antiguo al más reciente'
+      : 'Del más reciente al más antiguo';
+  }
+
+  private sortTimeline(entries: TimelineEntry[]): TimelineEntry[] {
+    const dir = this.timelineOldestFirst ? 1 : -1;
+    return [...entries].sort(
+      (a, b) => dir * (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
+    );
   }
 
   private buildTimeline(t: Terminal): TimelineEntry[] {
@@ -602,11 +730,11 @@ export class PmtInventoryComponent implements OnInit {
       .map(e => ({
         id: `status-${e.id}`,
         kind: 'status' as const,
-        title: 'Cambio de Estado',
-        icon: 'sell',
+        title: STATUS_TIMELINE_TITLE[e.newStatus] ?? (TERMINAL_ESTADO_LABELS[e.newStatus] ?? 'Cambio de estado'),
+        icon: STATUS_TIMELINE_ICON[e.newStatus] ?? 'sell',
         createdAt: e.createdAt,
         createdBy: e.createdBy,
-        comment: e.comment,
+        comment: resolveUsernamesInText(e.comment),
         previousStatus: e.previousStatus,
         newStatus: e.newStatus,
       }));
@@ -620,7 +748,7 @@ export class PmtInventoryComponent implements OnInit {
         icon: FIELD_ACCION_ICONS[h.accion] ?? 'place',
         createdAt: h.createdAt,
         createdBy: h.createdBy,
-        comment: h.descripcion,
+        comment: resolveUsernamesInText(h.descripcion),
         accion: h.accion,
         comercio: h.comercio,
         ciudad: h.ciudad,
@@ -628,33 +756,22 @@ export class PmtInventoryComponent implements OnInit {
         direccion: h.direccion,
       }));
 
-    return [...statusEntries, ...fieldEntries]
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }
+    const returnEntries: TimelineEntry[] = this.svc.assignedHistory
+      .filter(h => h.serie === t.serie && !!h.returnedAt)
+      .map(h => ({
+        id: `assign-ret-${h.id}`,
+        kind: 'assign' as const,
+        title: 'Devolución de resguardo',
+        icon: 'undo',
+        createdAt: h.returnedAt!,
+        assignedTo: h.assignedTo,
+        assignedRole: h.role,
+        comment: resolveUsernamesInText(
+          `Devuelto por ${h.assignedTo}${h.comment ? ` · ${h.comment}` : ''}`,
+        ),
+      }));
 
-  private buildWorkflowSteps(estado: TerminalEstado) {
-    const repairFlow: TerminalEstado[] = ['en_reparacion', 'reparado', 'garantia', 'irreparable', 'obsoleto', 'retirado', 'destruido'];
-    let steps = WORKFLOW_STEPS.map(s => ({ ...s }));
-
-    if (repairFlow.includes(estado)) {
-      steps = [
-        { statuses: ['instalado'], label: 'Instalado' },
-        { statuses: ['en_reparacion'], label: 'En Reparación' },
-      ];
-      if (estado === 'reparado') steps.push({ statuses: ['reparado'], label: 'Reparado' });
-      if (estado === 'garantia') steps.push({ statuses: ['garantia'], label: 'En Garantía' });
-      if (estado === 'irreparable') steps.push({ statuses: ['irreparable'], label: 'Irreparable' });
-      if (estado === 'obsoleto') steps.push({ statuses: ['obsoleto'], label: 'Obsoleto' });
-      if (estado === 'retirado') steps.push({ statuses: ['retirado'], label: 'Retirado' });
-      if (estado === 'destruido') steps.push({ statuses: ['destruido'], label: 'Destruido' });
-    }
-
-    const idx = steps.findIndex(s => s.statuses.includes(estado));
-    return steps.map((s, i) => ({
-      key: s.statuses.join('|'),
-      label: s.label,
-      state: (idx < 0 ? 'todo' : i < idx ? 'done' : i === idx ? 'active' : 'todo') as 'done' | 'active' | 'todo',
-    }));
+    return this.sortTimeline([...statusEntries, ...fieldEntries, ...returnEntries]);
   }
 
   // ── Pagination ────────────────────────────────────────────────────────────

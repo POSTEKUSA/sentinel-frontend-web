@@ -71,6 +71,9 @@
             <th>N° Serie</th>
             <th>Estado</th>
             <th>Bodega / Comercio</th>
+            @if (showCajaColumn) {
+              <th>Caja</th>
+            }
             <th>Actualizado</th>
             <th class="th-actions" style="text-align:right">Acciones</th>
           </tr>
@@ -78,7 +81,7 @@
         <tbody>
           @if (paged.length === 0) {
             <tr>
-              <td colspan="8" class="admin-empty">
+              <td [attr.colspan]="tableColspan" class="admin-empty">
                 <span class="mi">search_off</span>
                 <span>Sin resultados</span>
               </td>
@@ -96,6 +99,15 @@
                 </span>
               </td>
               <td class="td-truncate" [title]="placeCell(t)">{{ placeCell(t) }}</td>
+              @if (showCajaColumn) {
+                <td>
+                  @if (t.estado === 'en_bodega' && t.caja) {
+                    <span class="caja-chip">{{ t.caja }}</span>
+                  } @else {
+                    <span class="td-sub">—</span>
+                  }
+                </td>
+              }
               <td class="td-sub">{{ t.updatedAt | date:'dd/MM/yy' }}</td>
               <td class="td-actions">
                 <div class="row-actions" style="justify-content:flex-end">
@@ -182,6 +194,12 @@
               <label class="cf-label">Bodega / Comercio</label>
               <div class="asset-view-value">{{ placeCell(viewTarget) }}</div>
             </div>
+            @if (viewTarget.estado === 'en_bodega') {
+              <div class="asset-field">
+                <label class="cf-label">Caja</label>
+                <div class="asset-view-value">{{ viewTarget.caja || '—' }}</div>
+              </div>
+            }
 
             <div class="asset-field">
               <label class="cf-label">País</label>
@@ -270,7 +288,7 @@
               </select>
             </div>
             @if (showWarehouseField) {
-              <div class="asset-field asset-field--span-2">
+              <div class="asset-field">
                 <label class="cf-label">Bodega *</label>
                 <select class="cf-input" formControlName="warehouseId">
                   <option value="">— Seleccione bodega —</option>
@@ -278,6 +296,21 @@
                     <option [value]="w.id">{{ w.nombre }}</option>
                   }
                 </select>
+              </div>
+              <div class="asset-field">
+                <label class="cf-label">Caja</label>
+                <input
+                  class="cf-input"
+                  formControlName="caja"
+                  list="caja-suggestions"
+                  placeholder="Ej. CAJA-10-001 (paquete de 10)"
+                  autocomplete="off" />
+                <datalist id="caja-suggestions">
+                  @for (c of cajasKnown; track c) {
+                    <option [value]="c"></option>
+                  }
+                </datalist>
+                <span class="field-hint">Código de caja / paquete de ingreso (10 o 12 uds., etc.)</span>
               </div>
             }
             @if (showMerchantSiteField) {
@@ -310,7 +343,7 @@
   <!-- History dialog -->
   @if (historyTerminal) {
     <div class="dialog-backdrop" (click)="historyTerminal = null">
-      <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
+      <div class="dialog dialog--lg dialog--history" (click)="$event.stopPropagation()">
         <div class="dialog-head">
           <div class="history-head-meta">
             <h2>Historial de <app-copyable-code [value]="historyTerminal.inventario || historyTerminal.serie" label="inventario" /></h2>
@@ -328,36 +361,20 @@
           </div>
           <button type="button" class="icon-btn" (click)="historyTerminal = null"><span class="mi">close</span></button>
         </div>
-        <div class="dialog-body">
-          <!-- Workflow strip -->
-          <div class="workflow-strip" aria-label="Flujo de tracking">
-            <span class="workflow-title">Flujo de Tracking</span>
-            <div class="workflow-track">
-              <div class="workflow-line" aria-hidden="true"></div>
-              @for (step of workflowSteps; track step.key) {
-                <div class="workflow-step" [attr.data-state]="step.state">
-                  <div class="workflow-node">
-                    @if (step.state === 'done') {
-                      <span class="mi">check_circle</span>
-                    } @else if (step.state === 'active') {
-                      <span class="mi">radio_button_checked</span>
-                    } @else {
-                      <span class="workflow-num">{{ $index + 1 }}</span>
-                    }
-                  </div>
-                  <span class="workflow-label">{{ step.label }}</span>
-                </div>
-              }
-            </div>
-          </div>
-
-          <!-- Unified timeline -->
+        <div class="dialog-body history-dialog-body">
           @if (timeline.length === 0) {
             <div class="timeline-empty">
               <span class="mi">history</span>
               <span>Sin registros en el historial de esta terminal</span>
             </div>
           } @else {
+            <div class="timeline-toolbar">
+              <p class="timeline-hint">Flujo cronológico · {{ timelineOrderLabel }}</p>
+              <button type="button" class="btn-secondary btn-sm" (click)="toggleTimelineOrder()">
+                <span class="mi">swap_vert</span>
+                {{ timelineOldestFirst ? 'Más reciente primero' : 'Más antiguo primero' }}
+              </button>
+            </div>
             <ol class="timeline">
               @for (entry of timeline; track entry.id) {
                 <li class="timeline-item" [attr.data-kind]="entry.kind">
@@ -368,10 +385,16 @@
                     <header class="timeline-card-head">
                       <div class="timeline-card-titles">
                         <span class="timeline-kind">{{ entry.title }}</span>
-                        <span class="timeline-by">por {{ entry.createdBy | userName:'Sistema' }}</span>
+                        <span class="timeline-by">
+                          @if (entry.kind === 'assign' && entry.assignedTo) {
+                            {{ entry.assignedTo | userName:'—':true }}
+                          } @else {
+                            por {{ entry.createdBy | userName:'Sistema':true }}
+                          }
+                        </span>
                       </div>
                       <time class="timeline-date" [attr.datetime]="entry.createdAt">
-                        {{ entry.createdAt | date:'dd MMM yyyy HH:mm' }}
+                        {{ entry.createdAt | date:'dd MMM yyyy · HH:mm' }}
                       </time>
                     </header>
 
@@ -481,6 +504,49 @@
     </div>
   }
 
+  <!-- Assign dialog -->
+  @if (assignTarget) {
+    <div class="dialog-backdrop" (click)="cancelAssign()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Asignar equipo</h2>
+          <button type="button" class="icon-btn" (click)="cancelAssign()"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
+            Terminal <app-copyable-code [value]="assignTarget.serie" label="serie" />
+            · estado actual: <strong>{{ estadoLabels[assignTarget.estado] }}</strong>
+            @if (assignTarget.assignedTo) {
+              · actualmente con <strong>{{ assignTarget.assignedTo | userName:'—':true }}</strong>
+            }
+          </p>
+          <label class="cf-label">Rol *</label>
+          <select class="cf-input" [(ngModel)]="assignRole" (ngModelChange)="onAssignRoleChange()" style="margin-bottom:12px">
+            @for (r of assignRoles; track r) {
+              <option [value]="r">{{ assignRoleLabels[r] }}</option>
+            }
+          </select>
+          <label class="cf-label">Usuario *</label>
+          <select class="cf-input" [(ngModel)]="assignUsername" style="margin-bottom:12px">
+            <option value="">— Seleccione {{ assignRoleLabels[assignRole].toLowerCase() }} —</option>
+            @for (u of assignUsers; track u.id) {
+              <option [value]="u.username">{{ u.nombre || u.username }}</option>
+            }
+          </select>
+          <label class="cf-label">Comentario (opcional)</label>
+          <textarea class="cf-input" rows="3" [(ngModel)]="assignComment" placeholder="Motivo de la asignación…"></textarea>
+          @if (assignError) {
+            <p class="form-error" style="margin-top:10px">{{ assignError }}</p>
+          }
+        </div>
+        <div class="dialog-foot">
+          <button type="button" class="btn-secondary" (click)="cancelAssign()">Cancelar</button>
+          <button type="button" class="btn-primary" (click)="applyAssign()">Asignar</button>
+        </div>
+      </div>
+    </div>
+  }
+
   <!-- Floating row actions menu (outside table so it stacks above history icon) -->
   @if (menuTarget && menuPos) {
     <div
@@ -491,6 +557,11 @@
       <button type="button" class="cf-menu-item" (click)="openView(menuTarget!); closeMenus()">
         <span class="mi">visibility</span> Ver
       </button>
+      @if (canAssign(menuTarget)) {
+        <button type="button" class="cf-menu-item" (click)="openAssign(menuTarget!, $event)">
+          <span class="mi">person_add</span> Asignar
+        </button>
+      }
       <button
         type="button"
         class="cf-menu-item"

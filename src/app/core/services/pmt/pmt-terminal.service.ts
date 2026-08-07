@@ -9,10 +9,12 @@ import {
   MOCK_PMT_INITIALIZATIONS, MOCK_PMT_HISTORICAL,
   MOCK_PMT_ASSIGNED_HISTORY, MOCK_PMT_QUERY_RECORDS
 } from '../../mock/pmt/mock-terminals';
+import { userDisplayName } from '../../utils/user-display.util';
 
 let terminalSeq = MOCK_PMT_TERMINALS.length + 1;
 let trackingSeq = MOCK_PMT_TRACKING.length + 1;
 let initSeq = MOCK_PMT_INITIALIZATIONS.length + 1;
+let assignedHistSeq = MOCK_PMT_ASSIGNED_HISTORY.length + 1;
 
 @Injectable({ providedIn: 'root' })
 export class PmtTerminalService {
@@ -123,6 +125,60 @@ export class PmtTerminalService {
 
   canSendToGarantia(t: Terminal): boolean {
     return !['garantia', 'irreparable', 'obsoleto', 'retirado', 'destruido', 'serie_sustituida'].includes(t.estado);
+  }
+
+  /** Assign / reassign to supervisor, técnico or ejecutivo. */
+  canAssign(t: Terminal): boolean {
+    return [
+      'inyectado',
+      'asignado_supervisor',
+      'asignado_tecnico',
+      'asignado_ejecutivo',
+      'reparado',
+    ].includes(t.estado);
+  }
+
+  assignToUser(
+    id: number,
+    opts: {
+      username: string;
+      role: 'supervisor' | 'tecnico' | 'ejecutivo';
+      comment?: string;
+      createdBy?: string;
+    },
+  ): void {
+    const terminal = this.terminals.find(t => t.id === id);
+    if (!terminal) return;
+
+    const estadoMap = {
+      supervisor: 'asignado_supervisor',
+      tecnico: 'asignado_tecnico',
+      ejecutivo: 'asignado_ejecutivo',
+    } as const;
+    const newEstado = estadoMap[opts.role];
+    const now = new Date().toISOString();
+    const roleLabel =
+      opts.role === 'supervisor' ? 'supervisor' : opts.role === 'tecnico' ? 'técnico' : 'ejecutivo';
+    const displayName = userDisplayName(opts.username, undefined, opts.username);
+    const comment =
+      opts.comment?.trim() ||
+      `Asignado a ${displayName} (${roleLabel})`;
+
+    this.changeEstado(id, newEstado, comment, opts.createdBy ?? 'admin', {
+      assignedTo: opts.username,
+      assignedAt: now,
+    });
+
+    const hist: AssignedPosHistory = {
+      id: assignedHistSeq++,
+      serie: terminal.serie,
+      modelo: terminal.modelo,
+      assignedTo: opts.username,
+      role: opts.role,
+      assignedAt: now,
+      comment: opts.comment?.trim() || undefined,
+    };
+    this.assignedHistorySubject.next([hist, ...this.assignedHistory]);
   }
 
   /** Builds injection payload from a merchant query record + terminal serie. */
