@@ -5,10 +5,10 @@ export const MOCK_PMT_TERMINALS: Terminal[] = [
   { id: 2, serie: 'VX001235', inventario: 'POS-002', marca: 'Verifone', modelo: 'VX520', estado: 'en_bodega', warehouseId: 3, zona: 'Sur', caja: 'CAJA-01', inyectado: 'No', fecha: '2025-01-10', createdAt: '2025-01-10T08:00:00Z', updatedAt: '2025-01-10T08:00:00Z' },
   { id: 3, serie: 'VX001236', inventario: 'POS-003', marca: 'Ingenico', modelo: 'Move5000', estado: 'en_inyeccion', warehouseId: 1, zona: 'Centro', caja: 'CAJA-02', inyectado: 'No', fecha: '2025-01-12', createdAt: '2025-01-12T08:00:00Z', updatedAt: '2025-01-15T08:00:00Z' },
   { id: 4, serie: 'VX001237', inventario: 'POS-004', marca: 'Ingenico', modelo: 'Move5000', estado: 'en_inyeccion', warehouseId: 4, zona: 'Este', caja: 'CAJA-02', inyectado: 'No', fecha: '2025-01-12', createdAt: '2025-01-12T08:00:00Z', updatedAt: '2025-01-15T08:00:00Z' },
-  { id: 5, serie: 'VX001238', inventario: 'POS-005', marca: 'Verifone', modelo: 'VX520', estado: 'asignado_supervisor', warehouseId: 2, zona: 'Norte', assignedTo: 'J. L�pez', assignedAt: '2025-02-01T09:00:00Z', createdAt: '2025-01-15T08:00:00Z', updatedAt: '2025-02-01T09:00:00Z' },
-  { id: 6, serie: 'VX001239', inventario: 'POS-006', marca: 'Verifone', modelo: 'VX520', estado: 'asignado_supervisor', warehouseId: 3, zona: 'Sur', assignedTo: 'J. L�pez', assignedAt: '2025-02-01T09:00:00Z', createdAt: '2025-01-15T08:00:00Z', updatedAt: '2025-02-01T09:00:00Z' },
-  { id: 7, serie: 'VX001240', inventario: 'POS-007', marca: 'Ingenico', modelo: 'Lane3000', estado: 'asignado_tecnico', warehouseId: 1, zona: 'Centro', assignedTo: 'M. Garc�a', assignedAt: '2025-02-05T10:00:00Z', createdAt: '2025-01-20T08:00:00Z', updatedAt: '2025-02-05T10:00:00Z' },
-  { id: 8, serie: 'VX001241', inventario: 'POS-008', marca: 'Ingenico', modelo: 'Lane3000', estado: 'asignado_tecnico', warehouseId: 4, zona: 'Este', assignedTo: 'R. Mart�nez', assignedAt: '2025-02-10T10:00:00Z', createdAt: '2025-01-20T08:00:00Z', updatedAt: '2025-02-10T10:00:00Z' },
+  { id: 5, serie: 'VX001238', inventario: 'POS-005', marca: 'Verifone', modelo: 'VX520', estado: 'asignado_supervisor', warehouseId: 2, zona: 'Norte', assignedTo: 'jlopez', assignedAt: '2025-02-01T09:00:00Z', createdAt: '2025-01-15T08:00:00Z', updatedAt: '2025-02-01T09:00:00Z' },
+  { id: 6, serie: 'VX001239', inventario: 'POS-006', marca: 'Verifone', modelo: 'VX520', estado: 'asignado_supervisor', warehouseId: 3, zona: 'Sur', assignedTo: 'jlopez', assignedAt: '2025-02-01T09:00:00Z', createdAt: '2025-01-15T08:00:00Z', updatedAt: '2025-02-01T09:00:00Z' },
+  { id: 7, serie: 'VX001240', inventario: 'POS-007', marca: 'Ingenico', modelo: 'Lane3000', estado: 'asignado_tecnico', warehouseId: 1, zona: 'Centro', assignedTo: 'mgarcia', assignedAt: '2025-02-05T10:00:00Z', createdAt: '2025-01-20T08:00:00Z', updatedAt: '2025-02-05T10:00:00Z' },
+  { id: 8, serie: 'VX001241', inventario: 'POS-008', marca: 'Ingenico', modelo: 'Lane3000', estado: 'asignado_tecnico', warehouseId: 4, zona: 'Este', assignedTo: 'rmartinez', assignedAt: '2025-02-10T10:00:00Z', createdAt: '2025-01-20T08:00:00Z', updatedAt: '2025-02-10T10:00:00Z' },
   { id: 9, serie: 'VX001242', inventario: 'POS-009', marca: 'Verifone', modelo: 'VX820', estado: 'instalado', merchantId: 'mer-2', merchantSiteId: 'site-2a', zona: 'Norte', nombre: 'Supermercado La Colonia', codigo: 'COM-00102', terminal: 'T00001', direccion: 'Blvd. del Norte Km 2', ciudad: 'San Pedro Sula', comunicacion: 'GPRS', chip: '8950-001', createdAt: '2025-01-25T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z' },
   { id: 10, serie: 'VX001243', inventario: 'POS-010', marca: 'Verifone', modelo: 'VX820', estado: 'instalado', merchantId: 'mer-1', merchantSiteId: 'site-1a', zona: 'Centro', nombre: 'Farmacia San Judas', codigo: 'COM-00101', terminal: 'T00002', direccion: 'Frente al Mercado Los Dolores', ciudad: 'Tegucigalpa', comunicacion: 'IP', chip: '8950-002', createdAt: '2025-01-25T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z' },
   { id: 11, serie: 'VX001244', inventario: 'POS-011', marca: 'Verifone', modelo: 'VX520', estado: 'instalado', merchantId: 'mer-3', merchantSiteId: 'site-3a', zona: 'Centro', nombre: 'Restaurante La Finca', codigo: 'COM-00103', terminal: 'T00003', direccion: 'Blvd. Suyapa', ciudad: 'Tegucigalpa', comunicacion: 'IP', createdAt: '2025-02-01T08:00:00Z', updatedAt: '2025-03-05T08:00:00Z' },
@@ -22,7 +22,7 @@ export const MOCK_PMT_TERMINALS: Terminal[] = [
   { id: 19, serie: 'VX001252', inventario: 'POS-019', marca: 'Ingenico', modelo: 'Lane3000', estado: 'inyectado', warehouseId: 4, zona: 'Este', caja: 'CAJA-03', inyectado: 'Si', fecha: '2025-03-01', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-01T08:00:00Z' },
   { id: 20, serie: 'VX001253', inventario: 'POS-020', marca: 'Verifone', modelo: 'VX820', estado: 'instalado', merchantId: 'mer-4', merchantSiteId: 'site-4a', zona: 'Norte', nombre: 'Ferretería Central', codigo: 'COM-00104', terminal: 'T00005', direccion: 'Col. Satélite, Choloma', ciudad: 'Choloma', comunicacion: 'GPRS', chip: '8950-003', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-04-01T08:00:00Z' },
   { id: 21, serie: 'VX001254', inventario: 'POS-021', marca: 'Verifone', modelo: 'VX820', estado: 'instalado', merchantId: 'mer-2', merchantSiteId: 'site-2c', zona: 'Centro', nombre: 'Supermercado La Colonia', codigo: 'COM-00102', terminal: 'T00006', direccion: 'City Mall TGU', ciudad: 'Tegucigalpa', comunicacion: 'IP', createdAt: '2025-03-05T08:00:00Z', updatedAt: '2025-04-01T08:00:00Z' },
-  { id: 22, serie: 'VX001255', inventario: 'POS-022', marca: 'Ingenico', modelo: 'Move5000', estado: 'asignado_ejecutivo', warehouseId: 1, zona: 'Centro', assignedTo: 'P. S�nchez', assignedAt: '2025-04-01T09:00:00Z', createdAt: '2025-03-10T08:00:00Z', updatedAt: '2025-04-01T09:00:00Z' },
+  { id: 22, serie: 'VX001255', inventario: 'POS-022', marca: 'Ingenico', modelo: 'Move5000', estado: 'asignado_ejecutivo', warehouseId: 1, zona: 'Centro', assignedTo: 'psanchez', assignedAt: '2025-04-01T09:00:00Z', createdAt: '2025-03-10T08:00:00Z', updatedAt: '2025-04-01T09:00:00Z' },
   { id: 23, serie: 'VX001256', inventario: 'POS-023', marca: 'Verifone', modelo: 'VX520', estado: 'reparado', warehouseId: 1, zona: 'Oeste', caja: 'CAJA-04', inyectado: 'Si', fecha: '2025-04-01', createdAt: '2025-04-01T08:00:00Z', updatedAt: '2025-04-01T08:00:00Z' },
   { id: 24, serie: 'VX001257', inventario: 'POS-024', marca: 'Ingenico', modelo: 'Lane3000', estado: 'en_bodega', warehouseId: 1, zona: 'Oeste', caja: 'CAJA-04', inyectado: 'No', fecha: '2025-04-01', createdAt: '2025-04-01T08:00:00Z', updatedAt: '2025-04-01T08:00:00Z' },
   { id: 25, serie: 'VX001258', inventario: 'POS-025', marca: 'Verifone', modelo: 'VX820', estado: 'destruido', warehouseId: 2, zona: 'Norte', createdAt: '2025-04-05T08:00:00Z', updatedAt: '2025-04-10T08:00:00Z' },
@@ -31,9 +31,9 @@ export const MOCK_PMT_TERMINALS: Terminal[] = [
 export const MOCK_PMT_TRACKING: TrackingEvent[] = [
   { id: 1, terminalId: 13, serie: 'VX001246', previousStatus: 'instalado', newStatus: 'en_reparacion', comment: 'Pantalla dañada', createdBy: 'admin', createdAt: '2025-04-01T08:00:00Z' },
   { id: 2, terminalId: 14, serie: 'VX001247', previousStatus: 'instalado', newStatus: 'garantia', comment: 'Defecto de fábrica', createdBy: 'admin', createdAt: '2025-04-05T08:00:00Z' },
-  { id: 3, terminalId: 5, serie: 'VX001238', previousStatus: 'en_bodega', newStatus: 'asignado_supervisor', comment: 'Asignado para distribución zona norte', createdBy: 'J. L�pez', createdAt: '2025-02-01T09:00:00Z' },
-  { id: 4, terminalId: 9, serie: 'VX001242', previousStatus: 'asignado_tecnico', newStatus: 'instalado', comment: 'Instalación completada en comercio', createdBy: 'M. Garc�a', createdAt: '2025-03-01T08:00:00Z' },
-  { id: 5, terminalId: 10, serie: 'VX001243', previousStatus: 'asignado_tecnico', newStatus: 'instalado', comment: 'Instalado correctamente', createdBy: 'R. Mart�nez', createdAt: '2025-03-01T08:00:00Z' },
+  { id: 3, terminalId: 5, serie: 'VX001238', previousStatus: 'en_bodega', newStatus: 'asignado_supervisor', comment: 'Asignado para distribución zona norte', createdBy: 'jlopez', createdAt: '2025-02-01T09:00:00Z' },
+  { id: 4, terminalId: 9, serie: 'VX001242', previousStatus: 'asignado_tecnico', newStatus: 'instalado', comment: 'Instalación completada en comercio', createdBy: 'mgarcia', createdAt: '2025-03-01T08:00:00Z' },
+  { id: 5, terminalId: 10, serie: 'VX001243', previousStatus: 'asignado_tecnico', newStatus: 'instalado', comment: 'Instalado correctamente', createdBy: 'rmartinez', createdAt: '2025-03-01T08:00:00Z' },
 ];
 
 export const MOCK_PMT_INITIALIZATIONS: Initialization[] = [
@@ -47,20 +47,20 @@ export const MOCK_PMT_INITIALIZATIONS: Initialization[] = [
 ];
 
 export const MOCK_PMT_HISTORICAL: HistoricalRecord[] = [
-  { id: 1, serie: 'VX001242', modelo: 'VX820', comercio: 'Supermercado La Colonia', direccion: 'Av Principal 123', ciudad: 'Tegucigalpa', zona: 'Norte', accion: 'instalacion', descripcion: 'Instalación inicial en comercio', createdBy: 'M. Garc�a', createdAt: '2025-03-01T08:00:00Z' },
-  { id: 2, serie: 'VX001243', modelo: 'VX820', comercio: 'Farmacia Kielsa', direccion: 'Col. Altos 45', ciudad: 'San Pedro Sula', zona: 'Sur', accion: 'instalacion', createdBy: 'R. Mart�nez', createdAt: '2025-03-01T09:00:00Z' },
+  { id: 1, serie: 'VX001242', modelo: 'VX820', comercio: 'Supermercado La Colonia', direccion: 'Av Principal 123', ciudad: 'Tegucigalpa', zona: 'Norte', accion: 'instalacion', descripcion: 'Instalación inicial en comercio', createdBy: 'mgarcia', createdAt: '2025-03-01T08:00:00Z' },
+  { id: 2, serie: 'VX001243', modelo: 'VX820', comercio: 'Farmacia Kielsa', direccion: 'Col. Altos 45', ciudad: 'San Pedro Sula', zona: 'Sur', accion: 'instalacion', createdBy: 'rmartinez', createdAt: '2025-03-01T09:00:00Z' },
   { id: 3, serie: 'VX001250', modelo: 'VX820', comercio: 'Comercio Retirado S.A.', zona: 'Sur', accion: 'retiro', descripcion: 'Retiro por cierre de comercio', createdBy: 'admin', createdAt: '2025-01-15T08:00:00Z' },
   { id: 4, serie: 'VX001246', modelo: 'VX520', accion: 'reparacion', descripcion: 'Enviado a taller por pantalla dañada', createdBy: 'admin', createdAt: '2025-04-01T08:00:00Z' },
 ];
 
 export const MOCK_PMT_ASSIGNED_HISTORY: AssignedPosHistory[] = [
-  { id: 1, serie: 'VX001238', modelo: 'VX520', assignedTo: 'J. L�pez', role: 'supervisor', assignedAt: '2025-02-01T09:00:00Z' },
-  { id: 2, serie: 'VX001239', modelo: 'VX520', assignedTo: 'J. L�pez', role: 'supervisor', assignedAt: '2025-02-01T09:00:00Z' },
-  { id: 3, serie: 'VX001240', modelo: 'Lane3000', assignedTo: 'M. Garc�a', role: 'tecnico', assignedAt: '2025-02-05T10:00:00Z' },
-  { id: 4, serie: 'VX001241', modelo: 'Lane3000', assignedTo: 'R. Mart�nez', role: 'tecnico', assignedAt: '2025-02-10T10:00:00Z' },
-  { id: 5, serie: 'VX001245', modelo: 'VX520', assignedTo: 'M. Garc�a', role: 'tecnico', assignedAt: '2025-01-20T10:00:00Z', returnedAt: '2025-03-01T08:00:00Z', comment: 'Devuelto tras instalación exitosa' },
-  { id: 6, serie: 'VX001252', modelo: 'Lane3000', assignedTo: 'M. Garc�a', role: 'tecnico', assignedAt: '2025-04-01T09:00:00Z' },
-  { id: 7, serie: 'VX001255', modelo: 'Move5000', assignedTo: 'P. S�nchez', role: 'ejecutivo', assignedAt: '2025-04-01T09:00:00Z', comment: 'Demo / prueba comercial' },
+  { id: 1, serie: 'VX001238', modelo: 'VX520', assignedTo: 'jlopez', role: 'supervisor', assignedAt: '2025-02-01T09:00:00Z' },
+  { id: 2, serie: 'VX001239', modelo: 'VX520', assignedTo: 'jlopez', role: 'supervisor', assignedAt: '2025-02-01T09:00:00Z' },
+  { id: 3, serie: 'VX001240', modelo: 'Lane3000', assignedTo: 'mgarcia', role: 'tecnico', assignedAt: '2025-02-05T10:00:00Z' },
+  { id: 4, serie: 'VX001241', modelo: 'Lane3000', assignedTo: 'rmartinez', role: 'tecnico', assignedAt: '2025-02-10T10:00:00Z' },
+  { id: 5, serie: 'VX001245', modelo: 'VX520', assignedTo: 'mgarcia', role: 'tecnico', assignedAt: '2025-01-20T10:00:00Z', returnedAt: '2025-03-01T08:00:00Z', comment: 'Devuelto tras instalación exitosa' },
+  { id: 6, serie: 'VX001252', modelo: 'Lane3000', assignedTo: 'mgarcia', role: 'tecnico', assignedAt: '2025-04-01T09:00:00Z' },
+  { id: 7, serie: 'VX001255', modelo: 'Move5000', assignedTo: 'psanchez', role: 'ejecutivo', assignedAt: '2025-04-01T09:00:00Z', comment: 'Demo / prueba comercial' },
 ];
 
 export const MOCK_PMT_QUERY_RECORDS: QueryRecord[] = [

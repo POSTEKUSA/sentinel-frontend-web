@@ -6,6 +6,7 @@ import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.serv
 import { WarehouseService } from '../../../core/services/pmt/warehouse.service';
 import { MerchantService } from '../../../core/services/pos-admin/merchant.service';
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+import { UserNamePipe } from '../../../shared/pipes/user-name.pipe';
 
 import {
   Terminal, TerminalEstado,
@@ -72,7 +73,7 @@ const WORKFLOW_STEPS: { statuses: TerminalEstado[]; label: string }[] = [
 @Component({
   selector: 'app-pmt-inventory',
   standalone: true,
-  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule, RouterLink],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule, RouterLink, UserNamePipe],
   templateUrl: './pmt-inventory.component.html',
   styleUrl: './pmt-inventory.component.css',
 })

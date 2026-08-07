@@ -51,7 +51,7 @@
                   <span class="dot"></span>{{ i.resultado ?? '—' }}
                 </span>
               </td>
-              <td>{{ i.createdBy ?? '—' }}</td>
+              <td>{{ i.createdBy | userName }}</td>
             </tr>
           }
         </tbody>

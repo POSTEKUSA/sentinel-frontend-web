@@ -6,11 +6,12 @@ import { PmtSimCardService } from '../../../core/services/pmt/pmt-sim-card.servi
 import { SimCard, SimCardEstado, SIM_CARD_ESTADO_LABELS, SIM_CARD_ESTADO_BADGE } from '../../../core/models/pmt/sim-card.model';
 
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+import { UserNamePipe } from '../../../shared/pipes/user-name.pipe';
 
 @Component({
   selector: 'app-pmt-sim-cards',
   standalone: true,
-  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule, UserNamePipe],
   templateUrl: './pmt-sim-cards.component.html',
   styleUrl: './pmt-sim-cards.component.css',
 })

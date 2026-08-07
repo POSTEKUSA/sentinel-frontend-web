@@ -13,11 +13,12 @@ import {
 } from '../../../core/models/pos-admin';
 import { PurchaseOrderService } from '../../../core/services/pos-admin/purchase-order.service';
 import { PosCatalogService } from '../../../core/services/pos-admin/pos-catalog.service';
+import { UserNamePipe } from '../../../shared/pipes/user-name.pipe';
 
 @Component({
   selector: 'app-purchase-order-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, UserNamePipe],
   templateUrl: './purchase-order-form.component.html',
   styleUrl: './purchase-order-form.component.css',
 })

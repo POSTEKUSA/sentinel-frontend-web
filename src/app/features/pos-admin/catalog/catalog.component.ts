@@ -11,6 +11,7 @@ import {
   Supplier,
 } from '../../../core/models/pos-admin';
 import { PosCatalogService } from '../../../core/services/pos-admin/pos-catalog.service';
+import { userDisplayName } from '../../../core/utils/user-display.util';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { BrandModelDialogComponent } from './dialogs/brand-model-dialog.component';
@@ -94,7 +95,7 @@ export class CatalogComponent implements OnInit {
       type: 'date',
       dateFormat: 'short',
       sortable: true,
-      sub: row => row.createdBy,
+      sub: row => userDisplayName(row.createdBy),
     },
   ];
 

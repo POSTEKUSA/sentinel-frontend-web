@@ -5,11 +5,12 @@ import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.serv
 import { Initialization } from '../../../core/models/pmt/terminal.model';
 
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+import { UserNamePipe } from '../../../shared/pipes/user-name.pipe';
 
 @Component({
   selector: 'app-pmt-inicializaciones',
   standalone: true,
-  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, UserNamePipe],
   templateUrl: './pmt-inicializaciones.component.html',
   styleUrl: './pmt-inicializaciones.component.css',
 })

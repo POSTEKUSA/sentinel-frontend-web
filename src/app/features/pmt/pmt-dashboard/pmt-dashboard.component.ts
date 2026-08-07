@@ -6,11 +6,12 @@ import { PmtSimCardService } from '../../../core/services/pmt/pmt-sim-card.servi
 import { TerminalEstado, TERMINAL_ESTADO_LABELS, TrackingEvent } from '../../../core/models/pmt/terminal.model';
 
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+import { UserNamePipe } from '../../../shared/pipes/user-name.pipe';
 
 @Component({
   selector: 'app-pmt-dashboard',
   standalone: true,
-  imports: [CopyableCodeComponent, CommonModule, RouterModule],
+  imports: [CopyableCodeComponent, CommonModule, RouterModule, UserNamePipe],
   templateUrl: './pmt-dashboard.component.html',
   styleUrl: './pmt-dashboard.component.css',
 })

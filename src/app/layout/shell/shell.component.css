@@ -137,21 +137,6 @@
   flex: none;
 }
 
-.nav-item.nav-catalog {
-  margin-left: 6px;
-  padding-left: 10px;
-  border-left: 2px solid var(--line);
-  border-radius: 0 7px 7px 0;
-}
-
-.nav-item.nav-catalog.active {
-  border-left-color: var(--brand);
-}
-
-.nav-item.nav-catalog.active::before {
-  display: none;
-}
-
 .nav-item {
   display: flex;
   align-items: center;

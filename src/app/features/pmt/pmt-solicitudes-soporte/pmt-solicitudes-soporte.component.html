@@ -82,7 +82,7 @@
           <div class="grid-2" style="margin-bottom:12px">
             <div><span class="cf-label">Tipo:</span> <span>{{ detail.tipo | titlecase }}</span></div>
             <div><span class="cf-label">Serie:</span> <app-copyable-code [value]="detail.serie" label="serie" /></div>
-            <div><span class="cf-label">Creado por:</span> <span>{{ detail.createdBy ?? '—' }}</span></div>
+            <div><span class="cf-label">Creado por:</span> <span>{{ detail.createdBy | userName }}</span></div>
             <div><span class="cf-label">Creado:</span> <span>{{ detail.createdAt | date:'dd/MM/yyyy HH:mm' }}</span></div>
           </div>
           <p style="font-size:13px;color:var(--ink-2);margin-bottom:14px">{{ detail.descripcion }}</p>
@@ -107,7 +107,7 @@
           <div style="display:flex;flex-direction:column;gap:10px;max-height:200px;overflow-y:auto;margin-bottom:14px">
             @for (c of detail.comments; track c.id) {
               <div style="padding:8px 10px;background:var(--surface-alt);border-radius:6px;font-size:13px">
-                <div style="font-weight:600;margin-bottom:2px">{{ c.createdBy }} <span style="font-weight:400;color:var(--ink-3)">· {{ c.createdAt | date:'dd/MM/yy HH:mm' }}</span></div>
+                <div style="font-weight:600;margin-bottom:2px">{{ c.createdBy | userName }} <span style="font-weight:400;color:var(--ink-3)">· {{ c.createdAt | date:'dd/MM/yy HH:mm' }}</span></div>
                 <div>{{ c.comment }}</div>
               </div>
             }

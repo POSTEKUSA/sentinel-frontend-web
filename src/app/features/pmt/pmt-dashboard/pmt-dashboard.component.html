@@ -187,7 +187,7 @@
                 <div class="activity-dot"></div>
                 <div class="activity-body">
                   <p class="activity-text">
-                    <strong>{{ ev.createdBy ?? 'Sistema' }}</strong> cambió
+                    <strong>{{ ev.createdBy | userName:'Sistema' }}</strong> cambió
                     <app-copyable-code [value]="ev.serie" label="serie" />
                   </p>
                   @if (ev.previousStatus && ev.newStatus) {

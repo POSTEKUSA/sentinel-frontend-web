@@ -9,7 +9,7 @@
           Registra una nueva orden de compra de POS, accesorios y consumibles
         } @else if (order) {
           <span class="cf-badge cf-badge-info"><span class="dot"></span>{{ statusLabels[order.status] }}</span>
-          · Creada por {{ order.createdBy }} el {{ order.createdAt | date: 'medium' }}
+          · Creada por {{ order.createdBy | userName }} el {{ order.createdAt | date: 'medium' }}
         }
       </p>
     </div>

@@ -56,7 +56,7 @@
                   <span class="dot"></span>{{ estadoLabels[s.estado] }}
                 </span>
               </td>
-              <td>{{ s.terminalSerie ?? s.assignedTo ?? '—' }}</td>
+              <td>{{ s.terminalSerie ?? (s.assignedTo | userName) }}</td>
               <td>{{ s.apn ?? '—' }}</td>
               <td>{{ s.ip ?? '—' }}</td>
               <td style="text-align:right">

@@ -5,6 +5,8 @@ import { PmtTerminalService } from '../../../core/services/pmt/pmt-terminal.serv
 import { Terminal, TerminalEstado, TERMINAL_ESTADO_LABELS, AssignedPosHistory } from '../../../core/models/pmt/terminal.model';
 
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+import { UserNamePipe } from '../../../shared/pipes/user-name.pipe';
+import { userDisplayName } from '../../../core/utils/user-display.util';
 
 type AsignadosTab = 'supervisor' | 'tecnico' | 'ejecutivo';
 
@@ -23,7 +25,7 @@ const ROLE_LABEL: Record<AssignedPosHistory['role'], string> = {
 @Component({
   selector: 'app-pmt-asignados',
   standalone: true,
-  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule],
+  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, UserNamePipe],
   templateUrl: './pmt-asignados.component.html',
   styleUrl: './pmt-asignados.component.css',
 })
@@ -69,8 +71,12 @@ export class PmtAsignadosComponent implements OnInit {
     this.filtered = this.all.filter(t => {
       if (t.estado !== this.tabEstado) return false;
       const q = (f.q ?? '').toLowerCase().trim();
-      if (q && ![t.serie, t.modelo, t.nombre, t.assignedTo].some(v => (v ?? '').toLowerCase().includes(q))) return false;
-      if (f.assignedTo && !(t.assignedTo ?? '').toLowerCase().includes(f.assignedTo.toLowerCase())) return false;
+      const assignedName = userDisplayName(t.assignedTo, undefined, '').toLowerCase();
+      if (q && ![t.serie, t.modelo, t.nombre, t.assignedTo, assignedName].some(v => (v ?? '').toLowerCase().includes(q))) return false;
+      if (f.assignedTo) {
+        const needle = f.assignedTo.toLowerCase();
+        if (!(t.assignedTo ?? '').toLowerCase().includes(needle) && !assignedName.includes(needle)) return false;
+      }
       return true;
     });
   }
@@ -81,7 +87,13 @@ export class PmtAsignadosComponent implements OnInit {
 
   reasignar(t: Terminal, newUser: string): void {
     if (!newUser.trim()) return;
-    this.svc.changeEstado(t.id, t.estado, `Reasignado de ${t.assignedTo} a ${newUser}`, 'admin', { assignedTo: newUser, assignedAt: new Date().toISOString() });
+    this.svc.changeEstado(
+      t.id,
+      t.estado,
+      `Reasignado de ${userDisplayName(t.assignedTo)} a ${userDisplayName(newUser, undefined, newUser)}`,
+      'admin',
+      { assignedTo: newUser, assignedAt: new Date().toISOString() },
+    );
   }
 
   // ── History ───────────────────────────────────────────────────────────────

@@ -368,7 +368,7 @@
                     <header class="timeline-card-head">
                       <div class="timeline-card-titles">
                         <span class="timeline-kind">{{ entry.title }}</span>
-                        <span class="timeline-by">por {{ entry.createdBy || 'Sistema' }}</span>
+                        <span class="timeline-by">por {{ entry.createdBy | userName:'Sistema' }}</span>
                       </div>
                       <time class="timeline-date" [attr.datetime]="entry.createdAt">
                         {{ entry.createdAt | date:'dd MMM yyyy HH:mm' }}

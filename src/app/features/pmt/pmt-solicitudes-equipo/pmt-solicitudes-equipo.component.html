@@ -34,7 +34,7 @@
           @for (s of filtered; track s.id) {
             <tr>
               <td class="td-sub">{{ s.id }}</td>
-              <td>{{ s.solicitadoPor }}</td>
+              <td>{{ s.solicitadoPor | userName }}</td>
               <td>{{ s.items.length }} ítem(s)</td>
               <td>
                 <span class="cf-badge" [ngClass]="estadoBadge[s.estado]">
@@ -62,7 +62,7 @@
         </div>
         <div class="dialog-body">
           <div class="grid-2" style="margin-bottom:14px">
-            <div><span class="cf-label">Solicitado por:</span> {{ detail.solicitadoPor }}</div>
+            <div><span class="cf-label">Solicitado por:</span> {{ detail.solicitadoPor | userName }}</div>
             <div><span class="cf-label">Fecha:</span> {{ detail.createdAt | date:'dd/MM/yyyy' }}</div>
             <div><span class="cf-label">Estado actual:</span>
               <span class="cf-badge" [ngClass]="estadoBadge[detail.estado]"><span class="dot"></span>{{ estadoLabels[detail.estado] }}</span>
@@ -88,7 +88,7 @@
               @for (h of detail.history; track h.id) {
                 <div style="font-size:12px;padding:6px 10px;background:var(--surface-alt);border-radius:6px">
                   <span class="cf-badge" [ngClass]="estadoBadge[h.estado]"><span class="dot"></span>{{ estadoLabels[h.estado] }}</span>
-                  <span style="color:var(--ink-2);margin-left:8px">{{ h.createdBy }} · {{ h.createdAt | date:'dd/MM/yy HH:mm' }}</span>
+                  <span style="color:var(--ink-2);margin-left:8px">{{ h.createdBy | userName }} · {{ h.createdAt | date:'dd/MM/yy HH:mm' }}</span>
                   @if (h.comment) { <p style="margin-top:4px;color:var(--ink)">{{ h.comment }}</p> }
                 </div>
               }

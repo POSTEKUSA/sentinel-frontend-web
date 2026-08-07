@@ -7,11 +7,12 @@ import {
   SolicitudEquipo, SolicitudEquipoEstado, SolicitudEquipoItem,
   SOLICITUD_EQUIPO_ESTADO_LABELS, SOLICITUD_EQUIPO_ESTADO_BADGE, EQUIPO_ITEMS
 } from '../../../core/models/pmt/solicitud.model';
+import { UserNamePipe } from '../../../shared/pipes/user-name.pipe';
 
 @Component({
   selector: 'app-pmt-solicitudes-equipo',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, UserNamePipe],
   templateUrl: './pmt-solicitudes-equipo.component.html',
   styleUrl: './pmt-solicitudes-equipo.component.css',
 })

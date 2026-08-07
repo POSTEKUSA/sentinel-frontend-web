@@ -24,7 +24,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <input type="search" formControlName="q" placeholder="Buscar serie, comercio…" />
       </label>
-      <input class="cf-input filter-input" formControlName="assignedTo" placeholder="Usuario…" />
+      <input class="cf-input filter-input" formControlName="assignedTo" placeholder="Nombre…" />
     </form>
   </div>
 
@@ -59,7 +59,7 @@
               <td class="td-truncate" [title]="t.nombre ?? ''">{{ t.nombre ?? '—' }}</td>
               <td>{{ t.ciudad ?? '—' }}</td>
               <td>
-                <span class="cf-badge cf-badge-info"><span class="dot"></span>{{ t.assignedTo ?? '—' }}</span>
+                <span class="cf-badge cf-badge-info"><span class="dot"></span>{{ t.assignedTo | userName }}</span>
               </td>
               <td>{{ t.assignedAt | date:'dd/MM/yyyy' }}</td>
               <td style="text-align:right">
@@ -105,7 +105,7 @@
                   <tr>
                     <td>{{ h.assignedAt | date:'dd/MM/yyyy' }}</td>
                     <td>{{ h.returnedAt ? (h.returnedAt | date:'dd/MM/yyyy') : '—' }}</td>
-                    <td><strong>{{ h.assignedTo }}</strong></td>
+                    <td><strong>{{ h.assignedTo | userName }}</strong></td>
                     <td>
                       <span class="cf-badge" [ngClass]="h.role === 'supervisor' ? 'cf-badge-info' : h.role === 'ejecutivo' ? 'cf-badge-warn' : 'cf-badge-ok'">
                         <span class="dot"></span>{{ roleLabel[h.role] }}
