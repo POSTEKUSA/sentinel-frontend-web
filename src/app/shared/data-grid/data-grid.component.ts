@@ -18,6 +18,7 @@ import { ListSort } from './list-query';
 import {
   DataGridAction,
   DataGridActionEvent,
+  DataGridActionKind,
   DataGridColumn,
   DataGridQueryChange,
 } from './data-grid.types';
@@ -382,11 +383,17 @@ export class DataGridComponent<T = unknown> implements OnChanges {
   }
 
   buttonActionsFor(row: T): DataGridAction<T>[] {
-    return this.actions.filter(a => (a.kind ?? 'button') === 'button' && this.isVisible(a, row));
+    return this.actions.filter(a => this.resolvedKind(a) === 'button' && this.isVisible(a, row));
   }
 
   menuActionsFor(row: T): DataGridAction<T>[] {
-    return this.actions.filter(a => a.kind === 'menu' && this.isVisible(a, row));
+    return this.actions.filter(a => this.resolvedKind(a) === 'menu' && this.isVisible(a, row));
+  }
+
+  /** Default: `view` stays inline; edit/delete/etc. go in the ⋮ menu. */
+  resolvedKind(act: DataGridAction<T>): DataGridActionKind {
+    if (act.kind) return act.kind;
+    return act.id === 'view' ? 'button' : 'menu';
   }
 
   actionBtnClass(act: DataGridAction<T>): string {

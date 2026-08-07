@@ -70,11 +70,10 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'Reparación', icon: 'build', route: '/pmt/reparacion' },
         { label: 'En Garantía', icon: 'shield', route: '/pmt/garantia' },
         { label: 'SIM Cards', icon: 'sim_card', route: '/pmt/sim-cards' },
-        { label: 'Merchant Config', icon: 'storefront', route: '/pmt/query' },
         { label: 'Requisiciones', icon: 'shopping_cart', route: '/pmt/solicitudes-equipo', tooltip: 'Solicitudes de Producto o Compras a activo fijo' },
         { label: 'Compras', icon: 'orders', route: '/pos-admin/purchase-orders' },
         { label: 'Soporte', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
-        { label: 'Comercios', icon: 'merchants', route: '/pos-admin/merchants', dividerBefore: true, catalog: true },
+        { label: 'Comercios / MCC', icon: 'merchants', route: '/pos-admin/merchants', dividerBefore: true, catalog: true },
         { label: 'Bodegas', icon: 'warehouse', route: '/pmt/bodega', catalog: true },
         { label: 'Marcas / Modelos', icon: 'catalog', route: '/pos-admin/catalog', catalog: true },
         { label: 'Usuarios', icon: 'group', route: '/pmt/users', catalog: true },
@@ -152,7 +151,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/pos-admin/receiving')) return { title: 'Recepción', icon: 'receiving' };
     if (path.startsWith('/pos-admin/inventory')) return { title: 'Inventario', icon: 'inventory' };
     if (/^\/pos-admin\/merchants\/[^/]+/.test(path)) return { title: 'Comercio', icon: 'merchants' };
-    if (path.startsWith('/pos-admin/merchants')) return { title: 'Comercios', icon: 'merchants' };
+    if (path.startsWith('/pos-admin/merchants')) return { title: 'Comercios / MCC', icon: 'merchants' };
     if (path.startsWith('/dashboard')) return { title: 'Vista general de la flota', icon: 'dashboard' };
     
     // PMT Routes
@@ -168,7 +167,6 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/pmt/solicitudes-soporte')) return { title: 'Soporte', icon: 'support_agent' };
     if (path.startsWith('/pmt/solicitudes-equipo')) return { title: 'Requisiciones', icon: 'shopping_cart' };
     if (path.startsWith('/pmt/control-pos')) return { title: 'Tráfico', icon: 'sync_alt' };
-    if (path.startsWith('/pmt/query')) return { title: 'Merchant Config', icon: 'storefront' };
     if (path.startsWith('/pmt/bulk-upload')) return { title: 'Subir Inventario', icon: 'cloud_upload' };
     if (path.startsWith('/pmt/users')) return { title: 'Usuarios', icon: 'group' };
     if (path.startsWith('/pmt/')) return { title: 'Administración Activos', icon: 'inventory' };

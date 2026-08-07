@@ -34,7 +34,7 @@
     <div class="admin-table-wrap">
       <table class="cf-table">
         <thead>
-          <tr><th>Username</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Primer Login</th><th>Creado</th><th style="text-align:right">Acciones</th></tr>
+          <tr><th>Nombre</th><th>Username</th><th>Email</th><th>Rol</th><th>Estado</th><th>Primer Login</th><th>Creado</th><th style="text-align:right">Acciones</th></tr>
         </thead>
         <tbody>
           @if (filtered.length === 0) {
@@ -42,8 +42,8 @@
           }
           @for (u of filtered; track u.id) {
             <tr>
-              <td><app-copyable-code [value]="u.username" label="usuario" /></td>
               <td>{{ u.nombre ?? '—' }}</td>
+              <td><app-copyable-code [value]="u.username" label="usuario" /></td>
               <td class="td-sub">{{ u.email ?? '—' }}</td>
               <td><span class="cf-badge cf-badge-muted"><span class="dot"></span>{{ roleLabels[u.role] }}</span></td>
               <td>
@@ -60,12 +60,28 @@
               </td>
               <td>{{ u.createdAt | date:'dd/MM/yyyy' }}</td>
               <td style="text-align:right">
-                <div class="row-actions">
-                  <button class="icon-btn" title="{{ u.active ? 'Desactivar' : 'Activar' }}" (click)="toggleActive(u)">
-                    <span class="mi">{{ u.active ? 'person_off' : 'person' }}</span>
-                  </button>
-                  <button class="icon-btn" title="Editar" (click)="openEdit(u)"><span class="mi">edit</span></button>
-                  <button class="icon-btn icon-btn--danger" title="Eliminar" (click)="delete(u.id)"><span class="mi">delete</span></button>
+                <div class="row-actions" style="justify-content:flex-end">
+                  <div class="cf-menu" [class.open]="openMenuId === 'usr-' + u.id">
+                    <button
+                      type="button"
+                      class="cf-icon-btn"
+                      aria-label="Más acciones"
+                      (click)="toggleMenu('usr-' + u.id, $event)">
+                      <span class="mi">more_vert</span>
+                    </button>
+                    <div class="cf-menu-panel">
+                      <button type="button" class="cf-menu-item" (click)="toggleActive(u); closeMenus()">
+                        <span class="mi">{{ u.active ? 'person_off' : 'person' }}</span>
+                        {{ u.active ? 'Desactivar' : 'Activar' }}
+                      </button>
+                      <button type="button" class="cf-menu-item" (click)="openEdit(u); closeMenus()">
+                        <span class="mi">edit</span> Editar
+                      </button>
+                      <button type="button" class="cf-menu-item danger" (click)="delete(u.id); closeMenus()">
+                        <span class="mi">delete_outline</span> Eliminar
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </td>
             </tr>
@@ -84,8 +100,8 @@
         </div>
         <form [formGroup]="formData" class="dialog-body" (ngSubmit)="save()">
           <div class="grid-2">
-            <div><label class="cf-label">Username *</label><input class="cf-input" formControlName="username" placeholder="jlopez" /></div>
             <div><label class="cf-label">Nombre</label><input class="cf-input" formControlName="nombre" placeholder="Juan López" /></div>
+            <div><label class="cf-label">Username *</label><input class="cf-input" formControlName="username" placeholder="jlopez" /></div>
             <div><label class="cf-label">Email</label><input class="cf-input" formControlName="email" type="email" placeholder="jlopez@postek.com" /></div>
             <div><label class="cf-label">Rol</label>
               <select class="cf-input" formControlName="role">

@@ -27,6 +27,12 @@ export interface DataGridColumn<T = unknown> {
 
 export type DataGridActionKind = 'button' | 'menu';
 
+/**
+ * Row action. Placement:
+ * - `kind: 'button'` → inline outside the ⋮ menu
+ * - `kind: 'menu'` → inside the overflow menu
+ * - omit `kind` → default: `view` is inline; everything else goes in the menu
+ */
 export interface DataGridAction<T = unknown> {
   id: string;
   label: string;

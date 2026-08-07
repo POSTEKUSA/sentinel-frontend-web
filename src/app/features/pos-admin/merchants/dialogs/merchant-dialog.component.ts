@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
-import { Merchant, MerchantStatus } from '../../../../core/models/pos-admin';
+import { Merchant, MerchantStatus, MccCode, TransactionLimit } from '../../../../core/models/pos-admin';
 import { MerchantService } from '../../../../core/services/pos-admin/merchant.service';
+import { MccCatalogService } from '../../../../core/services/pos-admin/mcc-catalog.service';
+import { LimitCatalogService } from '../../../../core/services/pos-admin/limit-catalog.service';
 import { WarehouseService } from '../../../../core/services/pmt/warehouse.service';
 import { Warehouse } from '../../../../core/models/pmt/warehouse.model';
 import { CIUDADES_POR_PAIS, PAISES, ZONAS_DEFAULT } from '../../../../core/constants/geo.constants';
@@ -39,13 +41,26 @@ export interface MerchantDialogData {
             <label for="tradeName">Nombre comercial</label>
             <input id="tradeName" formControlName="tradeName" autocomplete="organization" />
           </div>
-          <div class="field">
+          <div class="field field--span-2">
             <label for="mcc">MCC</label>
-            <input id="mcc" formControlName="mcc" placeholder="5411…" autocomplete="off" spellcheck="false" />
+            <select id="mcc" formControlName="mcc">
+              <option value="">— Seleccionar MCC —</option>
+              @for (m of mccOptions; track m.id) {
+                <option [value]="m.code">{{ m.code }} · {{ m.description }}</option>
+              }
+            </select>
+            @if (selectedMccDescription) {
+              <span class="field-hint">{{ selectedMccDescription }}</span>
+            }
           </div>
-          <div class="field">
-            <label for="mccDescription">Categoría (MCC)</label>
-            <input id="mccDescription" formControlName="mccDescription" placeholder="Supermercados…" />
+          <div class="field field--span-2">
+            <label for="limitCode">Límite</label>
+            <select id="limitCode" formControlName="limitCode">
+              <option value="">— Sin límite —</option>
+              @for (l of limitOptions; track l.id) {
+                <option [value]="l.code">{{ l.code }} · {{ l.name }}</option>
+              }
+            </select>
           </div>
           <div class="field">
             <label for="department">Departamento</label>
@@ -120,12 +135,27 @@ export interface MerchantDialogData {
       </form>
     </div>
   `,
+  styles: [
+    `
+      .field--span-2 {
+        grid-column: 1 / -1;
+      }
+      .field-hint {
+        display: block;
+        margin-top: 4px;
+        font-size: 0.78rem;
+        color: var(--ink-3, #8a929c);
+      }
+    `,
+  ],
 })
 export class MerchantDialogComponent {
   dialogRef = inject<MatDialogRef<MerchantDialogComponent, boolean>>(MatDialogRef);
   data = inject<MerchantDialogData>(MAT_DIALOG_DATA);
   private fb = inject(FormBuilder);
   private merchantSvc = inject(MerchantService);
+  private mccSvc = inject(MccCatalogService);
+  private limitSvc = inject(LimitCatalogService);
   private warehouseSvc = inject(WarehouseService);
 
   readonly paises = PAISES;
@@ -133,12 +163,14 @@ export class MerchantDialogComponent {
   readonly statusOptions: StatusOption[] = STATUS_ACTIVE_INACTIVE;
   ciudades: string[] = [];
   warehouses: Warehouse[] = [];
+  mccOptions: MccCode[] = [];
+  limitOptions: TransactionLimit[] = [];
 
   form = this.fb.group({
     affiliateCode: [this.data.item?.affiliateCode ?? '', Validators.required],
     tradeName: [this.data.item?.tradeName ?? '', Validators.required],
     mcc: [this.data.item?.mcc ?? '', Validators.required],
-    mccDescription: [this.data.item?.mccDescription ?? '', Validators.required],
+    limitCode: [this.data.item?.limitCode ?? ''],
     department: [this.data.item?.department ?? '', Validators.required],
     municipality: [this.data.item?.municipality ?? '', Validators.required],
     address: [this.data.item?.address ?? ''],
@@ -150,7 +182,17 @@ export class MerchantDialogComponent {
     responsibleName: [this.data.item?.responsibleName ?? ''],
   });
 
+  get selectedMccDescription(): string {
+    const code = this.form.getRawValue().mcc;
+    if (!code) return '';
+    return this.mccOptions.find(m => m.code === code)?.description
+      ?? this.data.item?.mccDescription
+      ?? '';
+  }
+
   constructor() {
+    this.mccOptions = this.buildMccOptions();
+    this.limitOptions = this.buildLimitOptions();
     this.warehouses = this.warehouseSvc.getActive();
     if (this.data.item?.warehouseId != null) {
       const current = this.warehouseSvc.getById(this.data.item.warehouseId);
@@ -177,6 +219,42 @@ export class MerchantDialogComponent {
     });
   }
 
+  private buildMccOptions(): MccCode[] {
+    const active = this.mccSvc.getActive();
+    const currentCode = this.data.item?.mcc;
+    if (!currentCode) return active;
+    if (active.some(m => m.code === currentCode)) return active;
+    const inactive = this.mccSvc.getByCode(currentCode);
+    if (inactive) return [...active, inactive];
+    return [
+      ...active,
+      {
+        id: `mcc-legacy-${currentCode}`,
+        code: currentCode,
+        description: this.data.item?.mccDescription || currentCode,
+        status: 'inactive',
+      },
+    ];
+  }
+
+  private buildLimitOptions(): TransactionLimit[] {
+    const active = this.limitSvc.getActive();
+    const currentCode = this.data.item?.limitCode;
+    if (!currentCode) return active;
+    if (active.some(l => l.code === currentCode)) return active;
+    const inactive = this.limitSvc.getByCode(currentCode);
+    if (inactive) return [...active, inactive];
+    return [
+      ...active,
+      {
+        id: `lim-legacy-${currentCode}`,
+        code: currentCode,
+        name: currentCode,
+        status: 'inactive',
+      },
+    ];
+  }
+
   private setCiudades(pais: string, keep?: string): void {
     const list = [...(CIUDADES_POR_PAIS[pais] ?? [])];
     if (keep?.trim() && !list.includes(keep)) list.unshift(keep);
@@ -187,11 +265,17 @@ export class MerchantDialogComponent {
     if (this.form.invalid) return;
     const v = this.form.getRawValue();
     const warehouseId = v.warehouseId ? Number(v.warehouseId) : undefined;
+    const mcc = v.mcc!;
+    const mccDescription =
+      this.mccOptions.find(m => m.code === mcc)?.description
+      ?? this.data.item?.mccDescription
+      ?? mcc;
     const value: Omit<Merchant, 'id' | 'createdAt'> = {
       affiliateCode: v.affiliateCode!,
       tradeName: v.tradeName!,
-      mcc: v.mcc!,
-      mccDescription: v.mccDescription!,
+      mcc,
+      mccDescription,
+      limitCode: v.limitCode || undefined,
       department: v.department!,
       municipality: v.municipality!,
       address: v.address ?? '',

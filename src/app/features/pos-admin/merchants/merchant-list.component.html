@@ -1,21 +1,31 @@
 <div class="admin-page">
   <header class="cf-head">
     <div>
-      <h1>Comercios Afiliados</h1>
+      <h1>Comercios / MCC</h1>
       <p class="count">
-        <b>{{ filtered.length }}</b> comercios
-        @if (all.length !== filtered.length) {
-          <span> · {{ all.length }} en total</span>
+        @if (activeTab === 'comercios') {
+          <b>{{ filtered.length }}</b> comercios
+          @if (all.length !== filtered.length) {
+            <span> · {{ all.length }} en total</span>
+          }
+        } @else if (activeTab === 'mcc') {
+          Catálogo de códigos MCC
+        } @else if (activeTab === 'limites') {
+          Catálogo de límites de transacción
+        } @else {
+          Distribución de comercios por MCC
         }
       </p>
     </div>
     <div class="head-actions">
-      <button type="button" class="btn-primary" (click)="openCreateDialog()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-        Nuevo comercio
-      </button>
+      @if (primaryActionLabel; as label) {
+        <button type="button" class="btn-primary" (click)="onPrimaryAction()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          {{ label }}
+        </button>
+      }
     </div>
   </header>
 
@@ -26,7 +36,7 @@
       role="tab"
       [class.active]="activeTab === 'comercios'"
       [attr.aria-selected]="activeTab === 'comercios'"
-      (click)="activeTab = 'comercios'">
+      (click)="setTab('comercios')">
       Comercios
     </button>
     <button
@@ -35,8 +45,26 @@
       role="tab"
       [class.active]="activeTab === 'mcc'"
       [attr.aria-selected]="activeTab === 'mcc'"
-      (click)="activeTab = 'mcc'">
-      Reporte por MCC
+      (click)="setTab('mcc')">
+      MCC
+    </button>
+    <button
+      type="button"
+      class="cf-tab"
+      role="tab"
+      [class.active]="activeTab === 'limites'"
+      [attr.aria-selected]="activeTab === 'limites'"
+      (click)="setTab('limites')">
+      Límites
+    </button>
+    <button
+      type="button"
+      class="cf-tab"
+      role="tab"
+      [class.active]="activeTab === 'reporte'"
+      [attr.aria-selected]="activeTab === 'reporte'"
+      (click)="setTab('reporte')">
+      Reporte MCC
     </button>
   </div>
 
@@ -110,7 +138,12 @@
                   <td><app-copyable-code [value]="m.affiliateCode" label="código" /></td>
                   <td>
                     <div class="td-name">{{ m.tradeName }}</div>
-                    <div class="td-sub">MCC {{ m.mcc }} · {{ m.mccDescription }}</div>
+                    <div class="td-sub">
+                      MCC {{ m.mcc }} · {{ m.mccDescription }}
+                      @if (m.limitCode) {
+                        <span> · Límite {{ m.limitCode }}</span>
+                      }
+                    </div>
                   </td>
                   <td class="num">{{ activePosCount(m.id) }}</td>
                   <td>{{ m.ciudad || m.municipality }}{{ m.zona ? ' · ' + m.zona : '' }}{{ m.pais ? ', ' + m.pais : (', ' + m.department) }}</td>
@@ -120,14 +153,24 @@
                   <td>{{ m.createdAt | date: 'mediumDate' }}</td>
                   <td>
                     <div class="row-actions">
-                      <button type="button" class="btn-secondary btn-sm" (click)="openEditDialog(m)">
-                        <span class="mi">edit</span>
-                        Editar
-                      </button>
                       <a class="btn-secondary btn-sm" [routerLink]="['/pos-admin/merchants', m.id]">
                         <span class="mi">visibility</span>
                         Ver
                       </a>
+                      <div class="cf-menu" [class.open]="openMenuId === 'mer-' + m.id">
+                        <button
+                          type="button"
+                          class="cf-icon-btn"
+                          aria-label="Más acciones"
+                          (click)="toggleMenu('mer-' + m.id, $event)">
+                          <span class="mi">more_vert</span>
+                        </button>
+                        <div class="cf-menu-panel">
+                          <button type="button" class="cf-menu-item" (click)="openEditDialog(m); closeMenus()">
+                            <span class="mi">edit</span> Editar
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -140,6 +183,14 @@
   }
 
   @if (activeTab === 'mcc') {
+    <app-mcc-catalog-panel />
+  }
+
+  @if (activeTab === 'limites') {
+    <app-limit-catalog-panel />
+  }
+
+  @if (activeTab === 'reporte') {
     <div class="panel">
       @if (mccReport.length === 0) {
         <app-empty-state icon="pie_chart" title="Sin datos"></app-empty-state>

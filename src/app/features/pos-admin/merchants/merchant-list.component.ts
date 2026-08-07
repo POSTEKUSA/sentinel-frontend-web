@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -8,13 +8,18 @@ import { Merchant } from '../../../core/models/pos-admin';
 import { MerchantService } from '../../../core/services/pos-admin/merchant.service';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { MerchantDialogComponent } from './dialogs/merchant-dialog.component';
+import { MccDialogComponent } from './dialogs/mcc-dialog.component';
+import { LimitDialogComponent } from './dialogs/limit-dialog.component';
 import {
   StatusTagComponent,
   STATUS_TAG_ACTIVE_INACTIVE,
   StatusTagOption,
 } from '../../../shared/status-tag/status-tag.component';
-
 import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
+import { MccCatalogPanelComponent } from './tabs/mcc-catalog-panel.component';
+import { LimitCatalogPanelComponent } from './tabs/limit-catalog-panel.component';
+
+export type MerchantHubTab = 'comercios' | 'mcc' | 'limites' | 'reporte';
 
 @Component({
   selector: 'app-merchant-list',
@@ -26,13 +31,16 @@ import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-co
     ReactiveFormsModule,
     RouterModule,
     EmptyStateComponent,
+    MccCatalogPanelComponent,
+    LimitCatalogPanelComponent,
   ],
   templateUrl: './merchant-list.component.html',
   styleUrl: './merchant-list.component.css',
 })
 export class MerchantListComponent implements OnInit {
   readonly statusOptions: StatusTagOption[] = STATUS_TAG_ACTIVE_INACTIVE;
-  activeTab: 'comercios' | 'mcc' = 'comercios';
+  activeTab: MerchantHubTab = 'comercios';
+  openMenuId: string | null = null;
 
   all: Merchant[] = [];
   filtered: Merchant[] = [];
@@ -58,6 +66,16 @@ export class MerchantListComponent implements OnInit {
     private dialog: MatDialog,
   ) {}
 
+  @HostListener('document:click')
+  closeMenus(): void {
+    this.openMenuId = null;
+  }
+
+  toggleMenu(id: string, event: Event): void {
+    event.stopPropagation();
+    this.openMenuId = this.openMenuId === id ? null : id;
+  }
+
   ngOnInit(): void {
     this.merchantSvc.merchants$.subscribe(merchants => {
       this.all = merchants;
@@ -73,6 +91,42 @@ export class MerchantListComponent implements OnInit {
       this.applyFilters();
     });
     this.filterForm.valueChanges.subscribe(() => this.applyFilters());
+  }
+
+  setTab(tab: MerchantHubTab): void {
+    this.activeTab = tab;
+    this.closeMenus();
+  }
+
+  onPrimaryAction(): void {
+    if (this.activeTab === 'comercios') {
+      this.openCreateDialog();
+      return;
+    }
+    if (this.activeTab === 'mcc') {
+      this.dialog.open(MccDialogComponent, {
+        width: '480px',
+        maxWidth: '94vw',
+        panelClass: 'cf-dialog-panel',
+        data: {},
+      });
+      return;
+    }
+    if (this.activeTab === 'limites') {
+      this.dialog.open(LimitDialogComponent, {
+        width: '480px',
+        maxWidth: '94vw',
+        panelClass: 'cf-dialog-panel',
+        data: {},
+      });
+    }
+  }
+
+  get primaryActionLabel(): string | null {
+    if (this.activeTab === 'comercios') return 'Nuevo comercio';
+    if (this.activeTab === 'mcc') return 'Nuevo MCC';
+    if (this.activeTab === 'limites') return 'Nuevo límite';
+    return null;
   }
 
   private refreshMunicipalities(): void {

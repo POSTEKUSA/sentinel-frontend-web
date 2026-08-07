@@ -99,8 +99,8 @@ export class CatalogComponent implements OnInit {
   ];
 
   readonly brandActions: DataGridAction<PosCatalogItem>[] = [
-    { id: 'edit', label: 'Editar', icon: 'edit', kind: 'button', variant: 'primary' },
-    { id: 'delete', label: 'Eliminar', icon: 'delete_outline', kind: 'menu', danger: true },
+    { id: 'edit', label: 'Editar', icon: 'edit' },
+    { id: 'delete', label: 'Eliminar', icon: 'delete_outline', danger: true },
   ];
 
   constructor(

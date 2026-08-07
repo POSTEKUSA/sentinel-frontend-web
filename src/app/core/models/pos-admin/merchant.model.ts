@@ -14,6 +14,8 @@ export interface Merchant {
   tradeName: string;
   mcc: string;
   mccDescription: string;
+  /** Código de límite (catálogo L1, L2…). */
+  limitCode?: string;
   department: string;
   municipality: string;
   address: string;

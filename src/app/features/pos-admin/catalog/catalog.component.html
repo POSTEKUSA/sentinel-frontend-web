@@ -116,15 +116,14 @@
                   </td>
                   <td class="td-actions">
                     <div class="row-actions">
-                      <button type="button" class="btn-primary btn-sm" (click)="openSupplierDialog(row)">
-                        <span class="mi">edit</span>
-                        Editar
-                      </button>
                       <div class="cf-menu" [class.open]="openMenuId === 'sup-' + row.id">
                         <button type="button" class="cf-icon-btn" aria-label="Más acciones" (click)="toggleMenu('sup-' + row.id, $event)">
                           <span class="mi">more_vert</span>
                         </button>
                         <div class="cf-menu-panel">
+                          <button type="button" class="cf-menu-item" (click)="openSupplierDialog(row); closeMenus()">
+                            <span class="mi">edit</span> Editar
+                          </button>
                           <button type="button" class="cf-menu-item danger" (click)="deleteSupplier(row); closeMenus()">
                             <span class="mi">delete_outline</span> Eliminar
                           </button>
@@ -187,15 +186,14 @@
                   </td>
                   <td class="td-actions">
                     <div class="row-actions">
-                      <button type="button" class="btn-primary btn-sm" (click)="openAccessoryDialog(row)">
-                        <span class="mi">edit</span>
-                        Editar
-                      </button>
                       <div class="cf-menu" [class.open]="openMenuId === 'acc-' + row.id">
                         <button type="button" class="cf-icon-btn" aria-label="Más acciones" (click)="toggleMenu('acc-' + row.id, $event)">
                           <span class="mi">more_vert</span>
                         </button>
                         <div class="cf-menu-panel">
+                          <button type="button" class="cf-menu-item" (click)="openAccessoryDialog(row); closeMenus()">
+                            <span class="mi">edit</span> Editar
+                          </button>
                           <button type="button" class="cf-menu-item danger" (click)="deleteAccessory(row); closeMenus()">
                             <span class="mi">delete_outline</span> Eliminar
                           </button>

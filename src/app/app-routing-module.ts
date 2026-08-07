@@ -131,12 +131,6 @@ const routes: Routes = [
         path: 'pmt/control-pos',
         loadComponent: () => import('./features/pmt/pmt-control-pos/pmt-control-pos.component').then(m => m.PmtControlPosComponent),
       },
-
-
-      {
-        path: 'pmt/query',
-        loadComponent: () => import('./features/pmt/pmt-query/pmt-query.component').then(m => m.PmtQueryComponent),
-      },
       {
         path: 'pmt/bulk-upload',
         loadComponent: () => import('./features/pmt/pmt-bulk-upload/pmt-bulk-upload.component').then(m => m.PmtBulkUploadComponent),

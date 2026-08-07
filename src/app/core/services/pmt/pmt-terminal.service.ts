@@ -113,7 +113,7 @@ export class PmtTerminalService {
     return !['garantia', 'irreparable', 'obsoleto', 'retirado', 'destruido', 'serie_sustituida'].includes(t.estado);
   }
 
-  /** Builds injection payload from a Merchant Config (query) record + terminal serie. */
+  /** Builds injection payload from a merchant query record + terminal serie. */
   buildInjectionPayload(serie: string, merchant: QueryRecord, extras?: { version?: string; apn?: string }): Record<string, string> {
     return {
       serie,

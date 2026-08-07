@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +19,7 @@ export class PmtUsersComponent implements OnInit {
   private fb  = inject(FormBuilder);
   all: PmtUser[] = [];
   filtered: PmtUser[] = [];
+  openMenuId: string | null = null;
 
   readonly roleLabels = PMT_USER_ROLE_LABELS;
   readonly roleKeys   = Object.keys(PMT_USER_ROLE_LABELS) as PmtUserRole[];
@@ -32,6 +33,16 @@ export class PmtUsersComponent implements OnInit {
     role: ['consulta'], active: [true], firstLogin: [true],
   });
   formError = '';
+
+  @HostListener('document:click')
+  closeMenus(): void {
+    this.openMenuId = null;
+  }
+
+  toggleMenu(id: string, event: Event): void {
+    event.stopPropagation();
+    this.openMenuId = this.openMenuId === id ? null : id;
+  }
 
   ngOnInit(): void {
     this.svc.users$.subscribe(list => { this.all = list; this.applyFilters(); });
