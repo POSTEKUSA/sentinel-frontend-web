@@ -1,1 +1,12 @@
 /* Estilos específicos del contenedor de inventario (los tabs internos usan .admin-* globales) */
+
+.cf-tabs-sub {
+  margin-top: -4px;
+  margin-bottom: 12px;
+  opacity: 0.95;
+}
+
+.cf-tabs-sub .cf-tab {
+  font-size: 0.9em;
+}
+

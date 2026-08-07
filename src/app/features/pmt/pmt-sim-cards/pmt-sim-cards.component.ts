@@ -49,7 +49,7 @@ export class PmtSimCardsComponent implements OnInit {
     const f = this.filterForm.getRawValue();
     this.filtered = this.all.filter(s => {
       const q = (f.q ?? '').toLowerCase();
-      if (q && ![s.iccid, s.numero, s.terminalSerie, s.assignedTo].some(v => (v ?? '').toLowerCase().includes(q))) return false;
+      if (q && ![s.iccid, s.numero, s.terminalSerie, s.assignedTo, s.inventoryCode, s.posInventoryCode].some(v => (v ?? '').toLowerCase().includes(q))) return false;
       if (f.estado && s.estado !== f.estado) return false;
       if (f.compania && s.compania !== f.compania) return false;
       return true;

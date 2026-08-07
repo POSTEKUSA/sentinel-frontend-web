@@ -2,7 +2,7 @@
   <form [formGroup]="filterForm" class="toolbar">
     <label class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input type="search" formControlName="serialNumber" placeholder="Buscar N° de serie…" autocomplete="off" spellcheck="false" />
+      <input type="search" formControlName="serialNumber" placeholder="Buscar código, serie o SIM…" autocomplete="off" spellcheck="false" />
     </label>
     <input class="cf-input filter-input" formControlName="brand" placeholder="Marca…" autocomplete="off" />
     <input class="cf-input filter-input" formControlName="model" placeholder="Modelo…" autocomplete="off" />
@@ -40,9 +40,11 @@
       <table class="cf-table">
         <thead>
           <tr>
+            <th>Código</th>
             <th>Marca</th>
             <th>Modelo</th>
             <th>N° Serie</th>
+            <th>SIM</th>
             <th>Tipo</th>
             <th>Estado</th>
             <th>Ubicación</th>
@@ -53,9 +55,24 @@
         <tbody>
           @for (u of filtered; track u.id) {
             <tr>
+              <td><app-copyable-code [value]="u.inventoryCode" label="código" /></td>
               <td class="td-name">{{ u.brand }}</td>
               <td>{{ u.model }}</td>
               <td><app-copyable-code [value]="u.serialNumber" label="serie" /></td>
+              <td>
+                @if (u.simInventoryCode || u.simIccid) {
+                  <div>
+                    @if (u.simInventoryCode) {
+                      <app-copyable-code [value]="u.simInventoryCode" label="SIM" />
+                    }
+                  </div>
+                  @if (u.simIccid) {
+                    <div class="td-sub">{{ u.simIccid }}</div>
+                  }
+                } @else {
+                  <span class="td-sub">Sin SIM</span>
+                }
+              </td>
               <td>{{ u.posType }}</td>
               <td>
                 <span class="cf-badge" [ngClass]="statusBadgeClass(u.status)">

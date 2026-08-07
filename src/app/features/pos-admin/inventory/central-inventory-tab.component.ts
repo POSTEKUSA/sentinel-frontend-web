@@ -49,9 +49,14 @@ export class CentralInventoryTabComponent implements OnInit {
 
   applyFilters(): void {
     const f = this.filterForm.getRawValue();
+    const serialQ = (f.serialNumber ?? '').toLowerCase();
     this.filtered = this.all.filter(
       u =>
-        (!f.serialNumber || u.serialNumber.toLowerCase().includes(f.serialNumber.toLowerCase())) &&
+        (!serialQ ||
+          u.serialNumber.toLowerCase().includes(serialQ) ||
+          u.inventoryCode.toLowerCase().includes(serialQ) ||
+          (u.simInventoryCode ?? '').toLowerCase().includes(serialQ) ||
+          (u.simIccid ?? '').toLowerCase().includes(serialQ)) &&
         (!f.brand || u.brand.toLowerCase().includes(f.brand.toLowerCase())) &&
         (!f.model || u.model.toLowerCase().includes(f.model.toLowerCase())) &&
         (!f.posType || u.posType.toLowerCase().includes(f.posType.toLowerCase())) &&

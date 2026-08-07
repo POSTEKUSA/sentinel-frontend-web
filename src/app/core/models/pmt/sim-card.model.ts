@@ -19,11 +19,16 @@ export const SIM_CARD_ESTADO_BADGE: Record<SimCardEstado, string> = {
 export interface SimCard {
   id: number;
   iccid: string;
+  /** Código de inventario, p. ej. SIM-001 */
+  inventoryCode: string;
   numero?: string;
   compania: string;
   estado: SimCardEstado;
   assignedTo?: string;
+  /** N° de serie del POS asignado */
   terminalSerie?: string;
+  /** Código de inventario del POS, p. ej. POS-001 */
+  posInventoryCode?: string;
   apn?: string;
   ip?: string;
   notes?: string;

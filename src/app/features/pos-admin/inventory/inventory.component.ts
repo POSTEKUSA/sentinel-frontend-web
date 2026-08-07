@@ -5,6 +5,7 @@ import { CentralInventoryTabComponent } from './central-inventory-tab.component'
 import { ByLocationTabComponent } from './by-location-tab.component';
 import { CustodyTabComponent } from './custody-tab.component';
 import { AccessoryStockTabComponent } from './accessory-stock-tab.component';
+import { SimInventoryTabComponent } from './sim-inventory-tab.component';
 
 @Component({
   selector: 'app-inventory',
@@ -15,15 +16,20 @@ import { AccessoryStockTabComponent } from './accessory-stock-tab.component';
     ByLocationTabComponent,
     CustodyTabComponent,
     AccessoryStockTabComponent,
+    SimInventoryTabComponent,
   ],
   templateUrl: './inventory.component.html',
   styleUrl: './inventory.component.css',
 })
 export class InventoryComponent {
-  activeTab: 'central' | 'location' | 'custody' | 'accessories' = 'central';
+  /** Tabs principales: POS (default) | Accesorios | Consumibles | SIM */
+  activeTab: 'pos' | 'accessories' | 'consumables' | 'sim' = 'pos';
+  /** Sub-vistas dentro de POS */
+  posSubTab: 'central' | 'location' | 'custody' = 'central';
 
   @ViewChild(CustodyTabComponent) custodyTab?: CustodyTabComponent;
-  @ViewChild(AccessoryStockTabComponent) accessoryTab?: AccessoryStockTabComponent;
+  @ViewChild('accessoryStock') accessoryTab?: AccessoryStockTabComponent;
+  @ViewChild('consumableStock') consumableTab?: AccessoryStockTabComponent;
 
   openCustodyAssign(): void {
     this.custodyTab?.openAssignDialog();
@@ -31,5 +37,9 @@ export class InventoryComponent {
 
   openAccessoryMovement(): void {
     this.accessoryTab?.openRegisterDialog();
+  }
+
+  openConsumableMovement(): void {
+    this.consumableTab?.openRegisterDialog();
   }
 }

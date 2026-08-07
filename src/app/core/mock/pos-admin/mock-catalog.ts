@@ -18,26 +18,26 @@ export const MOCK_SUPPLIERS: Supplier[] = [
   },
   {
     id: 'sup-2', name: 'Sunmi', country: 'China',
-    contactName: 'Carlos Ruiz', phone: '+502 5555-2222', email: 'contacto@sunmi-ca.com',
+    contactName: 'Carlos Ruiz', phone: '+502 5555-2222', email: 'contacto@sunmi.com',
     suppliedBrands: ['Sunmi'], suppliedModels: ['Sunmi V2 Pro', 'Sunmi T2s'], status: 'active',
   },
   {
     id: 'sup-3', name: 'Ingenico S.A.', country: 'Francia',
-    contactName: 'Laura Jiménez', phone: '+506 8888-3333', email: 'laura.jimenez@ingenico-cr.com',
+    contactName: 'Laura Jiménez', phone: '+506 8888-3333', email: 'contacto@ingenico.com',
     suppliedBrands: ['Ingenico', 'Verifone'], suppliedModels: ['Ingenico Move 5000', 'Verifone VX520'], status: 'active',
   },
   {
     id: 'sup-4', name: 'Urovo', country: 'China',
-    contactName: 'Wei Zhang', phone: '+86 138-0000-4444', email: 'wei.zhang@urovo-export.com',
+    contactName: 'Wei Zhang', phone: '+86 138-0000-4444', email: 'contacto@urovo.com',
     suppliedBrands: ['Urovo'], suppliedModels: ['Urovo DT40'], status: 'inactive',
   },
 ];
 
+/** Catálogo de accesorios (ACC-*) y consumibles (prefijo por tipo: ROL, CAR, BAS…). */
 export const MOCK_ACCESSORIES: AccessoryCatalogItem[] = [
-  { id: 'acc-1', type: 'Rollo de papel térmico 57mm', category: 'consumable', compatibleBrandModel: 'Universal', unitOfMeasure: 'Rollo', minStock: 500, status: 'active' },
-  { id: 'acc-2', type: 'Cargador de pared', category: 'accessory', compatibleBrandModel: 'PAX A920', unitOfMeasure: 'Unidad', minStock: 30, status: 'active' },
-  { id: 'acc-3', type: 'Base cargadora (cradle)', category: 'accessory', compatibleBrandModel: 'Sunmi V2 Pro', unitOfMeasure: 'Unidad', minStock: 20, status: 'active' },
-  { id: 'acc-4', type: 'Batería de repuesto', category: 'accessory', compatibleBrandModel: 'Sunmi T2s', unitOfMeasure: 'Unidad', minStock: 25, status: 'active' },
-  { id: 'acc-5', type: 'SIM Card datos', category: 'consumable', compatibleBrandModel: 'Universal', unitOfMeasure: 'Unidad', minStock: 100, status: 'active' },
-  { id: 'acc-6', type: 'Funda protectora', category: 'accessory', compatibleBrandModel: 'Urovo DT40', unitOfMeasure: 'Unidad', minStock: 10, status: 'obsolete' },
+  { id: 'acc-1', type: 'Rollo de papel térmico 57mm', category: 'consumable', inventoryCode: 'ROL-001', unitOfMeasure: 'Rollo', minStock: 500, status: 'active' },
+  { id: 'acc-2', type: 'Cargador de pared', category: 'accessory', inventoryCode: 'ACC-001', unitOfMeasure: 'Unidad', minStock: 30, status: 'active' },
+  { id: 'acc-3', type: 'Base cargadora (cradle)', category: 'accessory', inventoryCode: 'ACC-002', unitOfMeasure: 'Unidad', minStock: 20, status: 'active' },
+  { id: 'acc-4', type: 'Batería de repuesto', category: 'accessory', inventoryCode: 'ACC-003', unitOfMeasure: 'Unidad', minStock: 25, status: 'active' },
+  { id: 'acc-5', type: 'Funda protectora', category: 'accessory', inventoryCode: 'ACC-004', unitOfMeasure: 'Unidad', minStock: 10, status: 'obsolete' },
 ];

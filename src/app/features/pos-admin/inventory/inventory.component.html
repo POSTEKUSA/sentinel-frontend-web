@@ -1,11 +1,11 @@
 <div class="admin-page">
   <header class="cf-head">
     <div>
-      <h1>Inventario de POS y Accesorios</h1>
-      <p class="count">Disponibilidad, ubicación, resguardo y consumo de equipos y consumibles</p>
+      <h1>Inventario</h1>
+      <p class="count">POS, accesorios, consumibles y SIM cards con código de inventario</p>
     </div>
     <div class="head-actions">
-      @if (activeTab === 'custody') {
+      @if (activeTab === 'pos' && posSubTab === 'custody') {
         <button type="button" class="btn-primary" (click)="openCustodyAssign()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
           Asignar en resguardo
@@ -17,26 +17,47 @@
           Registrar movimiento
         </button>
       }
+      @if (activeTab === 'consumables') {
+        <button type="button" class="btn-primary" (click)="openConsumableMovement()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Registrar movimiento
+        </button>
+      }
     </div>
   </header>
 
   <div class="cf-tabs" role="tablist">
-    <button type="button" class="cf-tab" [class.active]="activeTab === 'central'" (click)="activeTab = 'central'">Inventario Central</button>
-    <button type="button" class="cf-tab" [class.active]="activeTab === 'location'" (click)="activeTab = 'location'">Por Ubicación</button>
-    <button type="button" class="cf-tab" [class.active]="activeTab === 'custody'" (click)="activeTab = 'custody'">Resguardo</button>
-    <button type="button" class="cf-tab" [class.active]="activeTab === 'accessories'" (click)="activeTab = 'accessories'">Accesorios y Rollos</button>
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'pos'" (click)="activeTab = 'pos'">POS</button>
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'accessories'" (click)="activeTab = 'accessories'">Accesorios</button>
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'consumables'" (click)="activeTab = 'consumables'">Consumibles</button>
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'sim'" (click)="activeTab = 'sim'">SIM Cards</button>
   </div>
 
-  @if (activeTab === 'central') {
-    <app-central-inventory-tab></app-central-inventory-tab>
+  @if (activeTab === 'pos') {
+    <div class="cf-tabs cf-tabs-sub" role="tablist" aria-label="Vistas de POS">
+      <button type="button" class="cf-tab" [class.active]="posSubTab === 'central'" (click)="posSubTab = 'central'">Inventario Central</button>
+      <button type="button" class="cf-tab" [class.active]="posSubTab === 'location'" (click)="posSubTab = 'location'">Por Ubicación</button>
+      <button type="button" class="cf-tab" [class.active]="posSubTab === 'custody'" (click)="posSubTab = 'custody'">Resguardo</button>
+    </div>
+
+    @if (posSubTab === 'central') {
+      <app-central-inventory-tab></app-central-inventory-tab>
+    }
+    @if (posSubTab === 'location') {
+      <app-by-location-tab></app-by-location-tab>
+    }
+    @if (posSubTab === 'custody') {
+      <app-custody-tab></app-custody-tab>
+    }
   }
-  @if (activeTab === 'location') {
-    <app-by-location-tab></app-by-location-tab>
-  }
-  @if (activeTab === 'custody') {
-    <app-custody-tab></app-custody-tab>
-  }
+
   @if (activeTab === 'accessories') {
-    <app-accessory-stock-tab></app-accessory-stock-tab>
+    <app-accessory-stock-tab #accessoryStock category="accessory"></app-accessory-stock-tab>
+  }
+  @if (activeTab === 'consumables') {
+    <app-accessory-stock-tab #consumableStock category="consumable"></app-accessory-stock-tab>
+  }
+  @if (activeTab === 'sim') {
+    <app-sim-inventory-tab></app-sim-inventory-tab>
   }
 </div>

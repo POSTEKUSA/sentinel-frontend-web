@@ -1,0 +1,83 @@
+<div class="panel toolbar-panel">
+  <form [formGroup]="filterForm" class="toolbar">
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" formControlName="q" placeholder="Buscar código, ICCID, POS…" autocomplete="off" spellcheck="false" />
+    </label>
+    <select class="cf-input filter-input" formControlName="estado">
+      <option value="">Todos los estados</option>
+      @for (k of estadoKeys; track k) {
+        <option [value]="k">{{ estadoLabels[k] }}</option>
+      }
+    </select>
+    <select class="cf-input filter-input" formControlName="compania">
+      <option value="">Todas las compañías</option>
+      @for (c of companias; track c) {
+        <option [value]="c">{{ c }}</option>
+      }
+    </select>
+    <button
+      type="button"
+      [class]="hasActiveFilters ? 'btn-primary' : 'btn-secondary'"
+      (click)="clearFilters()">
+      <span class="mi">filter_alt_off</span>
+      Limpiar
+    </button>
+  </form>
+</div>
+
+<p class="result-count">{{ filtered.length }} SIM(s) de {{ all.length }} totales</p>
+
+<div class="panel">
+  @if (filtered.length === 0) {
+    <app-empty-state navIcon="inventory" title="Sin SIM Cards" subtitle="No hay chips que coincidan con los filtros."></app-empty-state>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>ICCID</th>
+            <th>Número</th>
+            <th>Compañía</th>
+            <th>Estado</th>
+            <th>POS asignado</th>
+            <th>APN</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of filtered; track s.id) {
+            <tr>
+              <td><app-copyable-code [value]="s.inventoryCode" label="código" /></td>
+              <td><app-copyable-code [value]="s.iccid" label="ICCID" /></td>
+              <td>{{ s.numero ?? '—' }}</td>
+              <td>{{ s.compania }}</td>
+              <td>
+                <span class="cf-badge" [ngClass]="estadoBadge[s.estado]">
+                  <span class="dot"></span>{{ estadoLabels[s.estado] }}
+                </span>
+              </td>
+              <td>
+                @if (s.terminalSerie || s.posInventoryCode) {
+                  <div>
+                    @if (s.posInventoryCode) {
+                      <app-copyable-code [value]="s.posInventoryCode" label="POS" />
+                    }
+                  </div>
+                  @if (s.terminalSerie) {
+                    <div class="td-sub">Serie: {{ s.terminalSerie }}</div>
+                  }
+                } @else if (s.assignedTo) {
+                  <span class="td-sub">{{ s.assignedTo | userName }}</span>
+                } @else {
+                  <span class="td-sub">Sin asignar</span>
+                }
+              </td>
+              <td>{{ s.apn ?? '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

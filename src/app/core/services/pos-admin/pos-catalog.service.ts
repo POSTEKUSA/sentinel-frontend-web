@@ -7,6 +7,7 @@ import {
 } from '../../models/pos-admin';
 import { MOCK_ACCESSORIES, MOCK_POS_CATALOG, MOCK_SUPPLIERS } from '../../mock/pos-admin/mock-catalog';
 import { CurrentUserService } from './current-user.service';
+import { accessoryInventoryPrefix, nextInventoryCode } from '../../utils/inventory-code.util';
 
 let catalogSeq = MOCK_POS_CATALOG.length + 1;
 let supplierSeq = MOCK_SUPPLIERS.length + 1;
@@ -83,8 +84,15 @@ export class PosCatalogService {
 
   // ── Accesorios / Consumibles (HU-003) ──────────────────────
 
-  createAccessory(accessory: Omit<AccessoryCatalogItem, 'id'>): AccessoryCatalogItem {
-    const created: AccessoryCatalogItem = { ...accessory, id: `acc-${accessorySeq++}` };
+  createAccessory(accessory: Omit<AccessoryCatalogItem, 'id' | 'inventoryCode'> & { inventoryCode?: string }): AccessoryCatalogItem {
+    const prefix = accessoryInventoryPrefix(accessory.category, accessory.type);
+    const inventoryCode =
+      accessory.inventoryCode ??
+      nextInventoryCode(
+        this.accessoriesSubject.value.map(a => a.inventoryCode),
+        prefix,
+      );
+    const created: AccessoryCatalogItem = { ...accessory, id: `acc-${accessorySeq++}`, inventoryCode };
     this.accessoriesSubject.next([created, ...this.accessoriesSubject.value]);
     return created;
   }

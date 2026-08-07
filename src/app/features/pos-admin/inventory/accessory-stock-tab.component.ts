@@ -1,12 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 
-import { AccessoryCatalogItem, AccessoryMovement } from '../../../core/models/pos-admin';
+import { AccessoryCatalogItem, AccessoryCategory, AccessoryMovement } from '../../../core/models/pos-admin';
 import { AccessoryStockService } from '../../../core/services/pos-admin/accessory-stock.service';
 import { PosCatalogService } from '../../../core/services/pos-admin/pos-catalog.service';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
 import { RegisterMovementDialogComponent } from './dialogs/register-movement-dialog.component';
 
 interface StockRow {
@@ -18,11 +19,14 @@ interface StockRow {
 @Component({
   selector: 'app-accessory-stock-tab',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent],
+  imports: [CommonModule, ReactiveFormsModule, EmptyStateComponent, CopyableCodeComponent],
   templateUrl: './accessory-stock-tab.component.html',
   styleUrl: './accessory-stock-tab.component.css',
 })
-export class AccessoryStockTabComponent implements OnInit {
+export class AccessoryStockTabComponent implements OnInit, OnChanges {
+  /** Filtra por categoría: accessory | consumable. Sin valor = todos. */
+  @Input() category?: AccessoryCategory;
+
   accessories: AccessoryCatalogItem[] = [];
   stockRows: StockRow[] = [];
 
@@ -30,6 +34,8 @@ export class AccessoryStockTabComponent implements OnInit {
   filteredMovements: AccessoryMovement[] = [];
 
   private fb = inject(FormBuilder);
+  private allAccessories: AccessoryCatalogItem[] = [];
+  private allMovements: AccessoryMovement[] = [];
 
   filterForm = this.fb.group({
     accessoryId: [''],
@@ -45,17 +51,40 @@ export class AccessoryStockTabComponent implements OnInit {
     private dialog: MatDialog,
   ) {}
 
+  get categoryLabel(): string {
+    return this.category === 'consumable' ? 'consumible' : 'accesorio';
+  }
+
+  get emptyTitle(): string {
+    return this.category === 'consumable' ? 'Sin consumibles registrados' : 'Sin accesorios registrados';
+  }
+
   ngOnInit(): void {
     this.catalogSvc.accessories$.subscribe(accessories => {
-      this.accessories = accessories;
-      this.buildStockRows();
+      this.allAccessories = accessories;
+      this.refreshCategorySlice();
     });
     this.stockSvc.movements$.subscribe(movements => {
-      this.movements = movements;
-      this.buildStockRows();
-      this.applyFilters();
+      this.allMovements = movements;
+      this.refreshCategorySlice();
     });
     this.filterForm.valueChanges.subscribe(() => this.applyFilters());
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['category'] && !changes['category'].firstChange) {
+      this.refreshCategorySlice();
+    }
+  }
+
+  private refreshCategorySlice(): void {
+    this.accessories = this.category
+      ? this.allAccessories.filter(a => a.category === this.category)
+      : [...this.allAccessories];
+    const ids = new Set(this.accessories.map(a => a.id));
+    this.movements = this.allMovements.filter(m => ids.has(m.accessoryId));
+    this.buildStockRows();
+    this.applyFilters();
   }
 
   private buildStockRows(): void {

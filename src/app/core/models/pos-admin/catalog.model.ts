@@ -50,12 +50,13 @@ export const ACCESSORY_CATEGORY_LABELS: Record<AccessoryCategory, string> = {
   consumable: 'Consumible',
 };
 
-/** HU-003 — Accesorios y consumibles */
+/** HU-003 — Accesorios y consumibles (definición de catálogo) */
 export interface AccessoryCatalogItem {
   id: string;
   type: string;
   category: AccessoryCategory;
-  compatibleBrandModel: string;
+  /** Código de inventario SKU: ACC-001, ROL-001, CAR-001, etc. */
+  inventoryCode: string;
   unitOfMeasure: string;
   minStock: number;
   status: CatalogStatus;

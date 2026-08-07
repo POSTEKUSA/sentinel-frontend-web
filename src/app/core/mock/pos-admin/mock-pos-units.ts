@@ -6,17 +6,18 @@ function daysAgoIso(days: number): string {
 
 export const MOCK_POS_UNITS: PosUnit[] = [
   {
-    id: 'unit-1', serialNumber: 'PAX-A920-000101', brand: 'PAX', model: 'A920', posType: 'POS Android',
+    id: 'unit-1', inventoryCode: 'POS-001', serialNumber: 'PAX-A920-000101', brand: 'PAX', model: 'A920', posType: 'POS Android',
     status: 'installed', locationType: 'merchant', locationLabel: 'Comercio: Farmacia San Judas',
     purchaseOrderId: 'po-1', purchaseOrderNumber: 'OC-2026-0001', receivedAt: daysAgoIso(60), receivedBy: 'operador.carlos',
     initialCondition: 'Nuevo, sellado de fábrica', merchantId: 'mer-1', merchantName: 'Farmacia San Judas', installedAt: daysAgoIso(50),
+    simIccid: '8950410112340001', simInventoryCode: 'SIM-001',
     history: [
       { id: 'h1', timestamp: daysAgoIso(60), eventType: 'received', description: 'Recepción desde OC-2026-0001', userName: 'operador.carlos' },
       { id: 'h2', timestamp: daysAgoIso(50), eventType: 'installed', description: 'Instalado en Farmacia San Judas', userName: 'tecnico.mendoza' },
     ],
   },
   {
-    id: 'unit-2', serialNumber: 'PAX-A920-000102', brand: 'PAX', model: 'A920', posType: 'POS Android',
+    id: 'unit-2', inventoryCode: 'POS-002', serialNumber: 'PAX-A920-000102', brand: 'PAX', model: 'A920', posType: 'POS Android',
     status: 'in_stock', locationType: 'central_warehouse', locationLabel: 'Almacén Central Tegucigalpa',
     purchaseOrderId: 'po-1', purchaseOrderNumber: 'OC-2026-0001', receivedAt: daysAgoIso(60), receivedBy: 'operador.carlos',
     initialCondition: 'Nuevo, sellado de fábrica',
@@ -25,7 +26,7 @@ export const MOCK_POS_UNITS: PosUnit[] = [
     ],
   },
   {
-    id: 'unit-3', serialNumber: 'PAX-A920-000103', brand: 'PAX', model: 'A920', posType: 'POS Android',
+    id: 'unit-3', inventoryCode: 'POS-003', serialNumber: 'PAX-A920-000103', brand: 'PAX', model: 'A920', posType: 'POS Android',
     status: 'with_technician', locationType: 'technician', locationLabel: 'Técnico: Roberto Mendoza',
     purchaseOrderId: 'po-1', purchaseOrderNumber: 'OC-2026-0001', receivedAt: daysAgoIso(60), receivedBy: 'operador.carlos',
     initialCondition: 'Nuevo, sellado de fábrica', custodianUserId: 'tec-1', custodianName: 'Roberto Mendoza', custodianRole: 'technician',
@@ -35,17 +36,18 @@ export const MOCK_POS_UNITS: PosUnit[] = [
     ],
   },
   {
-    id: 'unit-4', serialNumber: 'SUNMI-V2P-000201', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS Android',
+    id: 'unit-4', inventoryCode: 'POS-004', serialNumber: 'SUNMI-V2P-000201', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS Android',
     status: 'installed', locationType: 'merchant', locationLabel: 'Comercio: Supermercado La Colonia',
     purchaseOrderId: 'po-2', purchaseOrderNumber: 'OC-2026-0002', receivedAt: daysAgoIso(25), receivedBy: 'operador.andrea',
     initialCondition: 'Nuevo', merchantId: 'mer-2', merchantName: 'Supermercado La Colonia', installedAt: daysAgoIso(18),
+    simIccid: '8950410112340002', simInventoryCode: 'SIM-002',
     history: [
       { id: 'h1', timestamp: daysAgoIso(25), eventType: 'received', description: 'Recepción desde OC-2026-0002', userName: 'operador.andrea' },
       { id: 'h2', timestamp: daysAgoIso(18), eventType: 'installed', description: 'Instalado en Supermercado La Colonia', userName: 'ejecutivo.morales' },
     ],
   },
   {
-    id: 'unit-5', serialNumber: 'SUNMI-V2P-000202', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS Android',
+    id: 'unit-5', inventoryCode: 'POS-005', serialNumber: 'SUNMI-V2P-000202', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS Android',
     status: 'with_executive', locationType: 'executive', locationLabel: 'Ejecutivo: Patricia Morales',
     purchaseOrderId: 'po-2', purchaseOrderNumber: 'OC-2026-0002', receivedAt: daysAgoIso(25), receivedBy: 'operador.andrea',
     initialCondition: 'Nuevo', custodianUserId: 'exe-1', custodianName: 'Patricia Morales', custodianRole: 'executive',
@@ -55,7 +57,7 @@ export const MOCK_POS_UNITS: PosUnit[] = [
     ],
   },
   {
-    id: 'unit-6', serialNumber: 'SUNMI-V2P-000203', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS Android',
+    id: 'unit-6', inventoryCode: 'POS-006', serialNumber: 'SUNMI-V2P-000203', brand: 'Sunmi', model: 'V2 Pro', posType: 'POS Android',
     status: 'in_stock', locationType: 'regional_warehouse', locationLabel: 'Almacén Regional San Pedro Sula',
     purchaseOrderId: 'po-2', purchaseOrderNumber: 'OC-2026-0002', receivedAt: daysAgoIso(20), receivedBy: 'operador.andrea',
     initialCondition: 'Nuevo',
@@ -64,7 +66,7 @@ export const MOCK_POS_UNITS: PosUnit[] = [
     ],
   },
   {
-    id: 'unit-7', serialNumber: 'VFONE-VX520-000301', brand: 'Verifone', model: 'VX520', posType: 'POS Legacy',
+    id: 'unit-7', inventoryCode: 'POS-007', serialNumber: 'VFONE-VX520-000301', brand: 'Verifone', model: 'VX520', posType: 'POS Legacy',
     status: 'in_workshop', locationType: 'workshop', locationLabel: 'Taller Central',
     receivedAt: daysAgoIso(400), receivedBy: 'operador.jose',
     initialCondition: 'Usado', observations: 'Falla en lector de banda magnética',
@@ -74,7 +76,7 @@ export const MOCK_POS_UNITS: PosUnit[] = [
     ],
   },
   {
-    id: 'unit-8', serialNumber: 'UROVO-DT40-000401', brand: 'Urovo', model: 'DT40', posType: 'MPOS Android',
+    id: 'unit-8', inventoryCode: 'POS-008', serialNumber: 'UROVO-DT40-000401', brand: 'Urovo', model: 'DT40', posType: 'MPOS Android',
     status: 'decommissioned', locationType: 'decommissioned', locationLabel: 'Baja definitiva',
     receivedAt: daysAgoIso(700), receivedBy: 'operador.jose',
     initialCondition: 'Usado', observations: 'Modelo obsoleto, batería no reparable',
@@ -84,7 +86,7 @@ export const MOCK_POS_UNITS: PosUnit[] = [
     ],
   },
   {
-    id: 'unit-9', serialNumber: 'UROVO-DT40-000402', brand: 'Urovo', model: 'DT40', posType: 'MPOS Android',
+    id: 'unit-9', inventoryCode: 'POS-009', serialNumber: 'UROVO-DT40-000402', brand: 'Urovo', model: 'DT40', posType: 'MPOS Android',
     status: 'destroyed', locationType: 'destroyed', locationLabel: 'Destruido',
     receivedAt: daysAgoIso(700), receivedBy: 'operador.jose',
     initialCondition: 'Usado', observations: 'Destrucción certificada por vencimiento PCI',
@@ -95,7 +97,7 @@ export const MOCK_POS_UNITS: PosUnit[] = [
     ],
   },
   {
-    id: 'unit-10', serialNumber: 'PAX-A80-000501', brand: 'PAX', model: 'A80', posType: 'POS Legacy',
+    id: 'unit-10', inventoryCode: 'POS-010', serialNumber: 'PAX-A80-000501', brand: 'PAX', model: 'A80', posType: 'POS Legacy',
     status: 'in_transit', locationType: 'in_transit', locationLabel: 'En tránsito a Almacén Regional San Pedro Sula',
     purchaseOrderId: 'po-3', purchaseOrderNumber: 'OC-2026-0003', receivedAt: daysAgoIso(2), receivedBy: 'operador.jose',
     initialCondition: 'Nuevo',
@@ -104,20 +106,22 @@ export const MOCK_POS_UNITS: PosUnit[] = [
     ],
   },
   {
-    id: 'unit-11', serialNumber: 'INGE-MOVE5000-000601', brand: 'Ingenico', model: 'Move 5000', posType: 'MPOS Android',
+    id: 'unit-11', inventoryCode: 'POS-011', serialNumber: 'INGE-MOVE5000-000601', brand: 'Ingenico', model: 'Move 5000', posType: 'MPOS Android',
     status: 'installed', locationType: 'merchant', locationLabel: 'Comercio: Restaurante La Finca',
     purchaseOrderId: 'po-3', purchaseOrderNumber: 'OC-2026-0003', receivedAt: daysAgoIso(30), receivedBy: 'operador.jose',
     initialCondition: 'Nuevo', merchantId: 'mer-3', merchantName: 'Restaurante La Finca', installedAt: daysAgoIso(22),
+    simIccid: '8950410112340003', simInventoryCode: 'SIM-003',
     history: [
       { id: 'h1', timestamp: daysAgoIso(30), eventType: 'received', description: 'Recepción desde OC-2026-0003', userName: 'operador.jose' },
       { id: 'h2', timestamp: daysAgoIso(22), eventType: 'installed', description: 'Instalado en Restaurante La Finca', userName: 'tecnico.mendoza' },
     ],
   },
   {
-    id: 'unit-12', serialNumber: 'SUNMI-T2S-000701', brand: 'Sunmi', model: 'T2s', posType: 'POS Android',
+    id: 'unit-12', inventoryCode: 'POS-012', serialNumber: 'SUNMI-T2S-000701', brand: 'Sunmi', model: 'T2s', posType: 'POS Android',
     status: 'installed', locationType: 'merchant', locationLabel: 'Comercio: Ferretería Central',
     receivedAt: daysAgoIso(90), receivedBy: 'operador.andrea',
     initialCondition: 'Nuevo', merchantId: 'mer-4', merchantName: 'Ferretería Central', installedAt: daysAgoIso(85),
+    simIccid: '8950410112340011', simInventoryCode: 'SIM-011',
     history: [
       { id: 'h1', timestamp: daysAgoIso(90), eventType: 'received', description: 'Recepción inicial', userName: 'operador.andrea' },
       { id: 'h2', timestamp: daysAgoIso(85), eventType: 'installed', description: 'Instalado en Ferretería Central', userName: 'ejecutivo.morales' },

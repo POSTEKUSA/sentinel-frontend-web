@@ -12,6 +12,9 @@ import {
 
 export interface AccessoryDialogData {
   item?: AccessoryCatalogItem;
+  /** Categoría fija al crear desde un tab específico */
+  defaultCategory?: AccessoryCategory;
+  lockCategory?: boolean;
 }
 
 @Component({
@@ -21,39 +24,43 @@ export interface AccessoryDialogData {
   template: `
     <div class="cf-modal">
       <div class="modal-head">
-        <span class="modal-title">{{ data.item ? 'Editar accesorio' : 'Nuevo registro' }}</span>
+        <span class="modal-title">{{ dialogTitle }}</span>
         <button type="button" class="modal-close" aria-label="Cerrar" (click)="dialogRef.close()">&times;</button>
       </div>
       <form [formGroup]="form" class="modal-body" (ngSubmit)="save()">
         <div class="field">
-          <label for="type">Tipo de accesorio/consumible</label>
-          <input id="type" formControlName="type" placeholder="Rollo de papel térmico…" autocomplete="off" />
+          <label for="type">Tipo</label>
+          <input id="type" formControlName="type" [placeholder]="typePlaceholder" autocomplete="off" />
         </div>
         <div class="grid-2">
-          <div class="field">
-            <label for="category">Categoría</label>
-            <select id="category" formControlName="category">
-              <option value="accessory">Accesorio</option>
-              <option value="consumable">Consumible</option>
-            </select>
-          </div>
+          @if (!data.lockCategory) {
+            <div class="field">
+              <label for="category">Categoría</label>
+              <select id="category" formControlName="category">
+                <option value="accessory">Accesorio</option>
+                <option value="consumable">Consumible</option>
+              </select>
+            </div>
+          }
           <div class="field">
             <label>Estado</label>
-            <app-status-switch formControlName="status" [options]="statusOptions" ariaLabel="Estado del accesorio" />
-          </div>
-          <div class="field">
-            <label for="compatibleBrandModel">Marca/modelo compatible</label>
-            <input id="compatibleBrandModel" formControlName="compatibleBrandModel" placeholder="Universal…" autocomplete="off" />
+            <app-status-switch formControlName="status" [options]="statusOptions" ariaLabel="Estado" />
           </div>
           <div class="field">
             <label for="unitOfMeasure">Unidad de medida</label>
             <input id="unitOfMeasure" formControlName="unitOfMeasure" placeholder="Unidad, rollo…" autocomplete="off" />
           </div>
+          <div class="field">
+            <label for="minStock">Stock mínimo</label>
+            <input id="minStock" type="number" min="0" formControlName="minStock" inputmode="numeric" />
+          </div>
         </div>
-        <div class="field">
-          <label for="minStock">Stock mínimo</label>
-          <input id="minStock" type="number" min="0" formControlName="minStock" inputmode="numeric" />
-        </div>
+        @if (data.item?.inventoryCode) {
+          <div class="field">
+            <label>Código de inventario</label>
+            <input [value]="data.item!.inventoryCode" disabled />
+          </div>
+        }
         <div class="form-actions">
           <button type="button" class="btn-secondary" (click)="dialogRef.close()">Cancelar</button>
           <button type="submit" class="btn-primary" [disabled]="form.invalid">
@@ -74,16 +81,28 @@ export class AccessoryDialogComponent {
 
   form = this.fb.group({
     type: [this.data.item?.type ?? '', Validators.required],
-    category: [this.data.item?.category ?? ('accessory' as AccessoryCategory), Validators.required],
+    category: [
+      this.data.item?.category ?? this.data.defaultCategory ?? ('accessory' as AccessoryCategory),
+      Validators.required,
+    ],
     status: [this.data.item?.status ?? ('active' as CatalogStatus), Validators.required],
-    compatibleBrandModel: [this.data.item?.compatibleBrandModel ?? 'Universal', Validators.required],
     unitOfMeasure: [this.data.item?.unitOfMeasure ?? 'Unidad', Validators.required],
     minStock: [this.data.item?.minStock ?? 0, [Validators.required, Validators.min(0)]],
   });
 
+  get dialogTitle(): string {
+    const cat = this.form.value.category ?? this.data.defaultCategory ?? 'accessory';
+    const noun = cat === 'consumable' ? 'consumible' : 'accesorio';
+    return this.data.item ? `Editar ${noun}` : `Nuevo ${noun}`;
+  }
+
+  get typePlaceholder(): string {
+    return this.form.value.category === 'consumable' ? 'Rollo de papel térmico…' : 'Cargador, funda…';
+  }
+
   save(): void {
     if (this.form.invalid) return;
-    const value = this.form.getRawValue() as Omit<AccessoryCatalogItem, 'id'>;
+    const value = this.form.getRawValue() as Omit<AccessoryCatalogItem, 'id' | 'inventoryCode'>;
 
     if (this.data.item) {
       this.catalogSvc.updateAccessory(this.data.item.id, value);

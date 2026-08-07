@@ -13,6 +13,7 @@ import { MOCK_POS_UNITS } from '../../mock/pos-admin/mock-pos-units';
 import { MOCK_CUSTODY } from '../../mock/pos-admin/mock-custody';
 import { CurrentUserService } from './current-user.service';
 import { PurchaseOrderService } from './purchase-order.service';
+import { INVENTORY_PREFIX, nextInventoryCode } from '../../utils/inventory-code.util';
 
 let unitSeq = MOCK_POS_UNITS.length + 1;
 let historySeq = 1000;
@@ -95,6 +96,10 @@ export class PosInventoryService {
     const unit: PosUnit = {
       id: `unit-${unitSeq++}`,
       serialNumber: input.serialNumber.trim(),
+      inventoryCode: nextInventoryCode(
+        this.unitsSubject.value.map(u => u.inventoryCode),
+        INVENTORY_PREFIX.pos,
+      ),
       brand: input.brand,
       model: input.model,
       posType: input.posType,

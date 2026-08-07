@@ -1,13 +1,13 @@
 <div class="panel">
   <div class="admin-table-wrap">
     @if (stockRows.length === 0) {
-      <app-empty-state navIcon="inventory" title="Sin accesorios registrados"></app-empty-state>
+      <app-empty-state navIcon="inventory" [title]="emptyTitle"></app-empty-state>
     } @else {
       <table class="cf-table">
         <thead>
           <tr>
+            <th>Código</th>
             <th>Tipo</th>
-            <th>Categoría</th>
             <th class="num">Stock actual</th>
             <th class="num">Stock mínimo</th>
             <th>Alerta</th>
@@ -16,8 +16,8 @@
         <tbody>
           @for (r of stockRows; track r.accessory.id) {
             <tr>
+              <td><app-copyable-code [value]="r.accessory.inventoryCode" label="código" /></td>
               <td class="td-name">{{ r.accessory.type }}</td>
-              <td>{{ r.accessory.category === 'consumable' ? 'Consumible' : 'Accesorio' }}</td>
               <td class="num">{{ r.currentStock }} {{ r.accessory.unitOfMeasure }}</td>
               <td class="num">{{ r.accessory.minStock }}</td>
               <td>
@@ -40,9 +40,9 @@
 <div class="panel toolbar-panel">
   <form [formGroup]="filterForm" class="toolbar">
     <select class="cf-input filter-input" formControlName="accessoryId">
-      <option value="">Todos los accesorios</option>
+      <option value="">Todos los {{ categoryLabel }}s</option>
       @for (a of accessories; track a.id) {
-        <option [value]="a.id">{{ a.type }}</option>
+        <option [value]="a.id">{{ a.inventoryCode }} — {{ a.type }}</option>
       }
     </select>
     <input class="cf-input filter-input" formControlName="merchant" placeholder="Comercio…" autocomplete="off" />
@@ -75,7 +75,7 @@
         <thead>
           <tr>
             <th>Fecha</th>
-            <th>Accesorio</th>
+            <th>Ítem</th>
             <th>Tipo</th>
             <th class="num">Cantidad</th>
             <th>Comercio</th>

@@ -6,7 +6,7 @@ import { combineLatest } from 'rxjs';
 
 import {
   AccessoryCatalogItem,
-  ACCESSORY_CATEGORY_LABELS,
+  AccessoryCategory,
   PosCatalogItem,
   Supplier,
 } from '../../../core/models/pos-admin';
@@ -36,6 +36,7 @@ import {
   ListQuery,
   ListResult,
 } from '../../../shared/data-grid/list-query';
+import { CopyableCodeComponent } from '../../../shared/copyable-code/copyable-code.component';
 
 @Component({
   selector: 'app-pos-catalog',
@@ -46,6 +47,7 @@ import {
     EmptyStateComponent,
     StatusTagComponent,
     DataGridComponent,
+    CopyableCodeComponent,
   ],
   templateUrl: './catalog.component.html',
   styleUrl: './catalog.component.css',
@@ -53,13 +55,13 @@ import {
 export class CatalogComponent implements OnInit {
   readonly catalogStatusOptions: StatusTagOption[] = STATUS_TAG_CATALOG;
   readonly supplierStatusOptions: StatusTagOption[] = STATUS_TAG_ACTIVE_INACTIVE;
-  categoryLabels: Record<string, string> = ACCESSORY_CATEGORY_LABELS;
-  activeTab: 'brands' | 'suppliers' | 'accessories' = 'brands';
+  activeTab: 'brands' | 'suppliers' | 'accessories' | 'consumables' = 'brands';
   openMenuId: string | null = null;
 
   brandModelSearch = new FormControl('');
   supplierSearch = new FormControl('');
   accessorySearch = new FormControl('');
+  consumableSearch = new FormControl('');
 
   allCatalog: PosCatalogItem[] = [];
   allSuppliers: Supplier[] = [];
@@ -70,6 +72,7 @@ export class CatalogComponent implements OnInit {
 
   filteredSuppliers: Supplier[] = [];
   filteredAccessories: AccessoryCatalogItem[] = [];
+  filteredConsumables: AccessoryCatalogItem[] = [];
 
   readonly brandColumns: DataGridColumn<PosCatalogItem>[] = [
     {
@@ -131,6 +134,7 @@ export class CatalogComponent implements OnInit {
     combineLatest([this.catalogSvc.accessories$]).subscribe(([items]) => {
       this.allAccessories = items;
       this.applyAccessoryFilter();
+      this.applyConsumableFilter();
     });
 
     this.brandModelSearch.valueChanges.subscribe(() => {
@@ -143,6 +147,7 @@ export class CatalogComponent implements OnInit {
     });
     this.supplierSearch.valueChanges.subscribe(() => this.applySupplierFilter());
     this.accessorySearch.valueChanges.subscribe(() => this.applyAccessoryFilter());
+    this.consumableSearch.valueChanges.subscribe(() => this.applyConsumableFilter());
   }
 
   onBrandQueryChange(change: DataGridQueryChange): void {
@@ -206,11 +211,23 @@ export class CatalogComponent implements OnInit {
     );
   }
 
-  private applyAccessoryFilter(): void {
-    const q = (this.accessorySearch.value ?? '').toLowerCase().trim();
-    this.filteredAccessories = this.allAccessories.filter(
-      a => !q || a.type.toLowerCase().includes(q) || a.compatibleBrandModel.toLowerCase().includes(q),
+  private filterByCategory(category: AccessoryCategory, q: string): AccessoryCatalogItem[] {
+    const term = q.toLowerCase().trim();
+    return this.allAccessories.filter(
+      a =>
+        a.category === category &&
+        (!term ||
+          a.type.toLowerCase().includes(term) ||
+          a.inventoryCode.toLowerCase().includes(term)),
     );
+  }
+
+  private applyAccessoryFilter(): void {
+    this.filteredAccessories = this.filterByCategory('accessory', this.accessorySearch.value ?? '');
+  }
+
+  private applyConsumableFilter(): void {
+    this.filteredConsumables = this.filterByCategory('consumable', this.consumableSearch.value ?? '');
   }
 
   openBrandModelDialog(item?: PosCatalogItem): void {
@@ -241,12 +258,16 @@ export class CatalogComponent implements OnInit {
     this.confirmDelete(`¿Eliminar al proveedor "${item.name}"?`, () => this.catalogSvc.deleteSupplier(item.id));
   }
 
-  openAccessoryDialog(item?: AccessoryCatalogItem): void {
+  openAccessoryDialog(item?: AccessoryCatalogItem, category: AccessoryCategory = 'accessory'): void {
     this.dialog.open(AccessoryDialogComponent, {
       width: '520px',
       maxWidth: '94vw',
       panelClass: 'cf-dialog-panel',
-      data: { item },
+      data: {
+        item,
+        defaultCategory: item?.category ?? category,
+        lockCategory: !item,
+      },
     });
   }
 

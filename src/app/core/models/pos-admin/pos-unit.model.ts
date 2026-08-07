@@ -67,6 +67,8 @@ export interface PosUnitHistoryEvent {
 export interface PosUnit {
   id: string;
   serialNumber: string;
+  /** Código de inventario, p. ej. POS-001 */
+  inventoryCode: string;
   brand: string;
   model: string;
   posType: string;
@@ -88,6 +90,11 @@ export interface PosUnit {
   merchantId?: string;
   merchantName?: string;
   installedAt?: string;
+
+  /** ICCID de la SIM asignada (si aplica) */
+  simIccid?: string;
+  /** Código de inventario de la SIM asignada, p. ej. SIM-001 */
+  simInventoryCode?: string;
 
   history: PosUnitHistoryEvent[];
 }

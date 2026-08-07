@@ -155,9 +155,7 @@ export class PurchaseOrderFormComponent implements OnInit {
   onAccessoryChange(index: number, accessoryId: string): void {
     const acc = this.accessories.find(a => a.id === accessoryId);
     if (!acc) return;
-    const brand =
-      acc.compatibleBrandModel === 'Universal' ? 'Universal' : acc.compatibleBrandModel.split(' ')[0];
-    this.lines.at(index).patchValue({ brand, model: acc.type });
+    this.lines.at(index).patchValue({ brand: '—', model: acc.type });
   }
 
   accessoryIdForLine(brand: string, model: string): string {

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SimCard, SimCardEstado, SimCardTracking } from '../../models/pmt/sim-card.model';
 import { MOCK_PMT_SIM_CARDS, MOCK_PMT_SIM_TRACKING } from '../../mock/pmt/mock-sim-cards';
+import { INVENTORY_PREFIX, nextInventoryCode } from '../../utils/inventory-code.util';
 
 let simSeq = MOCK_PMT_SIM_CARDS.length + 1;
 let trackSeq = MOCK_PMT_SIM_TRACKING.length + 1;
@@ -17,9 +18,15 @@ export class PmtSimCardService {
   get simCards(): SimCard[] { return this.simSubject.value; }
   get tracking(): SimCardTracking[] { return this.trackingSubject.value; }
 
-  create(data: Omit<SimCard, 'id' | 'createdAt' | 'updatedAt'>): SimCard {
+  create(data: Omit<SimCard, 'id' | 'createdAt' | 'updatedAt' | 'inventoryCode'> & { inventoryCode?: string }): SimCard {
     const now = new Date().toISOString();
-    const s: SimCard = { ...data, id: simSeq++, createdAt: now, updatedAt: now };
+    const inventoryCode =
+      data.inventoryCode ??
+      nextInventoryCode(
+        this.simCards.map(s => s.inventoryCode),
+        INVENTORY_PREFIX.sim,
+      );
+    const s: SimCard = { ...data, inventoryCode, id: simSeq++, createdAt: now, updatedAt: now };
     this.simSubject.next([...this.simCards, s]);
     return s;
   }
