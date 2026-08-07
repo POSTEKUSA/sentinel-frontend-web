@@ -71,7 +71,7 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'En Garantía', icon: 'shield', route: '/pmt/garantia' },
         { label: 'SIM Cards', icon: 'sim_card', route: '/pmt/sim-cards' },
         { label: 'Requisiciones', icon: 'shopping_cart', route: '/pmt/solicitudes-equipo', tooltip: 'Solicitudes de Producto o Compras a activo fijo' },
-        { label: 'Compras', icon: 'orders', route: '/pos-admin/purchase-orders' },
+        { label: 'Compras', icon: 'shopping_cart', route: '/pos-admin/purchase-orders' },
         { label: 'Soporte', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
         { label: 'Comercios / MCC', icon: 'merchants', route: '/pos-admin/merchants', dividerBefore: true, catalog: true },
         { label: 'Bodegas', icon: 'warehouse', route: '/pmt/bodega', catalog: true },
@@ -145,9 +145,9 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/device-list')) return { title: 'Dispositivos', icon: 'devices' };
     if (path.startsWith('/device-map')) return { title: 'Mapa', icon: 'map' };
     if (path.startsWith('/pos-admin/catalog')) return { title: 'Marcas / Modelos', icon: 'catalog' };
-    if (path.startsWith('/pos-admin/purchase-orders/new')) return { title: 'Nueva orden de compra', icon: 'orders' };
-    if (/^\/pos-admin\/purchase-orders\/[^/]+/.test(path)) return { title: 'Orden de compra', icon: 'orders' };
-    if (path.startsWith('/pos-admin/purchase-orders')) return { title: 'Compras', icon: 'orders' };
+    if (path.startsWith('/pos-admin/purchase-orders/new')) return { title: 'Nueva orden de compra', icon: 'shopping_cart' };
+    if (/^\/pos-admin\/purchase-orders\/[^/]+/.test(path)) return { title: 'Orden de compra', icon: 'shopping_cart' };
+    if (path.startsWith('/pos-admin/purchase-orders')) return { title: 'Compras', icon: 'shopping_cart' };
     if (path.startsWith('/pos-admin/receiving')) return { title: 'Recepción', icon: 'receiving' };
     if (path.startsWith('/pos-admin/inventory')) return { title: 'Inventario', icon: 'inventory' };
     if (/^\/pos-admin\/merchants\/[^/]+/.test(path)) return { title: 'Comercio', icon: 'merchants' };

@@ -56,15 +56,41 @@ export const SOLICITUD_EQUIPO_ESTADO_BADGE: Record<SolicitudEquipoEstado, string
   cancelada: 'cf-badge-off',
 };
 
-export const EQUIPO_ITEMS = [
+/** Accesorios / consumibles (tipos intermedios del select). */
+export const EQUIPO_ACCESORIOS = [
+  'CHIP CLARO', 'CHIP TIGO', 'CHIP POSTEK',
+  'BATERIAS D60', 'BATERIAS X990/TRINITY',
+  'CARGADORES ANDROID', 'CARGADORES ENGAGE', 'CARGADORES VX',
+] as const;
+
+/** Tipos especiales: POS y P primero en flujo; PRS depende de POS; Operaciones al final. */
+export const EQUIPO_TIPOS_ESPECIALES = ['POS', 'P', 'PRS', 'Operaciones'] as const;
+
+export type EquipoItemTipoEspecial = (typeof EQUIPO_TIPOS_ESPECIALES)[number];
+export type EquipoItemTipo = EquipoItemTipoEspecial | (typeof EQUIPO_ACCESORIOS)[number];
+
+/** Orden del select: POS, P, accesorios…, PRS, Operaciones (último). */
+export const EQUIPO_ITEMS: EquipoItemTipo[] = [
+  'POS',
+  'P',
+  ...EQUIPO_ACCESORIOS,
+  'PRS',
+  'Operaciones',
+];
+
+/** @deprecated usar EQUIPO_ITEMS / EQUIPO_ACCESORIOS */
+export const EQUIPO_ITEMS_LEGACY = [
   'POS IP', 'POS GPRS', 'CHIP CLARO', 'CHIP TIGO', 'CHIP POSTEK',
   'BATERIAS D60', 'BATERIAS X990/TRINITY',
   'CARGADORES ANDROID', 'CARGADORES ENGAGE', 'CARGADORES VX',
 ];
 
 export interface SolicitudEquipoItem {
-  nombre: string;
+  /** Tipo / nombre del artículo (POS, P, PRS, Operaciones, accesorio…). */
+  nombre: EquipoItemTipo | string;
   cantidad: number;
+  marca?: string;
+  modelo?: string;
 }
 
 export interface SolicitudEquipo {

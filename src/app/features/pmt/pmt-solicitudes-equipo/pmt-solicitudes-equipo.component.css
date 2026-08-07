@@ -1,1 +1,90 @@
-﻿
+﻿.req-lines-head,
+.req-line {
+  display: grid;
+  grid-template-columns: 88px minmax(120px, 1fr) minmax(180px, 1.6fr) 40px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.req-lines-head {
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.req-line-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.req-line-empty {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.req-hint {
+  margin: 4px 0 10px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.cf-table th.th-actions,
+.cf-table td.td-actions {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  min-width: 96px;
+  width: 96px;
+  text-align: right;
+  white-space: nowrap;
+  background: var(--surface, #fff);
+  box-shadow: -8px 0 10px -8px rgba(20, 23, 28, 0.18);
+}
+
+.cf-table thead th.th-actions {
+  background: #fbfcfd;
+  z-index: 3;
+}
+
+.cf-table tbody tr:hover td.td-actions {
+  background: #fbfbfc;
+}
+
+.inv-actions-menu {
+  position: fixed;
+  z-index: 5000;
+  min-width: 200px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(20, 23, 28, 0.16);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 640px) {
+  .req-lines-head {
+    display: none;
+  }
+
+  .req-line {
+    grid-template-columns: 1fr 40px;
+    grid-template-areas:
+      "qty op"
+      "tipo op"
+      "detail op";
+  }
+
+  .req-line > input[type="number"] { grid-area: qty; }
+  .req-line > select:first-of-type { grid-area: tipo; }
+  .req-line > .req-line-detail,
+  .req-line > select:not(:first-of-type),
+  .req-line > .req-line-empty { grid-area: detail; }
+  .req-line > button { grid-area: op; align-self: start; }
+}

@@ -76,4 +76,8 @@ export class PmtSolicitudService {
       )
     );
   }
+
+  deleteEquipo(id: number): void {
+    this.equipoSubject.next(this.equipoSubject.value.filter(s => s.id !== id));
+  }
 }

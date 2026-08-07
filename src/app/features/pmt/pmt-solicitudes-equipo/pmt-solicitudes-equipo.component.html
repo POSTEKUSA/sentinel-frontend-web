@@ -5,7 +5,7 @@
       <p class="count">{{ filtered.length }} solicitudes</p>
     </div>
     <div class="head-actions">
-      <button class="btn-primary" (click)="showCreate = true">
+      <button class="btn-primary" (click)="openCreate()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         Nueva Solicitud
       </button>
@@ -22,10 +22,17 @@
   </div>
 
   <div class="panel">
-    <div class="admin-table-wrap">
+    <div class="admin-table-wrap" (scroll)="closeMenus()">
       <table class="cf-table">
         <thead>
-          <tr><th>#</th><th>Solicitado por</th><th>Items</th><th>Estado</th><th>Fecha</th><th style="text-align:right">Ver</th></tr>
+          <tr>
+            <th>#</th>
+            <th>Solicitado por</th>
+            <th>Items</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th class="th-actions" style="text-align:right">Acciones</th>
+          </tr>
         </thead>
         <tbody>
           @if (filtered.length === 0) {
@@ -42,8 +49,20 @@
                 </span>
               </td>
               <td>{{ s.createdAt | date:'dd/MM/yy' }}</td>
-              <td style="text-align:right">
-                <button class="icon-btn" (click)="openDetail(s)"><span class="mi">open_in_new</span></button>
+              <td class="td-actions">
+                <div class="row-actions" style="justify-content:flex-end">
+                  <button type="button" class="icon-btn" title="Ver" (click)="openDetail(s)">
+                    <span class="mi">visibility</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="cf-icon-btn"
+                    aria-label="Más acciones"
+                    [class.active]="menuTarget?.id === s.id"
+                    (click)="toggleMenu(s, $event)">
+                    <span class="mi">more_vert</span>
+                  </button>
+                </div>
               </td>
             </tr>
           }
@@ -74,10 +93,22 @@
 
           <p class="cf-label" style="margin-bottom:8px">Ítems solicitados</p>
           <table class="cf-table" style="margin-bottom:14px">
-            <thead><tr><th>Artículo</th><th style="text-align:right">Cantidad</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Cantidad</th>
+                <th>Artículo</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+              </tr>
+            </thead>
             <tbody>
-              @for (item of detail.items; track item.nombre) {
-                <tr><td>{{ item.nombre }}</td><td style="text-align:right"><strong>{{ item.cantidad }}</strong></td></tr>
+              @for (item of detail.items; track $index) {
+                <tr>
+                  <td><strong>{{ item.cantidad }}</strong></td>
+                  <td>{{ item.nombre }}</td>
+                  <td>{{ item.marca ?? '—' }}</td>
+                  <td>{{ item.modelo ?? '—' }}</td>
+                </tr>
               }
             </tbody>
           </table>
@@ -109,13 +140,13 @@
     </div>
   }
 
-  <!-- Create -->
-  @if (showCreate) {
-    <div class="dialog-backdrop" (click)="showCreate = false">
-      <div class="dialog" (click)="$event.stopPropagation()">
+  <!-- Create / Edit -->
+  @if (showForm) {
+    <div class="dialog-backdrop" (click)="closeForm()">
+      <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
         <div class="dialog-head">
-          <h2>Nueva Requisición</h2>
-          <button class="icon-btn" (click)="showCreate = false"><span class="mi">close</span></button>
+          <h2>{{ editId === null ? 'Nueva Requisición' : 'Editar Requisición #' + editId }}</h2>
+          <button class="icon-btn" (click)="closeForm()"><span class="mi">close</span></button>
         </div>
         <div class="dialog-body">
           <div style="margin-bottom:12px">
@@ -123,22 +154,173 @@
             <textarea class="cf-input" [(ngModel)]="newNotas" name="newNotas" rows="2" placeholder="Observaciones…"></textarea>
           </div>
           <p class="cf-label" style="margin-bottom:8px">Ítems</p>
+          <div class="req-lines-head">
+            <span>Cantidad</span>
+            <span>Artículo</span>
+            <span>Detalle</span>
+            <span>Operaciones</span>
+          </div>
           @for (item of newItems; track $index; let i = $index) {
-            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-              <select class="cf-input" [(ngModel)]="item.nombre" [name]="'item_name_' + i" style="flex:2">
-                @for (eq of equipoItems; track eq) { <option [value]="eq">{{ eq }}</option> }
+            <div class="req-line">
+              <input
+                class="cf-input"
+                type="number"
+                min="1"
+                [(ngModel)]="item.cantidad"
+                [name]="'item_qty_' + i"
+              />
+              <select
+                class="cf-input"
+                [(ngModel)]="item.nombre"
+                [name]="'item_name_' + i"
+                (ngModelChange)="onTipoChange(item)"
+              >
+                @for (eq of equipoItems; track eq) {
+                  <option [value]="eq">{{ eq }}</option>
+                }
               </select>
-              <input class="cf-input" type="number" min="1" [(ngModel)]="item.cantidad" [name]="'item_qty_' + i" style="flex:0 0 80px" />
-              <button class="icon-btn icon-btn--danger" (click)="removeItem(i)"><span class="mi">close</span></button>
+
+              @if (needsMarcaModelo(item.nombre)) {
+                <div class="req-line-detail">
+                  <select
+                    class="cf-input"
+                    [(ngModel)]="item.marca"
+                    [name]="'item_marca_' + i"
+                    (ngModelChange)="onMarcaChange(item)"
+                  >
+                    <option value="">Marca…</option>
+                    @for (b of posBrands(); track b) {
+                      <option [value]="b">{{ b }}</option>
+                    }
+                  </select>
+                  <select
+                    class="cf-input"
+                    [(ngModel)]="item.modelo"
+                    [name]="'item_modelo_' + i"
+                    (ngModelChange)="onModeloChange()"
+                  >
+                    <option value="">Modelo…</option>
+                    @for (m of posModels(item.marca); track m) {
+                      <option [value]="m">{{ m }}</option>
+                    }
+                  </select>
+                </div>
+              } @else if (isPrs(item.nombre)) {
+                <select
+                  class="cf-input"
+                  [ngModel]="prsKey(item)"
+                  [name]="'item_prs_' + i"
+                  (ngModelChange)="selectPrsPos(item, $event)"
+                >
+                  <option value="">POS (marca / modelo)…</option>
+                  @for (pos of posLinesForPrs(); track pos.marca + pos.modelo + $index) {
+                    <option [value]="pos.marca + '|' + pos.modelo">
+                      POS · {{ pos.marca }} {{ pos.modelo }}
+                    </option>
+                  }
+                </select>
+              } @else {
+                <span class="req-line-empty">—</span>
+              }
+
+              <button
+                type="button"
+                class="icon-btn icon-btn--danger"
+                title="Quitar ítem"
+                (click)="removeItem(i)"
+              >
+                <span class="mi">close</span>
+              </button>
             </div>
+          }
+          @if (newItems.some(i => isPrs(i.nombre)) && posLinesForPrs().length === 0) {
+            <p class="req-hint">Para PRS, agregá primero un ítem POS con marca y modelo. Si hay POS y P, PRS solo lista los POS.</p>
           }
           <button class="btn-secondary btn-sm" (click)="addItem()"><span class="mi">add</span> Agregar ítem</button>
         </div>
         <div class="dialog-foot">
-          <button class="btn-secondary" (click)="showCreate = false">Cancelar</button>
-          <button class="btn-primary" (click)="create()">Crear Solicitud</button>
+          <button class="btn-secondary" (click)="closeForm()">Cancelar</button>
+          <button class="btn-primary" [disabled]="!canSave()" (click)="save()">
+            {{ editId === null ? 'Crear Solicitud' : 'Guardar cambios' }}
+          </button>
         </div>
       </div>
+    </div>
+  }
+
+  <!-- Aprobar / cambiar estado -->
+  @if (approveTarget) {
+    <div class="dialog-backdrop" (click)="cancelApprove()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Aprobar / cambiar estado</h2>
+          <button type="button" class="icon-btn" (click)="cancelApprove()"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2);font-size:13px;margin:0 0 12px;line-height:1.5">
+            Solicitud #{{ approveTarget.id }} · estado actual:
+            <span class="cf-badge" [ngClass]="estadoBadge[approveTarget.estado]">
+              <span class="dot"></span>{{ estadoLabels[approveTarget.estado] }}
+            </span>
+          </p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div>
+              <label class="cf-label">Nuevo estado</label>
+              <select class="cf-input" [(ngModel)]="approveEstado" name="approveEstado">
+                @for (k of estadoKeys; track k) { <option [value]="k">{{ estadoLabels[k] }}</option> }
+              </select>
+            </div>
+            <div>
+              <label class="cf-label">Comentario (opcional)</label>
+              <input class="cf-input" [(ngModel)]="approveComment" name="approveComment" placeholder="Comentario…" />
+            </div>
+          </div>
+        </div>
+        <div class="dialog-foot">
+          <button type="button" class="btn-secondary" (click)="cancelApprove()">Cancelar</button>
+          <button type="button" class="btn-primary" (click)="confirmApprove()">Aplicar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Delete -->
+  @if (deleteTarget) {
+    <div class="dialog-backdrop" (click)="cancelDelete()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Eliminar requisición</h2>
+          <button type="button" class="icon-btn" (click)="cancelDelete()"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2);font-size:13px;margin:0;line-height:1.5">
+            ¿Eliminar la solicitud #{{ deleteTarget.id }}?
+            Esta acción no se puede deshacer.
+          </p>
+        </div>
+        <div class="dialog-foot">
+          <button type="button" class="btn-secondary" (click)="cancelDelete()">Cancelar</button>
+          <button type="button" class="btn-primary" (click)="confirmDelete()">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (menuTarget && menuPos) {
+    <div
+      class="inv-actions-menu"
+      [style.top.px]="menuPos.top"
+      [style.left.px]="menuPos.left"
+      (click)="$event.stopPropagation()">
+      <button type="button" class="cf-menu-item" (click)="openApprove(menuTarget!)">
+        <span class="mi">check_circle</span> Aprobar
+      </button>
+      <button type="button" class="cf-menu-item" (click)="openEdit(menuTarget!)">
+        <span class="mi">edit</span> Editar
+      </button>
+      <button type="button" class="cf-menu-item danger" (click)="askDelete(menuTarget!)">
+        <span class="mi">delete_outline</span> Eliminar
+      </button>
     </div>
   }
 </div>
