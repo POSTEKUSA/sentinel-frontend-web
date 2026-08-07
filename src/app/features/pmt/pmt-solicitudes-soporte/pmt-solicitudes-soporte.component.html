@@ -1,11 +1,11 @@
 <div class="admin-page">
   <header class="cf-head">
     <div>
-      <h1>Solicitudes de Soporte</h1>
+      <h1>Soporte Técnico</h1>
       <p class="count">{{ filtered.length }} solicitudes</p>
     </div>
     <div class="head-actions">
-      <button class="btn-primary" (click)="showCreate = true">
+      <button class="btn-primary" (click)="openCreate()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         Nueva Solicitud
       </button>
@@ -16,7 +16,7 @@
     <form [formGroup]="filterForm" class="toolbar">
       <label class="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input type="search" formControlName="q" placeholder="Buscar serie, descripción…" />
+        <input type="search" formControlName="q" placeholder="Buscar inventario, serie, marca…" />
       </label>
       <select class="cf-input filter-input" formControlName="estado">
         <option value="">Todos los estados</option>
@@ -24,23 +24,22 @@
           <option [value]="k">{{ estadoLabels[k] }}</option>
         }
       </select>
-      <select class="cf-input filter-input" formControlName="tipo">
-        <option value="">Todos los tipos</option>
-        <option value="tecnico">Técnico</option>
-        <option value="software">Software</option>
-        <option value="hardware">Hardware</option>
-        <option value="otro">Otro</option>
-      </select>
     </form>
   </div>
 
   <div class="panel">
-    <div class="admin-table-wrap">
-      <table class="cf-table">
+    <div class="admin-table-wrap" (scroll)="closeMenus()">
+      <table class="cf-table soporte-grid">
         <thead>
           <tr>
-            <th>#</th><th>Tipo</th><th>Descripción</th><th>Serie</th>
-            <th>Estado</th><th>Comentarios</th><th>Creado</th><th style="text-align:right">Acciones</th>
+            <th>COD Inventario</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>N° Serie</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Taller</th>
+            <th class="th-actions" style="text-align:right">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -48,20 +47,38 @@
             <tr><td colspan="8" class="admin-empty"><span class="mi">support_agent</span><span>Sin solicitudes</span></td></tr>
           }
           @for (s of filtered; track s.id) {
+            @let t = terminalFor(s);
             <tr>
-              <td class="td-sub">{{ s.id }}</td>
-              <td><span class="cf-badge cf-badge-muted"><span class="dot"></span>{{ s.tipo | titlecase }}</span></td>
-              <td class="td-truncate" [title]="s.descripcion">{{ s.descripcion }}</td>
-              <td><app-copyable-code [value]="s.serie" label="serie" /></td>
+              <td><app-copyable-code [value]="s.inventario ?? t?.inventario" label="inventario" /></td>
+              <td class="td-compact">{{ t?.marca ?? '—' }}</td>
+              <td class="td-compact">{{ t?.modelo ?? '—' }}</td>
+              <td><app-copyable-code [value]="s.serie ?? t?.serie" label="serie" /></td>
+              <td class="td-desc" [title]="s.descripcion">{{ s.descripcion }}</td>
               <td>
                 <span class="cf-badge" [ngClass]="estadoBadge[s.estado]">
                   <span class="dot"></span>{{ estadoLabels[s.estado] }}
                 </span>
               </td>
-              <td>{{ s.comments.length }}</td>
-              <td>{{ s.createdAt | date:'dd/MM/yy' }}</td>
-              <td style="text-align:right">
-                <button class="icon-btn" title="Ver detalle" (click)="openDetail(s)"><span class="mi">open_in_new</span></button>
+              <td>
+                @if (s.disposicion) {
+                  <span class="cf-badge" [ngClass]="disposicionBadge[s.disposicion]">
+                    <span class="dot"></span>{{ disposicionLabels[s.disposicion] }}
+                  </span>
+                } @else {
+                  <span class="td-sub">—</span>
+                }
+              </td>
+              <td class="td-actions">
+                <div class="row-actions" style="justify-content:flex-end">
+                  <button
+                    type="button"
+                    class="cf-icon-btn"
+                    aria-label="Más acciones"
+                    [class.active]="menuTarget?.id === s.id"
+                    (click)="toggleMenu(s, $event)">
+                    <span class="mi">more_vert</span>
+                  </button>
+                </div>
               </td>
             </tr>
           }
@@ -72,6 +89,7 @@
 
   <!-- Detail dialog -->
   @if (detail) {
+    @let dt = terminalFor(detail);
     <div class="dialog-backdrop" (click)="detail = null">
       <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
         <div class="dialog-head">
@@ -80,18 +98,20 @@
         </div>
         <div class="dialog-body">
           <div class="grid-2" style="margin-bottom:12px">
-            <div><span class="cf-label">Tipo:</span> <span>{{ detail.tipo | titlecase }}</span></div>
-            <div><span class="cf-label">Serie:</span> <app-copyable-code [value]="detail.serie" label="serie" /></div>
+            <div><span class="cf-label">COD Inventario:</span> <app-copyable-code [value]="detail.inventario ?? dt?.inventario" label="inventario" /></div>
+            <div><span class="cf-label">N° Serie:</span> <app-copyable-code [value]="detail.serie ?? dt?.serie" label="serie" /></div>
+            <div><span class="cf-label">Marca:</span> <span>{{ dt?.marca ?? '—' }}</span></div>
+            <div><span class="cf-label">Modelo:</span> <span>{{ dt?.modelo ?? '—' }}</span></div>
             <div><span class="cf-label">Creado por:</span> <span>{{ detail.createdBy | userName }}</span></div>
             <div><span class="cf-label">Creado:</span> <span>{{ detail.createdAt | date:'dd/MM/yyyy HH:mm' }}</span></div>
           </div>
           <p style="font-size:13px;color:var(--ink-2);margin-bottom:14px">{{ detail.descripcion }}</p>
 
           <div style="margin-bottom:12px">
-            <label class="cf-label">Cambiar estado</label>
+            <label class="cf-label">Estado (cliente)</label>
             <div class="row-actions" style="flex-wrap:wrap;gap:6px">
               @for (k of estadoKeys; track k) {
-                <button class="btn-sm" 
+                <button class="btn-sm"
                   [ngClass]="detail.estado === k ? 'btn-primary' : 'btn-secondary'"
                   [style.background]="detail.estado === k ? estadoColor(k) : null"
                   [style.borderColor]="detail.estado === k ? estadoColor(k) : null"
@@ -101,6 +121,29 @@
               }
             </div>
           </div>
+
+          @if (detail.disposicion) {
+            <div class="taller-box">
+              <p class="cf-label" style="margin-bottom:8px">Taller</p>
+              <div class="grid-2">
+                <div>
+                  <span class="cf-label">Estado taller:</span>
+                  <span class="cf-badge" [ngClass]="disposicionBadge[detail.disposicion]">
+                    <span class="dot"></span>{{ disposicionLabels[detail.disposicion] }}
+                  </span>
+                </div>
+                @if (detail.tallerMotivo) {
+                  <div><span class="cf-label">Motivo:</span> <span>{{ detail.tallerMotivo }}</span></div>
+                }
+              </div>
+              @if (detail.tallerObservacion) {
+                <div style="margin-top:8px">
+                  <span class="cf-label">Observaciones:</span>
+                  <p style="margin:4px 0 0;font-size:13px;color:var(--ink-2)">{{ detail.tallerObservacion }}</p>
+                </div>
+              }
+            </div>
+          }
 
           <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
           <p class="cf-label" style="margin-bottom:8px">Comentarios ({{ detail.comments.length }})</p>
@@ -120,37 +163,124 @@
     </div>
   }
 
-  <!-- Create dialog -->
+  <!-- Create / Edit dialog -->
   @if (showCreate) {
-    <div class="dialog-backdrop" (click)="showCreate = false">
+    <div class="dialog-backdrop" (click)="cancelForm()">
       <div class="dialog" (click)="$event.stopPropagation()">
         <div class="dialog-head">
-          <h2>Nueva Solicitud de Soporte</h2>
-          <button class="icon-btn" (click)="showCreate = false"><span class="mi">close</span></button>
+          <h2>{{ editTarget ? 'Editar solicitud' : 'Nueva solicitud de soporte' }}</h2>
+          <button class="icon-btn" (click)="cancelForm()"><span class="mi">close</span></button>
         </div>
-        <form [formGroup]="createForm" class="dialog-body" (ngSubmit)="create()">
-          <div class="grid-2">
-            <div><label class="cf-label">Serie (opcional)</label><input class="cf-input" formControlName="serie" placeholder="SN123456" /></div>
-            <div><label class="cf-label">Tipo</label>
-              <select class="cf-input" formControlName="tipo">
-                <option value="tecnico">Técnico</option>
-                <option value="software">Software</option>
-                <option value="hardware">Hardware</option>
-                <option value="otro">Otro</option>
-              </select>
-            </div>
+        <form [formGroup]="createForm" class="dialog-body" (ngSubmit)="saveForm()">
+          <div>
+            <label class="cf-label">COD Inventario *</label>
+            <input class="cf-input" formControlName="inventario" placeholder="POS-009" autocomplete="off" />
           </div>
+          @if (formTerminal) {
+            <div class="terminal-preview">
+              <div><span class="cf-label">Marca</span><span>{{ formTerminal.marca ?? '—' }}</span></div>
+              <div><span class="cf-label">Modelo</span><span>{{ formTerminal.modelo ?? '—' }}</span></div>
+              <div><span class="cf-label">N° Serie</span><app-copyable-code [value]="formTerminal.serie" label="serie" /></div>
+            </div>
+          } @else if (createForm.get('inventario')?.value?.trim()) {
+            <p class="form-hint warn">Sin terminal con ese código de inventario.</p>
+          }
           <div style="margin-top:10px">
             <label class="cf-label">Descripción *</label>
             <textarea class="cf-input" formControlName="descripcion" rows="4" placeholder="Describa el problema…"></textarea>
           </div>
           @if (createError) { <p class="form-error">{{ createError }}</p> }
           <div class="dialog-foot">
-            <button type="button" class="btn-secondary" (click)="showCreate = false">Cancelar</button>
-            <button type="submit" class="btn-primary">Crear</button>
+            <button type="button" class="btn-secondary" (click)="cancelForm()">Cancelar</button>
+            <button type="submit" class="btn-primary">{{ editTarget ? 'Guardar' : 'Crear' }}</button>
           </div>
         </form>
       </div>
+    </div>
+  }
+
+  <!-- Delete -->
+  @if (deleteTarget) {
+    <div class="dialog-backdrop" (click)="cancelDelete()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>Eliminar solicitud</h2>
+          <button type="button" class="icon-btn" (click)="cancelDelete()"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2);font-size:13px;margin:0;line-height:1.5">
+            ¿Eliminar la solicitud #{{ deleteTarget.id }}?
+            Esta acción no se puede deshacer.
+          </p>
+        </div>
+        <div class="dialog-foot">
+          <button type="button" class="btn-secondary" (click)="cancelDelete()">Cancelar</button>
+          <button type="button" class="btn-primary" (click)="confirmDelete()">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Workflow reparación / garantía -->
+  @if (workflowAction && workflowSolicitud && workflowTerminal) {
+    <div class="dialog-backdrop" (click)="cancelWorkflow()">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-head">
+          <h2>{{ workflowTitle() }}</h2>
+          <button type="button" class="icon-btn" (click)="cancelWorkflow()"><span class="mi">close</span></button>
+        </div>
+        <div class="dialog-body">
+          <p style="color:var(--ink-2); font-size:13px; margin-bottom:12px">
+            Solicitud #{{ workflowSolicitud.id }} ·
+            Terminal <app-copyable-code [value]="workflowTerminal.serie" label="serie" />
+          </p>
+          <label class="cf-label">Motivo *</label>
+          <select class="cf-input" [(ngModel)]="workflowMotivo" style="margin-bottom:12px">
+            <option value="">Seleccione un motivo…</option>
+            @for (m of workflowMotivosList; track m) {
+              <option [value]="m">{{ m }}</option>
+            }
+          </select>
+          <label class="cf-label">{{ workflowMotivo === 'Otro' ? 'Detalle *' : 'Observaciones (opcional)' }}</label>
+          <textarea class="cf-input" rows="3" [(ngModel)]="workflowComment"
+            [placeholder]="workflowMotivo === 'Otro' ? 'Describa el motivo…' : 'Observaciones adicionales…'"></textarea>
+          @if (workflowError) {
+            <p class="form-error" style="margin-top:10px">{{ workflowError }}</p>
+          }
+        </div>
+        <div class="dialog-foot">
+          <button type="button" class="btn-secondary" (click)="cancelWorkflow()">Cancelar</button>
+          <button type="button" class="btn-primary" (click)="applyWorkflow()">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (menuTarget && menuPos) {
+    <div
+      class="inv-actions-menu"
+      [style.top.px]="menuPos.top"
+      [style.left.px]="menuPos.left"
+      (click)="$event.stopPropagation()">
+      <button type="button" class="cf-menu-item" (click)="openDetail(menuTarget!)">
+        <span class="mi">visibility</span> Ver
+      </button>
+      <button type="button" class="cf-menu-item" (click)="openEdit(menuTarget!)">
+        <span class="mi">edit</span> Editar
+      </button>
+      @if (canSendToReparacion(menuTarget)) {
+        <button type="button" class="cf-menu-item" (click)="startWorkflow('reparacion', menuTarget!, $event)">
+          <span class="mi">build</span> Enviar a reparación
+        </button>
+      }
+      @if (canSendToGarantia(menuTarget)) {
+        <button type="button" class="cf-menu-item" (click)="startWorkflow('garantia', menuTarget!, $event)">
+          <span class="mi">shield</span> Enviar a garantía
+        </button>
+      }
+      <button type="button" class="cf-menu-item danger" (click)="askDelete(menuTarget!)">
+        <span class="mi">delete_outline</span> Eliminar
+      </button>
     </div>
   }
 </div>

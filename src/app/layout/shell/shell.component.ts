@@ -67,12 +67,12 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'Recepción', icon: 'receiving', route: '/pos-admin/receiving', hidden: true },
         { label: 'Inyección', icon: 'vaccines', route: '/pmt/pos-inyeccion' },
         { label: 'Asignados', icon: 'manage_accounts', route: '/pmt/asignados' },
+        { label: 'Soporte Técnico', icon: 'support_agent', route: '/pmt/soporte-tecnico' },
         { label: 'Reparación', icon: 'build', route: '/pmt/reparacion' },
-        { label: 'En Garantía', icon: 'shield', route: '/pmt/garantia' },
+        { label: 'Garantía', icon: 'shield', route: '/pmt/garantia' },
         { label: 'SIM Cards', icon: 'sim_card', route: '/pmt/sim-cards' },
         { label: 'Requisiciones', icon: 'shopping_cart', route: '/pmt/solicitudes-equipo', tooltip: 'Solicitudes de Producto o Compras a activo fijo' },
         { label: 'Compras', icon: 'shopping_cart', route: '/pos-admin/purchase-orders' },
-        { label: 'Soporte', icon: 'support_agent', route: '/pmt/solicitudes-soporte' },
         { label: 'Comercios / MCC', icon: 'merchants', route: '/pos-admin/merchants', dividerBefore: true, catalog: true },
         { label: 'Bodegas', icon: 'warehouse', route: '/pmt/bodega', catalog: true },
         { label: 'Marcas / Modelos', icon: 'catalog', route: '/pos-admin/catalog', catalog: true },
@@ -161,10 +161,12 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
     if (path.startsWith('/pmt/pos-inyeccion')) return { title: 'POS Inyección', icon: 'vaccines' };
     if (path.startsWith('/pmt/asignados')) return { title: 'Asignados', icon: 'manage_accounts' };
     if (path.startsWith('/pmt/reparacion')) return { title: 'Reparación', icon: 'build' };
-    if (path.startsWith('/pmt/garantia')) return { title: 'En Garantía', icon: 'shield' };
+    if (path.startsWith('/pmt/garantia')) return { title: 'Garantía', icon: 'shield' };
     if (path.startsWith('/pmt/inicializaciones')) return { title: 'Inicializaciones', icon: 'settings_power' };
     if (path.startsWith('/pmt/sim-cards')) return { title: 'SIM Cards', icon: 'sim_card' };
-    if (path.startsWith('/pmt/solicitudes-soporte')) return { title: 'Soporte', icon: 'support_agent' };
+    if (path.startsWith('/pmt/soporte-tecnico') || path.startsWith('/pmt/solicitudes-soporte')) {
+      return { title: 'Soporte Técnico', icon: 'support_agent' };
+    }
     if (path.startsWith('/pmt/solicitudes-equipo')) return { title: 'Requisiciones', icon: 'shopping_cart' };
     if (path.startsWith('/pmt/control-pos')) return { title: 'Tráfico', icon: 'sync_alt' };
     if (path.startsWith('/pmt/bulk-upload')) return { title: 'Subir Inventario', icon: 'cloud_upload' };

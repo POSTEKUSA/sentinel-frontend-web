@@ -120,8 +120,13 @@ const routes: Routes = [
         loadComponent: () => import('./features/pmt/pmt-sim-cards/pmt-sim-cards.component').then(m => m.PmtSimCardsComponent),
       },
       {
-        path: 'pmt/solicitudes-soporte',
+        path: 'pmt/soporte-tecnico',
         loadComponent: () => import('./features/pmt/pmt-solicitudes-soporte/pmt-solicitudes-soporte.component').then(m => m.PmtSolicitudesSoporteComponent),
+      },
+      {
+        path: 'pmt/solicitudes-soporte',
+        redirectTo: '/pmt/soporte-tecnico',
+        pathMatch: 'full',
       },
       {
         path: 'pmt/solicitudes-equipo',

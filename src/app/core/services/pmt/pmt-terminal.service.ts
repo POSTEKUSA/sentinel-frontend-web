@@ -37,6 +37,18 @@ export class PmtTerminalService {
   get assignedHistory(): AssignedPosHistory[] { return this.assignedHistorySubject.value; }
   get queryRecords(): QueryRecord[] { return this.queryRecordsSubject.value; }
 
+  findBySerie(serie: string): Terminal | undefined {
+    const s = serie.trim().toLowerCase();
+    if (!s) return undefined;
+    return this.terminals.find(t => t.serie.trim().toLowerCase() === s);
+  }
+
+  findByInventario(inventario: string): Terminal | undefined {
+    const inv = inventario.trim().toLowerCase();
+    if (!inv) return undefined;
+    return this.terminals.find(t => (t.inventario ?? '').trim().toLowerCase() === inv);
+  }
+
   // ── CRUD ─────────────────────────────────────────────────────────────────
 
   /** Serie is unique within the same marca (brand), not globally. */

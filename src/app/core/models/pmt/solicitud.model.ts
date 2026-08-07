@@ -1,5 +1,7 @@
 export type SolicitudSoporteEstado = 'pendiente' | 'en_proceso' | 'resuelto' | 'cerrado';
 export type SolicitudSoporteTipo = 'tecnico' | 'software' | 'hardware' | 'otro';
+/** Disposición interna del equipo (taller). Independiente del estado cara al cliente. */
+export type SolicitudSoporteDisposicion = 'reparacion' | 'garantia';
 
 export const SOLICITUD_SOPORTE_ESTADO_LABELS: Record<SolicitudSoporteEstado, string> = {
   pendiente: 'Pendiente',
@@ -14,12 +16,29 @@ export const SOLICITUD_SOPORTE_ESTADO_BADGE: Record<SolicitudSoporteEstado, stri
   cerrado: 'cf-badge-muted',
 };
 
+export const SOLICITUD_SOPORTE_DISPOSICION_LABELS: Record<SolicitudSoporteDisposicion, string> = {
+  reparacion: 'Reparación',
+  garantia: 'Garantía',
+};
+export const SOLICITUD_SOPORTE_DISPOSICION_BADGE: Record<SolicitudSoporteDisposicion, string> = {
+  reparacion: 'cf-badge-warn',
+  garantia: 'cf-badge-warn',
+};
+
 export interface SolicitudSoporte {
   id: number;
+  /** Código de inventario del terminal (llave principal al crear/editar). */
+  inventario?: string;
   serie?: string;
   tipo: SolicitudSoporteTipo;
   descripcion: string;
   estado: SolicitudSoporteEstado;
+  /** Proceso interno del terminal (reparación/garantía). No reemplaza `estado`. */
+  disposicion?: SolicitudSoporteDisposicion;
+  /** Motivo del envío a reparación/garantía. */
+  tallerMotivo?: string;
+  /** Observaciones del envío a reparación/garantía. */
+  tallerObservacion?: string;
   assignedTo?: string;
   createdBy?: string;
   createdAt: string;

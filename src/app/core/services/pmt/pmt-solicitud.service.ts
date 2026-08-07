@@ -49,6 +49,10 @@ export class PmtSolicitudService {
     this.updateSoporte(id, { estado });
   }
 
+  deleteSoporte(id: number): void {
+    this.soporteSubject.next(this.soporteSubject.value.filter(s => s.id !== id));
+  }
+
   // ── Equipo ───────────────────────────────────────────────────────────────
 
   createEquipo(data: Omit<SolicitudEquipo, 'id' | 'createdAt' | 'updatedAt' | 'history'>): SolicitudEquipo {

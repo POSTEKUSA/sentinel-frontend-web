@@ -1,16 +1,17 @@
 import { SolicitudSoporte, SolicitudEquipo } from '../../models/pmt/solicitud.model';
 
 export const MOCK_PMT_SOLICITUDES_SOPORTE: SolicitudSoporte[] = [
-  { id: 1, serie: 'VX001242', tipo: 'hardware', descripcion: 'El lector de tarjetas no funciona correctamente, el chip no lee.', estado: 'pendiente', createdBy: 'mgarcia', createdAt: '2025-04-15T08:00:00Z', updatedAt: '2025-04-15T08:00:00Z', comments: [] },
-  { id: 2, serie: 'VX001243', tipo: 'software', descripcion: 'La aplicación cierra inesperadamente durante el proceso de cobro.', estado: 'en_proceso', assignedTo: 'mherrera', createdBy: 'rmartinez', createdAt: '2025-04-10T09:00:00Z', updatedAt: '2025-04-12T10:00:00Z', comments: [
-    { id: 1, solicitudId: 2, comment: 'Revisando logs del sistema. Parece ser un problema con la versión de firmware.', createdBy: 'mherrera', createdAt: '2025-04-12T10:00:00Z' }
+  { id: 1, inventario: 'POS-009', serie: 'VX001242', tipo: 'hardware', descripcion: 'El lector de tarjetas no funciona correctamente, el chip no lee.', estado: 'pendiente', createdBy: 'mgarcia', createdAt: '2025-04-15T08:00:00Z', updatedAt: '2025-04-15T08:00:00Z', comments: [] },
+  { id: 2, inventario: 'POS-010', serie: 'VX001243', tipo: 'software', descripcion: 'La aplicación cierra inesperadamente durante el proceso de cobro.', estado: 'en_proceso', disposicion: 'reparacion', tallerMotivo: 'Error de software / reinicios constantes', tallerObservacion: 'Falla recurrente al cobrar.', assignedTo: 'mherrera', createdBy: 'rmartinez', createdAt: '2025-04-10T09:00:00Z', updatedAt: '2025-04-12T10:00:00Z', comments: [
+    { id: 1, solicitudId: 2, comment: 'Revisando logs del sistema. Parece ser un problema con la versión de firmware.', createdBy: 'mherrera', createdAt: '2025-04-12T10:00:00Z' },
+    { id: 4, solicitudId: 2, comment: 'Enviado a reparación: Error de software / reinicios constantes — Falla recurrente al cobrar.', createdBy: 'mherrera', createdAt: '2025-04-12T11:00:00Z' }
   ]},
-  { id: 3, serie: 'VX001244', tipo: 'tecnico', descripcion: 'Terminal no se conecta al servidor. Error de comunicación.', estado: 'resuelto', assignedTo: 'mherrera', createdBy: 'admin', createdAt: '2025-03-20T08:00:00Z', updatedAt: '2025-03-22T14:00:00Z', comments: [
+  { id: 3, inventario: 'POS-011', serie: 'VX001244', tipo: 'tecnico', descripcion: 'Terminal no se conecta al servidor. Error de comunicación.', estado: 'resuelto', assignedTo: 'mherrera', createdBy: 'admin', createdAt: '2025-03-20T08:00:00Z', updatedAt: '2025-03-22T14:00:00Z', comments: [
     { id: 2, solicitudId: 3, comment: 'Se actualizó la configuración APN. Terminal operativa.', createdBy: 'mherrera', createdAt: '2025-03-22T14:00:00Z' }
   ]},
   { id: 4, tipo: 'otro', descripcion: 'Solicitud de capacitación para uso del sistema en nuevos técnicos.', estado: 'pendiente', createdBy: 'jlopez', createdAt: '2025-04-16T11:00:00Z', updatedAt: '2025-04-16T11:00:00Z', comments: [] },
-  { id: 5, serie: 'VX001253', tipo: 'hardware', descripcion: 'Pantalla con líneas horizontales, posible daño físico.', estado: 'cerrado', assignedTo: 'mherrera', createdBy: 'rmartinez', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-05T16:00:00Z', comments: [
-    { id: 3, solicitudId: 5, comment: 'Terminal enviada a garantía.', createdBy: 'mherrera', createdAt: '2025-03-05T16:00:00Z' }
+  { id: 5, inventario: 'POS-020', serie: 'VX001253', tipo: 'hardware', descripcion: 'Pantalla con líneas horizontales, posible daño físico.', estado: 'cerrado', disposicion: 'garantia', tallerMotivo: 'Defecto de fábrica', tallerObservacion: 'Pantalla con líneas desde instalación.', assignedTo: 'mherrera', createdBy: 'rmartinez', createdAt: '2025-03-01T08:00:00Z', updatedAt: '2025-03-05T16:00:00Z', comments: [
+    { id: 3, solicitudId: 5, comment: 'Terminal enviada a garantía: Defecto de fábrica — Pantalla con líneas desde instalación.', createdBy: 'mherrera', createdAt: '2025-03-05T16:00:00Z' }
   ]},
 ];
 

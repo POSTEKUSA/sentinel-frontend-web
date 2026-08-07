@@ -1,1 +1,112 @@
-﻿
+﻿.soporte-grid {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.soporte-grid th,
+.soporte-grid td {
+  padding: 8px 8px;
+  font-size: 12.5px;
+  vertical-align: middle;
+}
+
+.soporte-grid th:nth-child(1),
+.soporte-grid td:nth-child(1) { width: 10%; }  /* Inventario */
+.soporte-grid th:nth-child(2),
+.soporte-grid td:nth-child(2) { width: 9%; }   /* Marca */
+.soporte-grid th:nth-child(3),
+.soporte-grid td:nth-child(3) { width: 10%; }  /* Modelo */
+.soporte-grid th:nth-child(4),
+.soporte-grid td:nth-child(4) { width: 12%; }  /* Serie */
+.soporte-grid th:nth-child(5),
+.soporte-grid td:nth-child(5) { width: 32%; }  /* Descripción */
+.soporte-grid th:nth-child(6),
+.soporte-grid td:nth-child(6) { width: 11%; }  /* Estado */
+.soporte-grid th:nth-child(7),
+.soporte-grid td:nth-child(7) { width: 11%; }  /* Taller */
+.soporte-grid th:nth-child(8),
+.soporte-grid td:nth-child(8) { width: 56px; } /* Acciones */
+
+.td-compact {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.td-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 0;
+  color: var(--ink-2);
+}
+
+.terminal-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--surface-alt, #f5f7f9);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.terminal-preview .cf-label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.form-hint {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.form-hint.warn {
+  color: #b45309;
+}
+
+.taller-box {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: var(--surface-alt, #f5f7f9);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.cf-table th.th-actions,
+.cf-table td.td-actions {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  min-width: 56px;
+  width: 56px;
+  text-align: right;
+  white-space: nowrap;
+  background: var(--surface, #fff);
+  box-shadow: -8px 0 10px -8px rgba(20, 23, 28, 0.18);
+}
+
+.cf-table thead th.th-actions {
+  background: #fbfcfd;
+  z-index: 3;
+}
+
+.cf-table tbody tr:hover td.td-actions {
+  background: #fbfbfc;
+}
+
+.inv-actions-menu {
+  position: fixed;
+  z-index: 5000;
+  min-width: 220px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(20, 23, 28, 0.16);
+  display: flex;
+  flex-direction: column;
+}
