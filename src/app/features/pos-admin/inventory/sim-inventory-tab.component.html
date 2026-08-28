@@ -26,8 +26,6 @@
   </form>
 </div>
 
-<p class="result-count">{{ filtered.length }} SIM(s) de {{ all.length }} totales</p>
-
 <div class="panel">
   @if (filtered.length === 0) {
     <app-empty-state navIcon="inventory" title="Sin SIM Cards" subtitle="No hay chips que coincidan con los filtros."></app-empty-state>
@@ -43,6 +41,7 @@
             <th>Estado</th>
             <th>POS asignado</th>
             <th>APN</th>
+            <th class="th-actions">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -74,6 +73,23 @@
                 }
               </td>
               <td>{{ s.apn ?? '—' }}</td>
+              <td class="td-actions">
+                <div class="row-actions">
+                  <div class="cf-menu" [class.open]="openMenuId === 'sim-' + s.id">
+                    <button type="button" class="cf-icon-btn" aria-label="Más acciones" (click)="toggleMenu('sim-' + s.id, $event)">
+                      <span class="mi">more_vert</span>
+                    </button>
+                    <div class="cf-menu-panel">
+                      <button type="button" class="cf-menu-item" (click)="openEdit(s); closeMenus()">
+                        <span class="mi">edit</span> Editar
+                      </button>
+                      <button type="button" class="cf-menu-item danger" (click)="askDelete(s); closeMenus()">
+                        <span class="mi">delete_outline</span> Eliminar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </td>
             </tr>
           }
         </tbody>
@@ -81,3 +97,69 @@
     </div>
   }
 </div>
+
+@if (showForm) {
+  <div class="dialog-backdrop" (click)="showForm = false">
+    <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
+      <div class="dialog-head">
+        <h2>{{ editId === null ? 'Agregar SIM Card' : 'Editar SIM Card' }}</h2>
+        <button type="button" class="icon-btn" (click)="showForm = false"><span class="mi">close</span></button>
+      </div>
+      <form [formGroup]="formData" class="dialog-body" (ngSubmit)="saveForm()">
+        <div class="grid-2">
+          <div class="field">
+            <label class="cf-label">ICCID *</label>
+            <input class="cf-input" formControlName="iccid" placeholder="8950410112340001" />
+          </div>
+          <div class="field">
+            <label class="cf-label">Número</label>
+            <input class="cf-input" formControlName="numero" placeholder="+504…" />
+          </div>
+          <div class="field">
+            <label class="cf-label">Compañía *</label>
+            <select class="cf-input" formControlName="compania">
+              @for (c of companias; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="cf-label">Estado</label>
+            <select class="cf-input" formControlName="estado">
+              @for (k of estadoKeys; track k) {
+                <option [value]="k">{{ estadoLabels[k] }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="cf-label">POS (código inventario)</label>
+            <input class="cf-input" formControlName="posInventoryCode" placeholder="POS-009" />
+          </div>
+          <div class="field">
+            <label class="cf-label">POS (serie)</label>
+            <input class="cf-input" formControlName="terminalSerie" placeholder="VX001242" />
+          </div>
+          <div class="field">
+            <label class="cf-label">APN</label>
+            <input class="cf-input" formControlName="apn" />
+          </div>
+          <div class="field">
+            <label class="cf-label">IP</label>
+            <input class="cf-input" formControlName="ip" />
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label class="cf-label">Notas</label>
+          <textarea class="cf-input" rows="2" formControlName="notes"></textarea>
+        </div>
+        @if (formError) {
+          <p class="form-error">{{ formError }}</p>
+        }
+        <div class="dialog-foot" style="margin-top:16px">
+          <button type="button" class="btn-secondary" (click)="showForm = false">Cancelar</button>
+          <button type="submit" class="btn-primary">{{ editId === null ? 'Agregar' : 'Guardar' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

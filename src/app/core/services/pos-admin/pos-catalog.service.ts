@@ -82,6 +82,10 @@ export class PosCatalogService {
     this.suppliersSubject.next(this.suppliersSubject.value.filter(s => s.id !== id));
   }
 
+  get accessories(): AccessoryCatalogItem[] {
+    return this.accessoriesSubject.value;
+  }
+
   // ── Accesorios / Consumibles (HU-003) ──────────────────────
 
   createAccessory(accessory: Omit<AccessoryCatalogItem, 'id' | 'inventoryCode'> & { inventoryCode?: string }): AccessoryCatalogItem {

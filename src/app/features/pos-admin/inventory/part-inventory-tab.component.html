@@ -1,0 +1,171 @@
+<div class="panel toolbar-panel">
+  <form [formGroup]="filterForm" class="toolbar">
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" formControlName="q" placeholder="Buscar código, tipo o serie…" autocomplete="off" spellcheck="false" />
+    </label>
+    <input class="cf-input filter-input" formControlName="type" placeholder="Tipo…" autocomplete="off" />
+    <select class="cf-input filter-input" formControlName="status">
+      <option value="">Todos</option>
+      @for (key of statusKeys; track key) {
+        <option [value]="key">{{ statusLabels[key] }}</option>
+      }
+    </select>
+    <select class="cf-input filter-input" formControlName="locationType">
+      <option value="">Todas</option>
+      @for (key of locationKeys; track key) {
+        <option [value]="key">{{ locationLabels[key] }}</option>
+      }
+    </select>
+    <input class="cf-input filter-input" formControlName="purchaseOrderNumber" placeholder="Orden de compra…" autocomplete="off" />
+    <button
+      type="button"
+      [class]="hasActiveFilters ? 'btn-primary' : 'btn-secondary'"
+      (click)="clearFilters()">
+      <span class="mi">filter_alt_off</span>
+      Limpiar
+    </button>
+  </form>
+</div>
+
+<div class="panel">
+  @if (filtered.length === 0) {
+    <app-empty-state navIcon="inventory" [title]="emptyTitle" subtitle="No hay registros que coincidan con los filtros."></app-empty-state>
+  } @else {
+    <div class="admin-table-wrap">
+      <table class="cf-table">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Tipo</th>
+            <th class="num">Cantidad</th>
+            <th>Serie</th>
+            <th>Estado</th>
+            <th>Ubicación</th>
+            <th>Fecha ingreso</th>
+            <th>Orden de compra</th>
+            <th class="th-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of filtered; track u.id) {
+            <tr>
+              <td><app-copyable-code [value]="u.inventoryCode" label="código" /></td>
+              <td class="td-name">{{ u.type }}</td>
+              <td class="num">{{ u.quantity }} {{ u.unitOfMeasure }}</td>
+              <td>
+                @if (u.serialNumber) {
+                  <app-copyable-code [value]="u.serialNumber" label="serie" />
+                } @else {
+                  <span class="td-sub">—</span>
+                }
+              </td>
+              <td>
+                <span class="cf-badge" [ngClass]="statusBadgeClass(u.status)">
+                  <span class="dot"></span>{{ statusLabels[u.status] }}
+                </span>
+              </td>
+              <td>{{ u.locationLabel }}</td>
+              <td>{{ u.receivedAt | date:'mediumDate' }}</td>
+              <td>
+                @if (u.purchaseOrderNumber) {
+                  <a class="breakdown-link" [routerLink]="['/pos-admin/purchase-orders', u.purchaseOrderId]">{{ u.purchaseOrderNumber }}</a>
+                } @else {
+                  <span class="td-sub">—</span>
+                }
+              </td>
+              <td class="td-actions">
+                <div class="row-actions">
+                  <div class="cf-menu" [class.open]="openMenuId === u.id">
+                    <button type="button" class="cf-icon-btn" aria-label="Más acciones" (click)="toggleMenu(u.id, $event)">
+                      <span class="mi">more_vert</span>
+                    </button>
+                    <div class="cf-menu-panel">
+                      <button type="button" class="cf-menu-item" (click)="openEdit(u); closeMenus()">
+                        <span class="mi">edit</span> Editar
+                      </button>
+                      <button type="button" class="cf-menu-item danger" (click)="askDelete(u); closeMenus()">
+                        <span class="mi">delete_outline</span> Eliminar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (showForm) {
+  <div class="dialog-backdrop" (click)="showForm = false">
+    <div class="dialog dialog--lg" (click)="$event.stopPropagation()">
+      <div class="dialog-head">
+        <h2>{{ dialogTitle }}</h2>
+        <button type="button" class="icon-btn" (click)="showForm = false"><span class="mi">close</span></button>
+      </div>
+      <form [formGroup]="formData" class="dialog-body" (ngSubmit)="saveForm()">
+        <div class="grid-2">
+          <div class="field">
+            <label class="cf-label">Tipo (catálogo) *</label>
+            <select class="cf-input" formControlName="catalogItemId" (change)="onCatalogChange(formData.value.catalogItemId!)">
+              <option value="">— Seleccione —</option>
+              @for (c of catalogOptions; track c.id) {
+                <option [value]="c.id">{{ c.inventoryCode }} — {{ c.type }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="cf-label">Cantidad *</label>
+            <input class="cf-input" type="number" min="1" formControlName="quantity" />
+          </div>
+          <div class="field">
+            <label class="cf-label">Unidad</label>
+            <input class="cf-input" formControlName="unitOfMeasure" />
+          </div>
+          <div class="field">
+            <label class="cf-label">N° Serie</label>
+            <input class="cf-input" formControlName="serialNumber" placeholder="Opcional" />
+          </div>
+          <div class="field">
+            <label class="cf-label">Estado *</label>
+            <select class="cf-input" formControlName="status">
+              @for (key of statusKeys; track key) {
+                <option [value]="key">{{ statusLabels[key] }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="cf-label">Ubicación *</label>
+            <select class="cf-input" formControlName="locationType">
+              @for (key of locationKeys; track key) {
+                <option [value]="key">{{ locationLabels[key] }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label class="cf-label">Detalle ubicación</label>
+            <input class="cf-input" formControlName="locationLabel" placeholder="Almacén, técnico…" />
+          </div>
+          <div class="field">
+            <label class="cf-label">Orden de compra</label>
+            <input class="cf-input" formControlName="purchaseOrderNumber" placeholder="OC-…" />
+          </div>
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label class="cf-label">Observaciones</label>
+          <textarea class="cf-input" rows="2" formControlName="observations"></textarea>
+        </div>
+        @if (formError) {
+          <p class="form-error">{{ formError }}</p>
+        }
+        <div class="dialog-foot" style="margin-top:16px">
+          <button type="button" class="btn-secondary" (click)="showForm = false">Cancelar</button>
+          <button type="submit" class="btn-primary">{{ editId ? 'Guardar' : 'Agregar' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

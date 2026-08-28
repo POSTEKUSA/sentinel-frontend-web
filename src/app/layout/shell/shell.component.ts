@@ -70,7 +70,6 @@ export class ShellComponent implements AfterViewInit, OnDestroy {
         { label: 'Soporte Técnico', icon: 'support_agent', route: '/pmt/soporte-tecnico' },
         { label: 'Reparación', icon: 'build', route: '/pmt/reparacion' },
         { label: 'Garantía', icon: 'shield', route: '/pmt/garantia' },
-        { label: 'SIM Cards', icon: 'sim_card', route: '/pmt/sim-cards' },
         { label: 'Requisiciones', icon: 'shopping_cart', route: '/pmt/solicitudes-equipo', tooltip: 'Solicitudes de Producto o Compras a activo fijo' },
         { label: 'Compras', icon: 'shopping_cart', route: '/pos-admin/purchase-orders' },
         { label: 'Comercios / MCC', icon: 'merchants', route: '/pos-admin/merchants', dividerBefore: true, catalog: true },

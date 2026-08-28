@@ -36,6 +36,10 @@ export class PmtSimCardService {
     this.simSubject.next(this.simCards.map(s => s.id === id ? { ...s, ...changes, updatedAt: now } : s));
   }
 
+  delete(id: number): void {
+    this.simSubject.next(this.simCards.filter(s => s.id !== id));
+  }
+
   changeEstado(id: number, newEstado: SimCardEstado, comment?: string, createdBy = 'admin'): void {
     const card = this.simCards.find(s => s.id === id);
     if (!card) return;

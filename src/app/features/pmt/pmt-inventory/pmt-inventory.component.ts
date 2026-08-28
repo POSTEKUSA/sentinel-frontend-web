@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, inject } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -10,6 +10,8 @@ import { UserNamePipe } from '../../../shared/pipes/user-name.pipe';
 import { MOCK_PMT_USERS } from '../../../core/mock/pmt/mock-pmt-users';
 import { PmtUser } from '../../../core/models/pmt/pmt-user.model';
 import { resolveUsernamesInText } from '../../../core/utils/user-display.util';
+import { PartInventoryTabComponent } from '../../pos-admin/inventory/part-inventory-tab.component';
+import { SimInventoryTabComponent } from '../../pos-admin/inventory/sim-inventory-tab.component';
 
 import {
   Terminal, TerminalEstado,
@@ -113,7 +115,16 @@ const ASSIGN_ROLE_LABELS: Record<AssignRole, string> = {
 @Component({
   selector: 'app-pmt-inventory',
   standalone: true,
-  imports: [CopyableCodeComponent, CommonModule, ReactiveFormsModule, FormsModule, RouterLink, UserNamePipe],
+  imports: [
+    CopyableCodeComponent,
+    CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
+    RouterLink,
+    UserNamePipe,
+    PartInventoryTabComponent,
+    SimInventoryTabComponent,
+  ],
   templateUrl: './pmt-inventory.component.html',
   styleUrl: './pmt-inventory.component.css',
 })
@@ -122,6 +133,14 @@ export class PmtInventoryComponent implements OnInit {
   private svc = inject(PmtTerminalService);
   private warehouseSvc = inject(WarehouseService);
   private merchantSvc = inject(MerchantService);
+
+  /** Tabs PMT: Terminales (default) | Accesorios | Consumibles | SIM */
+  activeTab: 'terminals' | 'accessories' | 'consumables' | 'sim' = 'terminals';
+  tabSummary: { filtered: number; total: number } = { filtered: 0, total: 0 };
+
+  @ViewChild('accessoryTab') accessoryTab?: PartInventoryTabComponent;
+  @ViewChild('consumableTab') consumableTab?: PartInventoryTabComponent;
+  @ViewChild('simTab') simTab?: SimInventoryTabComponent;
 
   all: Terminal[] = [];
   filtered: Terminal[] = [];
@@ -394,6 +413,18 @@ export class PmtInventoryComponent implements OnInit {
     });
     this.formError = '';
     this.showForm = true;
+  }
+
+  openAddPart(): void {
+    if (this.activeTab === 'accessories') {
+      this.accessoryTab?.openCreate();
+    } else if (this.activeTab === 'consumables') {
+      this.consumableTab?.openCreate();
+    }
+  }
+
+  openAddSim(): void {
+    this.simTab?.openCreate();
   }
 
   openView(t: Terminal): void {

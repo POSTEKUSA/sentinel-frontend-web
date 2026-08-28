@@ -33,11 +33,11 @@ export const MOCK_SUPPLIERS: Supplier[] = [
   },
 ];
 
-/** Catálogo de accesorios (ACC-*) y consumibles (prefijo por tipo: ROL, CAR, BAS…). */
+/** Catálogo: prefijo por tipo (CAR, BAS, BAT, FUN, ROL…). */
 export const MOCK_ACCESSORIES: AccessoryCatalogItem[] = [
   { id: 'acc-1', type: 'Rollo de papel térmico 57mm', category: 'consumable', inventoryCode: 'ROL-001', unitOfMeasure: 'Rollo', minStock: 500, status: 'active' },
-  { id: 'acc-2', type: 'Cargador de pared', category: 'accessory', inventoryCode: 'ACC-001', unitOfMeasure: 'Unidad', minStock: 30, status: 'active' },
-  { id: 'acc-3', type: 'Base cargadora (cradle)', category: 'accessory', inventoryCode: 'ACC-002', unitOfMeasure: 'Unidad', minStock: 20, status: 'active' },
-  { id: 'acc-4', type: 'Batería de repuesto', category: 'accessory', inventoryCode: 'ACC-003', unitOfMeasure: 'Unidad', minStock: 25, status: 'active' },
-  { id: 'acc-5', type: 'Funda protectora', category: 'accessory', inventoryCode: 'ACC-004', unitOfMeasure: 'Unidad', minStock: 10, status: 'obsolete' },
+  { id: 'acc-2', type: 'Cargador de pared', category: 'accessory', inventoryCode: 'CAR-001', unitOfMeasure: 'Unidad', minStock: 30, status: 'active' },
+  { id: 'acc-3', type: 'Base cargadora (cradle)', category: 'accessory', inventoryCode: 'BAS-001', unitOfMeasure: 'Unidad', minStock: 20, status: 'active' },
+  { id: 'acc-4', type: 'Batería de repuesto', category: 'accessory', inventoryCode: 'BAT-001', unitOfMeasure: 'Unidad', minStock: 25, status: 'active' },
+  { id: 'acc-5', type: 'Funda protectora', category: 'accessory', inventoryCode: 'FUN-001', unitOfMeasure: 'Unidad', minStock: 10, status: 'obsolete' },
 ];

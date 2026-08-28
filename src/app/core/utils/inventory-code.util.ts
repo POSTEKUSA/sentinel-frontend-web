@@ -1,26 +1,36 @@
 import { AccessoryCategory } from '../models/pos-admin';
 
-/** Prefijos de código de inventario por tipo de ítem. */
+/** Prefijos base de código de inventario. */
 export const INVENTORY_PREFIX = {
   pos: 'POS',
   sim: 'SIM',
-  accessory: 'ACC',
+  accessoryFallback: 'ACC',
   consumableFallback: 'CON',
 } as const;
 
-/** Prefijos de consumibles según tipo (rollo, cargador, base, batería, funda…). */
-export function consumablePrefixFromType(type: string): string {
+/**
+ * Prefijo según tipo: rollo→ROL, cargador→CAR, base→BAS, batería→BAT, funda→FUN.
+ * Si no hay match: ACC (accesorio) o CON (consumible).
+ */
+export function inventoryPrefixFromType(type: string, category: AccessoryCategory = 'accessory'): string {
   const t = type.toLowerCase();
   if (/rollo|rodillo|papel/.test(t)) return 'ROL';
   if (/cargador/.test(t)) return 'CAR';
   if (/base|cradle/.test(t)) return 'BAS';
   if (/bater/.test(t)) return 'BAT';
   if (/funda/.test(t)) return 'FUN';
-  return INVENTORY_PREFIX.consumableFallback;
+  return category === 'consumable'
+    ? INVENTORY_PREFIX.consumableFallback
+    : INVENTORY_PREFIX.accessoryFallback;
+}
+
+/** @deprecated usar inventoryPrefixFromType — se mantiene por compatibilidad. */
+export function consumablePrefixFromType(type: string): string {
+  return inventoryPrefixFromType(type, 'consumable');
 }
 
 export function accessoryInventoryPrefix(category: AccessoryCategory, type: string): string {
-  return category === 'accessory' ? INVENTORY_PREFIX.accessory : consumablePrefixFromType(type);
+  return inventoryPrefixFromType(type, category);
 }
 
 export function formatInventoryCode(prefix: string, seq: number, pad = 3): string {

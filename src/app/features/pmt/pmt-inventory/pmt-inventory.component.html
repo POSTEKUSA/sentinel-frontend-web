@@ -1,21 +1,59 @@
 <div class="admin-page">
   <header class="cf-head">
     <div>
-      <h1>Inventario de Terminales POS</h1>
-      <p class="count">{{ filtered.length }} equipo(s) encontrados de {{ all.length }} totales</p>
+      <h1>Inventario</h1>
+      <p class="count">
+        @if (activeTab === 'terminals') {
+          {{ filtered.length }} equipo(s) encontrados de {{ all.length }} totales
+        } @else if (activeTab === 'accessories') {
+          {{ tabSummary.filtered }} accesorio(s) encontrados de {{ tabSummary.total }} totales
+        } @else if (activeTab === 'consumables') {
+          {{ tabSummary.filtered }} consumible(s) encontrados de {{ tabSummary.total }} totales
+        } @else {
+          {{ tabSummary.filtered }} SIM(s) encontradas de {{ tabSummary.total }} totales
+        }
+      </p>
     </div>
     <div class="head-actions">
-      <a routerLink="/pmt/bulk-upload" class="btn-secondary">
-        <span class="mi">cloud_upload</span>
-        Importar inventario
-      </a>
-      <button type="button" class="btn-primary" (click)="openCreate()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        Nuevo Activo
-      </button>
+      @if (activeTab === 'terminals') {
+        <a routerLink="/pmt/bulk-upload" class="btn-secondary">
+          <span class="mi">cloud_upload</span>
+          Importar inventario
+        </a>
+        <button type="button" class="btn-primary" (click)="openCreate()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Nuevo Activo
+        </button>
+      }
+      @if (activeTab === 'accessories') {
+        <button type="button" class="btn-primary" (click)="openAddPart()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Agregar inventario
+        </button>
+      }
+      @if (activeTab === 'consumables') {
+        <button type="button" class="btn-primary" (click)="openAddPart()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Agregar inventario
+        </button>
+      }
+      @if (activeTab === 'sim') {
+        <button type="button" class="btn-primary" (click)="openAddSim()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Agregar inventario
+        </button>
+      }
     </div>
   </header>
 
+  <div class="cf-tabs" role="tablist">
+    <button type="button" class="cf-tab" role="tab" [class.active]="activeTab === 'terminals'" (click)="activeTab = 'terminals'">Terminales</button>
+    <button type="button" class="cf-tab" role="tab" [class.active]="activeTab === 'accessories'" (click)="activeTab = 'accessories'">Accesorios</button>
+    <button type="button" class="cf-tab" role="tab" [class.active]="activeTab === 'consumables'" (click)="activeTab = 'consumables'">Consumibles</button>
+    <button type="button" class="cf-tab" role="tab" [class.active]="activeTab === 'sim'" (click)="activeTab = 'sim'">SIM Cards</button>
+  </div>
+
+  @if (activeTab === 'terminals') {
   <!-- Filters -->
   <div class="panel toolbar-panel">
     <form [formGroup]="filterForm" class="toolbar">
@@ -143,6 +181,17 @@
       </div>
     }
   </div>
+  }
+
+  @if (activeTab === 'accessories') {
+    <app-part-inventory-tab #accessoryTab category="accessory" (summaryChange)="tabSummary = $event"></app-part-inventory-tab>
+  }
+  @if (activeTab === 'consumables') {
+    <app-part-inventory-tab #consumableTab category="consumable" (summaryChange)="tabSummary = $event"></app-part-inventory-tab>
+  }
+  @if (activeTab === 'sim') {
+    <app-sim-inventory-tab #simTab (summaryChange)="tabSummary = $event"></app-sim-inventory-tab>
+  }
 
   <!-- View (read-only) dialog -->
   @if (viewTarget) {

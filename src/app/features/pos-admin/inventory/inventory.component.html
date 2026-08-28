@@ -2,39 +2,27 @@
   <header class="cf-head">
     <div>
       <h1>Inventario</h1>
-      <p class="count">POS, accesorios, consumibles y SIM cards con código de inventario</p>
+      <p class="count">Terminales POS, accesorios, consumibles y SIM cards</p>
     </div>
     <div class="head-actions">
-      @if (activeTab === 'pos' && posSubTab === 'custody') {
+      @if (activeTab === 'terminals' && posSubTab === 'custody') {
         <button type="button" class="btn-primary" (click)="openCustodyAssign()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
           Asignar en resguardo
-        </button>
-      }
-      @if (activeTab === 'accessories') {
-        <button type="button" class="btn-primary" (click)="openAccessoryMovement()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          Registrar movimiento
-        </button>
-      }
-      @if (activeTab === 'consumables') {
-        <button type="button" class="btn-primary" (click)="openConsumableMovement()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          Registrar movimiento
         </button>
       }
     </div>
   </header>
 
   <div class="cf-tabs" role="tablist">
-    <button type="button" class="cf-tab" [class.active]="activeTab === 'pos'" (click)="activeTab = 'pos'">POS</button>
+    <button type="button" class="cf-tab" [class.active]="activeTab === 'terminals'" (click)="activeTab = 'terminals'">Terminales</button>
     <button type="button" class="cf-tab" [class.active]="activeTab === 'accessories'" (click)="activeTab = 'accessories'">Accesorios</button>
     <button type="button" class="cf-tab" [class.active]="activeTab === 'consumables'" (click)="activeTab = 'consumables'">Consumibles</button>
     <button type="button" class="cf-tab" [class.active]="activeTab === 'sim'" (click)="activeTab = 'sim'">SIM Cards</button>
   </div>
 
-  @if (activeTab === 'pos') {
-    <div class="cf-tabs cf-tabs-sub" role="tablist" aria-label="Vistas de POS">
+  @if (activeTab === 'terminals') {
+    <div class="cf-tabs cf-tabs-sub" role="tablist" aria-label="Vistas de terminales">
       <button type="button" class="cf-tab" [class.active]="posSubTab === 'central'" (click)="posSubTab = 'central'">Inventario Central</button>
       <button type="button" class="cf-tab" [class.active]="posSubTab === 'location'" (click)="posSubTab = 'location'">Por Ubicación</button>
       <button type="button" class="cf-tab" [class.active]="posSubTab === 'custody'" (click)="posSubTab = 'custody'">Resguardo</button>
@@ -52,10 +40,10 @@
   }
 
   @if (activeTab === 'accessories') {
-    <app-accessory-stock-tab #accessoryStock category="accessory"></app-accessory-stock-tab>
+    <app-part-inventory-tab category="accessory"></app-part-inventory-tab>
   }
   @if (activeTab === 'consumables') {
-    <app-accessory-stock-tab #consumableStock category="consumable"></app-accessory-stock-tab>
+    <app-part-inventory-tab category="consumable"></app-part-inventory-tab>
   }
   @if (activeTab === 'sim') {
     <app-sim-inventory-tab></app-sim-inventory-tab>
