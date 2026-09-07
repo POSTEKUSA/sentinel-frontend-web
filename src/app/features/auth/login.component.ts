@@ -17,7 +17,7 @@ import appConfig from '../../core/config/app-config.json';
 export class LoginComponent implements AfterViewInit {
   @ViewChild('logoImg') logoImg?: ElementRef<HTMLImageElement>;
 
-  email = 'user-demo@postek.com';
+  email = 'super-admin@postek.com';
   password = 'Pasword123!';
   showPassword = false;
   submitting = signal(false);
